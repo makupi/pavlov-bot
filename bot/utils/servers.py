@@ -14,3 +14,6 @@ class Servers:
 
     def get(self, name: str):
         return self._servers.get(name)
+
+    def get_names(self):
+        return list(self._servers.keys())

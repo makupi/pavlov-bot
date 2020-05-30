@@ -53,10 +53,6 @@ class Pavlov(commands.Cog):
     async def on_ready(self):
         print(f"{type(self).__name__} Cog ready.")
 
-    @commands.command()
-    async def servers(self, ctx):
-        pass
-
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
         if isinstance(error, commands.MissingRequiredArgument):
@@ -72,6 +68,14 @@ class Pavlov(commands.Cog):
 
     async def cog_before_invoke(self, ctx):
         await ctx.trigger_typing()
+
+    @commands.command()
+    async def servers(self, ctx):
+        server_names = servers.get_names()
+        embed = discord.Embed(
+            title="Servers", description="\n- ".join([""] + server_names)
+        )
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
