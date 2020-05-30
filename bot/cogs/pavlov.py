@@ -70,6 +70,9 @@ class Pavlov(commands.Cog):
             raise error
         await ctx.send(embed=embed)
 
+    async def cog_before_invoke(self, ctx):
+        await ctx.trigger_typing()
+
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
         data = await exec_server_command(server_name, "ServerInfo")
