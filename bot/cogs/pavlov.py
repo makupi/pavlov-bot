@@ -24,6 +24,27 @@ async def exec_server_command(server_name: str, command: str):
     return await pavlov.send(command)
 
 
+def check_perm_admin():
+    async def predicate(ctx):
+        return True
+
+    return commands.check(predicate)
+
+
+def check_perm_moderator():
+    async def predicate(ctx):
+        return True
+
+    return commands.check(predicate)
+
+
+def check_perm_captain():
+    async def predicate(ctx):
+        return True
+
+    return commands.check(predicate)
+
+
 class Pavlov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -36,32 +57,18 @@ class Pavlov(commands.Cog):
     async def servers(self, ctx):
         pass
 
-    def check_perm_admin(self):
-        async def predicate(ctx):
-            return True
-
-        return commands.check(predicate)
-
-    def check_perm_moderator(self):
-        async def predicate(ctx):
-            return True
-
-        return commands.check(predicate)
-
-    def check_perm_captain(self):
-        async def predicate(ctx):
-            return True
-
-        return commands.check(predicate)
-
     async def cog_command_error(self, ctx, error):
-        if isinstance(error.original, ServerNotFoundError):
-            embed = discord.Embed(
-                description=f"⚠️ Server `{error.original.server_name}` not found.\n "
+        embed = discord.Embed()
+        if isinstance(error, commands.MissingRequiredArgument):
+            embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+        elif isinstance(error.original, ServerNotFoundError):
+            embed.description = (
+                f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
             )
-            await ctx.send(embed=embed)
-        raise error
+        else:
+            raise error
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
