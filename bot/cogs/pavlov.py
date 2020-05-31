@@ -11,38 +11,33 @@ from pavlov import PavlovRCON
 # Ban – Told to fuck off
 
 
-class ServerNotFoundError(Exception):
-    def __init__(self, server_name: str):
-        self.server_name = server_name
-
-
 async def exec_server_command(server_name: str, command: str):
     server = servers.get(server_name)
-    if server is None:
-        raise ServerNotFoundError(server_name)
     pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"))
     return await pavlov.send(command)
 
 
-def check_perm_admin():
-    async def predicate(ctx):
-        return True
-
-    return commands.check(predicate)
+async def check_banned(ctx):
+    pass
 
 
-def check_perm_moderator():
-    async def predicate(ctx):
-        return True
+async def check_perm_admin(ctx, server_name: str):
+    """ Admin permissions are stored per server in the servers.json """
+    server = servers.get(server_name)
+    if ctx.author.id not in server.get("admins", []):
+        await ctx.send(
+            embed=discord.Embed(description=f"This command is only for Admins.")
+        )
+        return False
+    return True
 
-    return commands.check(predicate)
+
+async def check_perm_moderator(ctx, server_name: str):
+    return True
 
 
-def check_perm_captain():
-    async def predicate(ctx):
-        return True
-
-    return commands.check(predicate)
+async def check_perm_captain(ctx, server_name: str):
+    return True
 
 
 class Pavlov(commands.Cog):
@@ -93,70 +88,80 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_captain()
     async def switchmap(self, ctx, server_name: str, map_name: str, game_mode: str):
+        if not await check_perm_captain(ctx, server_name):
+            return
         data = await exec_server_command(
             server_name, f"SwitchMap {map_name} {game_mode}"
         )
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_captain()
     async def resetsnd(self, ctx, server_name: str):
+        if not await check_perm_captain(ctx, server_name):
+            return
         data = await exec_server_command(server_name, "ResetSND")
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_moderator()
     async def ban(self, ctx, server_name: str, unique_id: str):
+        if not await check_perm_moderator(ctx, server_name):
+            return
         data = await exec_server_command(server_name, f"Ban {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_moderator()
     async def kick(self, ctx, server_name: str, unique_id: str):
+        if not await check_perm_moderator(ctx, server_name):
+            return
         data = await exec_server_command(server_name, f"Kick {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_moderator()
     async def unban(self, ctx, server_name: str, unique_id: str):
+        if not await check_perm_moderator(ctx, server_name):
+            return
         data = await exec_server_command(server_name, f"Unban {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_moderator()
     async def switchteam(self, ctx, server_name: str, unique_id: str, team_id: str):
+        if not await check_perm_moderator(ctx, server_name):
+            return
         data = await exec_server_command(
             server_name, f"SwitchTeam {unique_id} {team_id}"
         )
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_admin()
     async def giveitem(self, ctx, server_name: str, unique_id: str, item_id: str):
+        if not await check_perm_admin(ctx, server_name):
+            return
         data = await exec_server_command(server_name, f"GiveItem {unique_id} {item_id}")
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_admin()
     async def givecash(self, ctx, server_name: str, unique_id: str, cash_amount: str):
+        if not await check_perm_admin(ctx, server_name):
+            return
         data = await exec_server_command(
             server_name, f"GiveCash {unique_id} {cash_amount}"
         )
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_admin()
     async def givecash(self, ctx, server_name: str, team_id: str, cash_amount: str):
+        if not await check_perm_admin(ctx, server_name):
+            return
         data = await exec_server_command(
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
         await ctx.send(data)
 
     @commands.command()
-    @check_perm_admin()
     async def setplayerskin(self, ctx, server_name: str, unique_id: str, skin_id: str):
+        if not await check_perm_admin(ctx, server_name):
+            return
         data = await exec_server_command(
             server_name, f"SetPlayerSkin {unique_id} {skin_id}"
         )

@@ -2,6 +2,11 @@ import json
 import os
 
 
+class ServerNotFoundError(Exception):
+    def __init__(self, server_name: str):
+        self.server_name = server_name
+
+
 class Servers:
     def __init__(self, filename="servers.json"):
         self._filename = filename
@@ -13,7 +18,10 @@ class Servers:
             self._servers = json.load(file)
 
     def get(self, name: str):
-        return self._servers.get(name)
+        server = self._servers.get(name)
+        if server is None:
+            ServerNotFoundError(name)
+        return server
 
     def get_names(self):
         return list(self._servers.keys())
