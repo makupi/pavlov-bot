@@ -11,6 +11,7 @@ class Servers:
     def __init__(self, filename="servers.json"):
         self._filename = filename
         self._servers = {}
+        self.ServerNotFoundError = ServerNotFoundError
         if not os.path.isfile(filename):
             with open(filename, "w") as file:
                 json.dump("{}", file)

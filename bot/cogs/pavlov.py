@@ -11,6 +11,10 @@ from pavlov import PavlovRCON
 # Ban – Told to fuck off
 
 
+MODERATOR_ROLE = "Mod-{}"
+CAPTAIN_ROLE = "Captain-{}"
+
+
 async def exec_server_command(server_name: str, command: str):
     server = servers.get(server_name)
     pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"))
@@ -33,10 +37,26 @@ async def check_perm_admin(ctx, server_name: str):
 
 
 async def check_perm_moderator(ctx, server_name: str):
+    role_name = MODERATOR_ROLE.format(server_name)
+    print(f"checking moderator for role name {role_name}")
+    role = discord.utils.get(ctx.author.roles, name=role_name)
+    if role is None:
+        await ctx.send(
+            embed=discord.Embed(description=f"This command is only for Moderators.")
+        )
+        return False
     return True
 
 
 async def check_perm_captain(ctx, server_name: str):
+    role_name = CAPTAIN_ROLE.format(server_name)
+    print(f"checking captain for role name {role_name}")
+    role = discord.utils.get(ctx.author.roles, name=role_name)
+    if role is None:
+        await ctx.send(
+            embed=discord.Embed(description=f"This command is only for Captains.")
+        )
+        return False
     return True
 
 
@@ -52,7 +72,7 @@ class Pavlov(commands.Cog):
         embed = discord.Embed()
         if isinstance(error, commands.MissingRequiredArgument):
             embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
-        elif isinstance(error.original, ServerNotFoundError):
+        elif isinstance(error.original, servers.ServerNotFoundError):
             embed.description = (
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
