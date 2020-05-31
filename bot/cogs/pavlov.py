@@ -103,12 +103,12 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    async def player(self, ctx, server_name: str, player_id: str):
+    async def player(self, ctx, player_id: str, server_name: str):
         data = await exec_server_command(server_name, f"InspectPlayer {player_id}")
         await ctx.send(data)
 
     @commands.command()
-    async def switchmap(self, ctx, server_name: str, map_name: str, game_mode: str):
+    async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(
@@ -124,28 +124,28 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    async def ban(self, ctx, server_name: str, unique_id: str):
+    async def ban(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Ban {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    async def kick(self, ctx, server_name: str, unique_id: str):
+    async def kick(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Kick {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    async def unban(self, ctx, server_name: str, unique_id: str):
+    async def unban(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Unban {unique_id}")
         await ctx.send(data)
 
     @commands.command()
-    async def switchteam(self, ctx, server_name: str, unique_id: str, team_id: str):
+    async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(
@@ -154,14 +154,14 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    async def giveitem(self, ctx, server_name: str, unique_id: str, item_id: str):
+    async def giveitem(self, ctx, unique_id: str, item_id: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"GiveItem {unique_id} {item_id}")
         await ctx.send(data)
 
     @commands.command()
-    async def givecash(self, ctx, server_name: str, unique_id: str, cash_amount: str):
+    async def givecash(self, ctx, unique_id: str, cash_amount: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
@@ -170,7 +170,7 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    async def givecash(self, ctx, server_name: str, team_id: str, cash_amount: str):
+    async def givecash(self, ctx, team_id: str, cash_amount: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
@@ -179,7 +179,7 @@ class Pavlov(commands.Cog):
         await ctx.send(data)
 
     @commands.command()
-    async def setplayerskin(self, ctx, server_name: str, unique_id: str, skin_id: str):
+    async def setplayerskin(self, ctx, unique_id: str, skin_id: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
