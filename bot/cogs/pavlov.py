@@ -38,7 +38,6 @@ async def check_perm_admin(ctx, server_name: str):
 
 async def check_perm_moderator(ctx, server_name: str):
     role_name = MODERATOR_ROLE.format(server_name)
-    print(f"checking moderator for role name {role_name}")
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
         await ctx.send(
@@ -50,7 +49,6 @@ async def check_perm_moderator(ctx, server_name: str):
 
 async def check_perm_captain(ctx, server_name: str):
     role_name = CAPTAIN_ROLE.format(server_name)
-    print(f"checking captain for role name {role_name}")
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
         await ctx.send(
@@ -95,12 +93,28 @@ class Pavlov(commands.Cog):
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
         data = await exec_server_command(server_name, "ServerInfo")
-        await ctx.send(data)
+        server_info = data.get("ServerInfo")
+
+        embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
+        embed.add_field(
+            name="Server Name", value=server_info.get("ServerName"), inline=False
+        )
+        embed.add_field(name="Round State", value=server_info.get("RoundState"))
+        embed.add_field(name="Players", value=server_info.get("PlayerCount"))
+        embed.add_field(name="Game Mode", value=server_info.get("GameMode"))
+        embed.add_field(name="Map Label", value=server_info.get("MapLabel"))
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def players(self, ctx, server_name: str):
         data = await exec_server_command(server_name, "RefreshList")
-        await ctx.send(data)
+        player_list = data.get("PlayerList")
+        embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
+        if len(player_list) == 0:
+            embed.description = f"Currently no active players on `{server_name}`"
+        for player in player_list:
+            embed.description += f"\n - {player}"
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def player(self, ctx, player_id: str, server_name: str):
