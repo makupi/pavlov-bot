@@ -115,13 +115,25 @@ class Pavlov(commands.Cog):
         if len(player_list) == 0:
             embed.description = f"Currently no active players on `{server_name}`"
         for player in player_list:
-            embed.description += f"\n - {player}"
+            embed.description += (
+                f"\n - {player.get('Username', '')} <{player.get('UniqueId')}>"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
     async def player(self, ctx, player_id: str, server_name: str):
         data = await exec_server_command(server_name, f"InspectPlayer {player_id}")
-        await ctx.send(data)
+        player_info = data.get("PlayerInfo")
+        if not player_info:
+            embed = discord.Embed(description=f"Player <{player_id}> not found.")
+        else:
+            embed = discord.Embed(description=f"**Player info** for <{player_id}>")
+            embed.add_field(name="Name", value=player_info.get("PlayerName"))
+            embed.add_field(name="UniqueId", value=player_info.get("UniqueId"))
+            embed.add_field(name="KDA", value=player_info.get("KDA"))
+            embed.add_field(name="Cash", value=player_info.get("Cash"))
+            embed.add_field(name="TeamId", value=player_info.get("TeamId"))
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
@@ -137,28 +149,44 @@ class Pavlov(commands.Cog):
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(server_name, "ResetSND")
-        await ctx.send(data)
+        if not data.get("ResetSND"):
+            embed = discord.Embed(description=f"**Failed** reset SND")
+        else:
+            embed = discord.Embed(description=f"SND successfully reset")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def ban(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Ban {unique_id}")
-        await ctx.send(data)
+        if not data.get("Ban"):
+            embed = discord.Embed(description=f"**Failed** to ban <{unique_id}>")
+        else:
+            embed = discord.Embed(description=f"<{unique_id}> successfully banned")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def kick(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Kick {unique_id}")
-        await ctx.send(data)
+        if not data.get("Kick"):
+            embed = discord.Embed(description=f"**Failed** to kick <{unique_id}>")
+        else:
+            embed = discord.Embed(description=f"<{unique_id}> successfully kicked")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def unban(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Unban {unique_id}")
-        await ctx.send(data)
+        if not data.get("Unban"):
+            embed = discord.Embed(description=f"**Failed** to unban <{unique_id}>")
+        else:
+            embed = discord.Embed(description=f"<{unique_id}> successfully unbanned")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
@@ -167,14 +195,28 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"SwitchTeam {unique_id} {team_id}"
         )
-        await ctx.send(data)
+        if not data.get("SwitchTeam"):
+            embed = discord.Embed(
+                description=f"**Failed** to switch <{unique_id}> to team {team_id}"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"<{unique_id}> switched to team {team_id}"
+            )
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def giveitem(self, ctx, unique_id: str, item_id: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"GiveItem {unique_id} {item_id}")
-        await ctx.send(data)
+        if not data.get("GiveItem"):
+            embed = discord.Embed(
+                description=f"**Failed** to give {item_id} to <{unique_id}>"
+            )
+        else:
+            embed = discord.Embed(description=f"{item_id} given to <{unique_id}>")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def givecash(self, ctx, unique_id: str, cash_amount: str, server_name: str):
@@ -183,16 +225,28 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"GiveCash {unique_id} {cash_amount}"
         )
-        await ctx.send(data)
+        if not data.get("GiveCash"):
+            embed = discord.Embed(
+                description=f"**Failed** to give {cash_amount} to <{unique_id}>"
+            )
+        else:
+            embed = discord.Embed(description=f"{cash_amount} given to <{unique_id}>")
+        await ctx.send(embed=embed)
 
     @commands.command()
-    async def givecash(self, ctx, team_id: str, cash_amount: str, server_name: str):
+    async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
-        await ctx.send(data)
+        if not data.get("GiveTeamCash"):
+            embed = discord.Embed(
+                description=f"**Failed** to give {cash_amount} to <{team_id}>"
+            )
+        else:
+            embed = discord.Embed(description=f"{cash_amount} given to <{team_id}>")
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def setplayerskin(self, ctx, unique_id: str, skin_id: str, server_name: str):
@@ -201,7 +255,13 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"SetPlayerSkin {unique_id} {skin_id}"
         )
-        await ctx.send(data)
+        if not data.get("SetPlayerSkin"):
+            embed = discord.Embed(
+                description=f"**Failed** to set <{unique_id}>'s skin to {skin_id}"
+            )
+        else:
+            embed = discord.Embed(description=f"<{unique_id}>'s skin set to {skin_id}")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
