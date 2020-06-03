@@ -25,29 +25,35 @@ async def check_banned(ctx):
     pass
 
 
-async def check_perm_admin(ctx, server_name: str):
+async def check_perm_admin(ctx, server_name: str, sub_check=False):
     """ Admin permissions are stored per server in the servers.json """
     server = servers.get(server_name)
     if ctx.author.id not in server.get("admins", []):
-        await ctx.send(
-            embed=discord.Embed(description=f"This command is only for Admins.")
-        )
+        if not sub_check:
+            await ctx.send(
+                embed=discord.Embed(description=f"This command is only for Admins.")
+            )
         return False
     return True
 
 
-async def check_perm_moderator(ctx, server_name: str):
+async def check_perm_moderator(ctx, server_name: str, sub_check=False):
+    if await check_perm_admin(ctx, server_name, sub_check=True):
+        return True
     role_name = MODERATOR_ROLE.format(server_name)
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
-        await ctx.send(
-            embed=discord.Embed(description=f"This command is only for Moderators.")
-        )
+        if not sub_check:
+            await ctx.send(
+                embed=discord.Embed(description=f"This command is only for Moderators.")
+            )
         return False
     return True
 
 
 async def check_perm_captain(ctx, server_name: str):
+    if await check_perm_moderator(ctx, server_name, sub_check=True):
+        return True
     role_name = CAPTAIN_ROLE.format(server_name)
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
