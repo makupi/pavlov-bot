@@ -131,3 +131,5 @@ dmypy.json
 .idea/
 
 config.json
+
+servers.json
