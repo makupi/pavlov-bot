@@ -101,7 +101,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
-        """Shows ServerInfo of a `<server>`
+        """Shows ServerInfo
 
         **Usage**: `{prefix}serverinfo <server_name>`
         **Example**: `{prefix}serverinfo rush`
@@ -122,7 +122,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def players(self, ctx, server_name: str):
-        """Shows RefreshList of a `<server>`
+        """Shows RefreshList
 
         **Usage**: `{prefix}players <server_name>`
         **Example**: `{prefix}players rush`
@@ -140,7 +140,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def playerinfo(self, ctx, player_id: str, server_name: str):
-        """Shows PlayerInfo of a `<player>` on a `<server>`
+        """Shows PlayerInfo
 
         **Usage**: `{prefix}playerinfo <player_id> <server_name>`
         **Example**: `{prefix}playerinfo 89374583439127 rush`
@@ -160,7 +160,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
-        """Runs SwitchMap on a `<server>`
+        """Runs SwitchMap
 
         **Usage**: `{prefix}switchmap <map_name> <game_mode> <server_name>`
         **Example**: `{prefix}switchmap 89374583439127 rush`
@@ -183,7 +183,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str):
-        """Runs ResetSND on a `<server>`
+        """Runs ResetSND
 
         **Usage**: `{prefix}resetsnd <server_name>`
         **Example**: `{prefix}resetsnd rush`
@@ -200,6 +200,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
+        """Runs SwitchTeam
+
+        **Usage**: `{prefix}switchteam <player_id> <team_id> <server_name>`
+        **Example**: `{prefix}resetsnd 89374583439127 0 rush`
+        """
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(
@@ -218,6 +223,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def rotatemap(self, ctx, server_name: str):
+        """Runs RotateMap
+
+        **Usage**: `{prefix}rotatemap <server_name>`
+        **Example**: `{prefix}rotatemap rush`
+        """
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"RotateMap")
@@ -230,6 +240,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def ban(self, ctx, unique_id: str, server_name: str):
+        """Runs Ban
+
+        **Usage**: `{prefix}ban <player_id> <server_name>`
+        **Example**: `{prefix}ban 89374583439127 rush`
+        """
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Ban {unique_id}")
@@ -242,6 +257,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def kick(self, ctx, unique_id: str, server_name: str):
+        """Runs Kick
+
+        **Usage**: `{prefix}kick <player_id> <server_name>`
+        **Example**: `{prefix}kick 89374583439127 rush`
+        """
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Kick {unique_id}")
@@ -254,6 +274,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def unban(self, ctx, unique_id: str, server_name: str):
+        """Runs Unban
+
+        **Usage**: `{prefix}unban <player_id> <server_name>`
+        **Example**: `{prefix}unban 89374583439127 rush`
+        """
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Unban {unique_id}")
@@ -266,6 +291,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def giveitem(self, ctx, unique_id: str, item_id: str, server_name: str):
+        """Runs GiveItem
+
+        **Usage**: `{prefix}giveitem <player_id> <item_id> <server_name>`
+        **Example**: `{prefix}giveitem 89374583439127 tazer rush`
+        """
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"GiveItem {unique_id} {item_id}")
@@ -280,6 +310,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def givecash(self, ctx, unique_id: str, cash_amount: str, server_name: str):
+        """Runs GiveCash
+
+        **Usage**: `{prefix}givecash <player_id> <cash_amount> <server_name>`
+        **Example**: `{prefix}givecash 89374583439127 5000 rush`
+        """
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
@@ -296,6 +331,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str):
+        """Runs GiveTeamCash
+
+        **Usage**: `{prefix}giveteamcash <player_id> <cash_amount> <server_name>`
+        **Example**: `{prefix}giveteamcash 89374583439127 5000 rush`
+        """
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(
@@ -312,6 +352,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def setplayerskin(self, ctx, unique_id: str, skin_id: str, server_name: str):
+        """Runs SetPlayerSkin
+
+        **Usage**: `{prefix}setplayerskin <player_id> <skin_id> <server_name>`
+        **Example**: `{prefix}setplayerskin 89374583439127 clown rush`
+        """
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(

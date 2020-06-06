@@ -21,7 +21,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
-        """: Current ping and latency of the bot."""
+        """ Current ping and latency of the bot"""
         embed = discord.Embed()
         before_time = time.time()
         msg = await ctx.send(embed=embed)
@@ -33,7 +33,7 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def uptime(self, ctx):
-        """: Current uptime of the bot."""
+        """Current uptime of the bot"""
         current_time = datetime.now().replace(microsecond=0)
         embed = discord.Embed(
             description=f"Time since I went online: {current_time - self.start_time}."
@@ -42,12 +42,13 @@ class Utility(commands.Cog):
 
     @commands.command()
     async def starttime(self, ctx):
-        """: Start time of the bot."""
+        """Start time of the bot"""
         embed = discord.Embed(description=f"I'm up since {self.start_time}.")
         await ctx.send(embed=embed)
 
     @commands.command()
     async def info(self, ctx):
+        """Shows software versions and status of the bot"""
         embed = discord.Embed(title="Pavlov-Bot")
         # embed.url = f"https://top.gg/bot/{self.bot.user.id}"
         embed.set_thumbnail(url=self.bot.user.avatar_url)
@@ -67,35 +68,6 @@ class Utility(commands.Cog):
             f"discord.py: {discord.__version__}\n"
             f"Python: {PY_VERSION}```",
             inline=False,
-        )
-        # embed.add_field(
-        #     name="Links",
-        #     value=f"[Invite]({self.bot.invite}) | "
-        #     f"[Vote](https://top.gg/bot/{self.bot.user.id}/vote) | "
-        #     f"[Support](https://discord.gg/vU7pDXB) | "
-        #     f"[Ko-fi](https://ko-fi.com/makubob) | "
-        #     f"[Github](https://github.com/makupi) | "
-        #     f"[Twitter](https://twitter.com/makubob)",
-        #     inline=False,
-        # )
-        embed.set_footer(
-            text="Thank you for using Pavlov-Bot <3", icon_url=self.bot.user.avatar_url
-        )
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=["socials", "invite", "support"])
-    async def links(self, ctx):
-        embed = discord.Embed()
-        embed.description = (
-            f"[Invite]({self.bot.invite}) | "
-            f"[Vote](https://top.gg/bot/431485759304892416/vote) | "
-            f"[Support](https://discord.gg/vU7pDXB) | "
-            f"[Ko-fi](https://ko-fi.com/makubob) | "
-            f"[Github](https://github.com/makupi) | "
-            f"[Twitter](https://twitter.com/makubob)"
-        )
-        embed.set_footer(
-            text="Thank you for using Daisy <3", icon_url=self.bot.user.avatar_url
         )
         await ctx.send(embed=embed)
 
