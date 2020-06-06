@@ -162,6 +162,34 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
+        if not await check_perm_captain(ctx, server_name):
+            return
+        data = await exec_server_command(
+            server_name, f"SwitchTeam {unique_id} {team_id}"
+        )
+        if not data.get("SwitchTeam"):
+            embed = discord.Embed(
+                description=f"**Failed** to switch <{unique_id}> to team {team_id}"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"<{unique_id}> switched to team {team_id}"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def rotatemap(self, ctx, server_name: str):
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data = await exec_server_command(server_name, f"RotateMap")
+        if not data.get("RotateMap"):
+            embed = discord.Embed(description=f"**Failed** to rotate map")
+        else:
+            embed = discord.Embed(description=f"Rotated map successfully")
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def ban(self, ctx, unique_id: str, server_name: str):
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -192,23 +220,6 @@ class Pavlov(commands.Cog):
             embed = discord.Embed(description=f"**Failed** to unban <{unique_id}>")
         else:
             embed = discord.Embed(description=f"<{unique_id}> successfully unbanned")
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
-        if not await check_perm_captain(ctx, server_name):
-            return
-        data = await exec_server_command(
-            server_name, f"SwitchTeam {unique_id} {team_id}"
-        )
-        if not data.get("SwitchTeam"):
-            embed = discord.Embed(
-                description=f"**Failed** to switch <{unique_id}> to team {team_id}"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{unique_id}> switched to team {team_id}"
-            )
         await ctx.send(embed=embed)
 
     @commands.command()
