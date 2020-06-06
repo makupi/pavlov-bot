@@ -92,6 +92,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def servers(self, ctx):
+        """Lists available servers"""
         server_names = servers.get_names()
         embed = discord.Embed(
             title="Servers", description="\n- ".join([""] + server_names)
@@ -100,6 +101,12 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
+        """Shows ServerInfo of a `<server>`
+
+        **Usage**: `{prefix}serverinfo <server_name>`
+        **Example**: `{prefix}serverinfo rush`
+        """
+
         data = await exec_server_command(server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
 
@@ -115,6 +122,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def players(self, ctx, server_name: str):
+        """Shows RefreshList of a `<server>`
+
+        **Usage**: `{prefix}players <server_name>`
+        **Example**: `{prefix}players rush`
+        """
         data = await exec_server_command(server_name, "RefreshList")
         player_list = data.get("PlayerList")
         embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
@@ -128,6 +140,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def playerinfo(self, ctx, player_id: str, server_name: str):
+        """Shows PlayerInfo of a `<player>` on a `<server>`
+
+        **Usage**: `{prefix}playerinfo <player_id> <server_name>`
+        **Example**: `{prefix}playerinfo 89374583439127 rush`
+        """
         data = await exec_server_command(server_name, f"InspectPlayer {player_id}")
         player_info = data.get("PlayerInfo")
         if not player_info:
@@ -143,6 +160,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
+        """Runs SwitchMap on a `<server>`
+
+        **Usage**: `{prefix}switchmap <map_name> <game_mode> <server_name>`
+        **Example**: `{prefix}switchmap 89374583439127 rush`
+        """
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(
@@ -161,6 +183,11 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str):
+        """Runs ResetSND on a `<server>`
+
+        **Usage**: `{prefix}resetsnd <server_name>`
+        **Example**: `{prefix}resetsnd rush`
+        """
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(server_name, "ResetSND")
