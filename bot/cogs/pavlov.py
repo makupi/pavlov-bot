@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 from discord.ext import commands
 
@@ -81,7 +83,9 @@ class Pavlov(commands.Cog):
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
             )
-        elif isinstance(error.original, ConnectionRefusedError):
+        elif isinstance(error.original, ConnectionRefusedError) or isinstance(
+            error.original, OSError
+        ):
             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
         else:
             raise error
@@ -89,6 +93,10 @@ class Pavlov(commands.Cog):
 
     async def cog_before_invoke(self, ctx):
         await ctx.trigger_typing()
+        name = f"{ctx.author.name}#{ctx.author.discriminator}"
+        print(
+            f"{datetime.now()} INVOKE: {name} <{ctx.author.id}> : {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
+        )
 
     @commands.command()
     async def servers(self, ctx):
