@@ -373,6 +373,18 @@ class Pavlov(commands.Cog):
             embed = discord.Embed(description=f"<{unique_id}>'s skin set to {skin_id}")
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def batch(self, ctx, *batch_commands):
+        for args in batch_commands:
+            _args = args.split(" ")
+            cmd = _args[0]
+            command = self.bot.all_commands.get(cmd.lower())
+            if command:
+                await ctx.send(f"batch execute: `{args}`.. ")
+                await command(ctx, *_args[1:])
+            else:
+                await ctx.send(f"BATCH execute: `{args}` ERROR: command not found")
+
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))
