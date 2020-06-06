@@ -1,13 +1,15 @@
 import discord
 from discord.ext import commands
 
+from bot.utils import config
+
 
 async def create_bot_help(embed, mapping, prefix=";"):
     for cog, cmds in mapping.items():
         cmd_str = ""
         for cmd in cmds:
             if not cmd.hidden:
-                cmd_str += f"`{prefix}{cmd.name}` - *{cmd.short_doc}*\n"
+                cmd_str += f"{cmd.short_doc.format(prefix=prefix)}\n"
         if cmd_str:
             embed.add_field(
                 name=f"**__{cog.qualified_name}__**", value=cmd_str, inline=False
@@ -30,14 +32,13 @@ class Help(commands.Cog):
         # mapping[None] = [c for c in bot.all_commands.values() if c.cog is None]
         return mapping
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def help(self, ctx, command_name: str = None):
         """Shows this help message"""
-        prefix = ";"
+        prefix = config.prefix
         embed = discord.Embed(
             title="Help",
-            description=f"*Use `{prefix}help <command-name>` to get a more detailed help for a specific command!*"
-            f"\n`<value>` is for required arguments and `[value]` for optional arguments!",
+            description=f"*Use `{prefix}help <command-name>` to get a more detailed help for a specific command!*\n",
         )
         if command_name is not None:
             cmd = ctx.bot.all_commands.get(command_name)
