@@ -127,7 +127,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def player(self, ctx, player_id: str, server_name: str):
+    async def playerinfo(self, ctx, player_id: str, server_name: str):
         data = await exec_server_command(server_name, f"InspectPlayer {player_id}")
         player_info = data.get("PlayerInfo")
         if not player_info:
@@ -196,7 +196,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
-        if not await check_perm_moderator(ctx, server_name):
+        if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(
             server_name, f"SwitchTeam {unique_id} {team_id}"
