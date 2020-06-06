@@ -83,9 +83,7 @@ class Pavlov(commands.Cog):
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
             )
-        elif isinstance(error.original, ConnectionRefusedError) or isinstance(
-            error.original, OSError
-        ):
+        elif isinstance(error.original, (ConnectionRefusedError, OSError)):
             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
         else:
             raise error
