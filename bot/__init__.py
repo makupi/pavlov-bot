@@ -21,6 +21,7 @@ async def get_prefix(_bot, message):
 
 bot = commands.AutoShardedBot(command_prefix=get_prefix)
 bot.version = __version__
+bot.remove_command("help")
 
 
 @bot.event
