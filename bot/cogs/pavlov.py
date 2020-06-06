@@ -47,7 +47,9 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
     if role is None:
         if not sub_check:
             await ctx.send(
-                embed=discord.Embed(description=f"This command is only for Moderators.")
+                embed=discord.Embed(
+                    description=f"This command is only for Moderators and above."
+                )
             )
         return False
     return True
@@ -60,7 +62,9 @@ async def check_perm_captain(ctx, server_name: str):
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
         await ctx.send(
-            embed=discord.Embed(description=f"This command is only for Captains.")
+            embed=discord.Embed(
+                description=f"This command is only for Captains and above."
+            )
         )
         return False
     return True
@@ -375,6 +379,10 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def batch(self, ctx, *batch_commands):
+        """`{prefix}batch "<command with arguments>" "<command with args>"
+
+        **Example**: `{prefix}batch "rotatemap rush" "serverinfo rush"`
+        """
         for args in batch_commands:
             _args = args.split(" ")
             cmd = _args[0]
@@ -382,6 +390,7 @@ class Pavlov(commands.Cog):
             if command:
                 await ctx.send(f"batch execute: `{args}`.. ")
                 try:
+                    await ctx.trigger_typing()
                     await command(ctx, *_args[1:])
                 except Exception as ex:
                     print(f"BATCH: {command} failed with {ex}")
