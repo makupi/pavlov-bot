@@ -87,7 +87,7 @@ Where admins are discordIDs of the admin users ([how to find user-ids](https://s
 
 
 ## Setup your bot with discord
-Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#)
+Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
 Obtain the bot token and install in config.json
 
 ## Installing pipenv
