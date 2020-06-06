@@ -2,14 +2,16 @@ import discord
 from discord.ext import commands
 
 
-async def create_bot_help(embed, mapping):
+async def create_bot_help(embed, mapping, prefix=";"):
     for cog, cmds in mapping.items():
         cmd_str = ""
         for cmd in cmds:
             if not cmd.hidden:
-                cmd_str += f"`{cmd.name}`: {cmd.short_doc}\n"
+                cmd_str += f"`{prefix}{cmd.name}` - *{cmd.short_doc}*\n"
         if cmd_str:
-            embed.add_field(name=cog.qualified_name, value=cmd_str, inline=False)
+            embed.add_field(
+                name=f"**__{cog.qualified_name}__**", value=cmd_str, inline=False
+            )
     return embed
 
 
@@ -30,7 +32,7 @@ class Help(commands.Cog):
 
     @commands.command()
     async def help(self, ctx, command_name: str = None):
-        """*Shows this help message*"""
+        """Shows this help message"""
         prefix = ";"
         embed = discord.Embed(
             title="Help",
@@ -42,7 +44,7 @@ class Help(commands.Cog):
             if cmd is not None:
                 embed.add_field(name=cmd.name, value=cmd.help.format(prefix=prefix))
                 return await ctx.send(embed=embed)
-        embed = await create_bot_help(embed, self.get_bot_mapping())
+        embed = await create_bot_help(embed, self.get_bot_mapping(), prefix)
         await ctx.send(embed=embed)
 
 
