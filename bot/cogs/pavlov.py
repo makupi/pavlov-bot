@@ -164,7 +164,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(server_name, "ResetSND")
-        if not data.get("ResetSND"):
+        reset_snd = data.get("ResetSND", {})
+        if not reset_snd.get("ResetSND"):
             embed = discord.Embed(description=f"**Failed** reset SND")
         else:
             embed = discord.Embed(description=f"SND successfully reset")
@@ -177,7 +178,8 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"SwitchTeam {unique_id} {team_id}"
         )
-        if not data.get("SwitchTeam"):
+        switch_team = data.get("SwitchTeam", {})
+        if not switch_team.get("SwitchTeam"):
             embed = discord.Embed(
                 description=f"**Failed** to switch <{unique_id}> to team {team_id}"
             )
@@ -192,7 +194,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"RotateMap")
-        if not data.get("RotateMap"):
+        rotate_map = data.get("RotateMap", {})
+        if not rotate_map.get("RotateMap"):
             embed = discord.Embed(description=f"**Failed** to rotate map")
         else:
             embed = discord.Embed(description=f"Rotated map successfully")
@@ -203,7 +206,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Ban {unique_id}")
-        if not data.get("Ban"):
+        ban = data.get("Ban", {})
+        if not ban.get("Ban"):
             embed = discord.Embed(description=f"**Failed** to ban <{unique_id}>")
         else:
             embed = discord.Embed(description=f"<{unique_id}> successfully banned")
@@ -214,7 +218,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Kick {unique_id}")
-        if not data.get("Kick"):
+        kick = data.get("Kick", {})
+        if not kick.get("Kick"):
             embed = discord.Embed(description=f"**Failed** to kick <{unique_id}>")
         else:
             embed = discord.Embed(description=f"<{unique_id}> successfully kicked")
@@ -225,7 +230,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"Unban {unique_id}")
-        if not data.get("Unban"):
+        unban = data.get("Unban", {})
+        if not unban.get("Unban"):
             embed = discord.Embed(description=f"**Failed** to unban <{unique_id}>")
         else:
             embed = discord.Embed(description=f"<{unique_id}> successfully unbanned")
@@ -236,7 +242,8 @@ class Pavlov(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         data = await exec_server_command(server_name, f"GiveItem {unique_id} {item_id}")
-        if not data.get("GiveItem"):
+        give_team = data.get("GiveItem", {})
+        if not give_team.get("GiveItem"):
             embed = discord.Embed(
                 description=f"**Failed** to give {item_id} to <{unique_id}>"
             )
@@ -251,7 +258,8 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"GiveCash {unique_id} {cash_amount}"
         )
-        if not data.get("GiveCash"):
+        give_cash = data.get("GiveCash", {})
+        if not give_cash.get("GiveCash"):
             embed = discord.Embed(
                 description=f"**Failed** to give {cash_amount} to <{unique_id}>"
             )
@@ -266,7 +274,8 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
-        if not data.get("GiveTeamCash"):
+        give_team_cash = data.get("GiveTeamCash", {})
+        if not give_team_cash.get("GiveTeamCash"):
             embed = discord.Embed(
                 description=f"**Failed** to give {cash_amount} to <{team_id}>"
             )
@@ -281,7 +290,8 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"SetPlayerSkin {unique_id} {skin_id}"
         )
-        if not data.get("SetPlayerSkin"):
+        set_player_skin = data.get("SetPlayerSkin", {})
+        if not set_player_skin.get("SetPlayerSkin"):
             embed = discord.Embed(
                 description=f"**Failed** to set <{unique_id}>'s skin to {skin_id}"
             )
