@@ -381,7 +381,10 @@ class Pavlov(commands.Cog):
             command = self.bot.all_commands.get(cmd.lower())
             if command:
                 await ctx.send(f"batch execute: `{args}`.. ")
-                await command(ctx, *_args[1:])
+                try:
+                    await command(ctx, *_args[1:])
+                except Exception as ex:
+                    print(f"BATCH: {command} failed with {ex}")
             else:
                 await ctx.send(f"BATCH execute: `{args}` ERROR: command not found")
 
