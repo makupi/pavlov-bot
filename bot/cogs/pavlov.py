@@ -148,7 +148,16 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(
             server_name, f"SwitchMap {map_name} {game_mode}"
         )
-        await ctx.send(data)
+        switch_map = data.get("SwitchMap", {})
+        if not switch_map.get("SwitchMap"):
+            embed = discord.Embed(
+                description=f"**Failed** to switch map to {map_name} with game mode {game_mode}"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"Switched map to {map_name} with game mode {game_mode}"
+            )
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str):
