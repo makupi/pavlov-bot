@@ -7,7 +7,7 @@ from discord.ext import commands
 
 from bot.utils import config
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
