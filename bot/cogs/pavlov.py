@@ -158,7 +158,7 @@ class Pavlov(commands.Cog):
     async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
-        **Requires**: Captain permissions for the server
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}switchmap 89374583439127 rush`
         """
         if not await check_perm_captain(ctx, server_name):
@@ -181,7 +181,7 @@ class Pavlov(commands.Cog):
     async def resetsnd(self, ctx, server_name: str):
         """`{prefix}resetsnd <server_name>`
 
-        **Requires**: Captain permissions for the server
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd rush`
         """
         if not await check_perm_captain(ctx, server_name):
@@ -198,7 +198,7 @@ class Pavlov(commands.Cog):
     async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
-        **Requires**: Captain permissions for the server
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd 89374583439127 0 rush`
         """
         if not await check_perm_captain(ctx, server_name):
@@ -221,7 +221,7 @@ class Pavlov(commands.Cog):
     async def rotatemap(self, ctx, server_name: str):
         """`{prefix}rotatemap <server_name>`
 
-        **Requires**: Moderator permissions for the server
+        **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}rotatemap rush`
         """
         if not await check_perm_moderator(ctx, server_name):
@@ -238,7 +238,7 @@ class Pavlov(commands.Cog):
     async def ban(self, ctx, unique_id: str, server_name: str):
         """`{prefix}ban <player_id> <server_name>`
 
-        **Requires**: Moderator permissions for the server
+        **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
@@ -255,7 +255,7 @@ class Pavlov(commands.Cog):
     async def kick(self, ctx, unique_id: str, server_name: str):
         """`{prefix}kick <player_id> <server_name>`
 
-        **Requires**: Moderator permissions for the server
+        **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kick 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
@@ -272,7 +272,7 @@ class Pavlov(commands.Cog):
     async def unban(self, ctx, unique_id: str, server_name: str):
         """`{prefix}unban <player_id> <server_name>`
 
-        **Requires**: Moderator permissions for the server
+        **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}unban 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
