@@ -153,7 +153,14 @@ class Pavlov(commands.Cog):
         data = await self.exec_server_command(server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
         if ctx.batch_exec:
-            return server_info
+            return (
+                f"```"
+                f'Server Name: {server_info.get("ServerName")}\n'
+                f'Round State: {server_info.get("RoundState")}\n'
+                f'Players:     {server_info.get("PlayerCount")}\n'
+                f'Game Mode:   {server_info.get("GameMode")}\n'
+                f'Map Label:   {server_info.get("MapLabel")}```'
+            )
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
         embed.add_field(
             name="Server Name", value=server_info.get("ServerName"), inline=False
