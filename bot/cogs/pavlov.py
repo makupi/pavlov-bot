@@ -149,7 +149,8 @@ class Pavlov(commands.Cog):
         """
         data = await self.exec_server_command(server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
-
+        if ctx.batch_exec:
+            return server_info
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
         embed.add_field(
             name="Server Name", value=server_info.get("ServerName"), inline=False
@@ -175,6 +176,8 @@ class Pavlov(commands.Cog):
             embed.description += (
                 f"\n - {player.get('Username', '')} <{player.get('UniqueId')}>"
             )
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -185,6 +188,8 @@ class Pavlov(commands.Cog):
         """
         data = await self.exec_server_command(server_name, f"InspectPlayer {player_id}")
         player_info = data.get("PlayerInfo")
+        if ctx.batch_exec:
+            return player_info
         if not player_info:
             embed = discord.Embed(description=f"Player <{player_id}> not found.")
         else:
@@ -209,6 +214,8 @@ class Pavlov(commands.Cog):
             server_name, f"SwitchMap {map_name} {game_mode}"
         )
         switch_map = data.get("SwitchMap")
+        if ctx.batch_exec:
+            return switch_map
         if not switch_map:
             embed = discord.Embed(
                 description=f"**Failed** to switch map to {map_name} with game mode {game_mode}"
@@ -230,6 +237,8 @@ class Pavlov(commands.Cog):
             return
         data = await self.exec_server_command(server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
+        if ctx.batch_exec:
+            return reset_snd
         if not reset_snd:
             embed = discord.Embed(description=f"**Failed** reset SND")
         else:
@@ -249,6 +258,8 @@ class Pavlov(commands.Cog):
             server_name, f"SwitchTeam {unique_id} {team_id}"
         )
         switch_team = data.get("SwitchTeam")
+        if ctx.batch_exec:
+            return switch_team
         if not switch_team:
             embed = discord.Embed(
                 description=f"**Failed** to switch <{unique_id}> to team {team_id}"
@@ -270,6 +281,8 @@ class Pavlov(commands.Cog):
             return
         data = await self.exec_server_command(server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
+        if ctx.batch_exec:
+            return rotate_map
         if not rotate_map:
             embed = discord.Embed(description=f"**Failed** to rotate map")
         else:
@@ -287,6 +300,8 @@ class Pavlov(commands.Cog):
             return
         data = await self.exec_server_command(server_name, f"Ban {unique_id}")
         ban = data.get("Ban")
+        if ctx.batch_exec:
+            return ban
         if not ban:
             embed = discord.Embed(description=f"**Failed** to ban <{unique_id}>")
         else:
@@ -304,6 +319,8 @@ class Pavlov(commands.Cog):
             return
         data = await self.exec_server_command(server_name, f"Kick {unique_id}")
         kick = data.get("Kick")
+        if ctx.batch_exec:
+            return kick
         if not kick:
             embed = discord.Embed(description=f"**Failed** to kick <{unique_id}>")
         else:
@@ -321,6 +338,8 @@ class Pavlov(commands.Cog):
             return
         data = await self.exec_server_command(server_name, f"Unban {unique_id}")
         unban = data.get("Unban")
+        if ctx.batch_exec:
+            return unban
         if not unban:
             embed = discord.Embed(description=f"**Failed** to unban <{unique_id}>")
         else:
@@ -340,6 +359,8 @@ class Pavlov(commands.Cog):
             server_name, f"GiveItem {unique_id} {item_id}"
         )
         give_team = data.get("GiveItem")
+        if ctx.batch_exec:
+            return give_team
         if not give_team:
             embed = discord.Embed(
                 description=f"**Failed** to give {item_id} to <{unique_id}>"
@@ -361,6 +382,8 @@ class Pavlov(commands.Cog):
             server_name, f"GiveCash {unique_id} {cash_amount}"
         )
         give_cash = data.get("GiveCash")
+        if ctx.batch_exec:
+            return give_cash
         if not give_cash:
             embed = discord.Embed(
                 description=f"**Failed** to give {cash_amount} to <{unique_id}>"
@@ -382,6 +405,8 @@ class Pavlov(commands.Cog):
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
         give_team_cash = data.get("GiveTeamCash")
+        if ctx.batch_exec:
+            return give_team_cash
         if not give_team_cash:
             embed = discord.Embed(
                 description=f"**Failed** to give {cash_amount} to <{team_id}>"
@@ -403,6 +428,8 @@ class Pavlov(commands.Cog):
             server_name, f"SetPlayerSkin {unique_id} {skin_id}"
         )
         set_player_skin = data.get("SetPlayerSkin")
+        if ctx.batch_exec:
+            return set_player_skin
         if not set_player_skin:
             embed = discord.Embed(
                 description=f"**Failed** to set <{unique_id}>'s skin to {skin_id}"
@@ -417,19 +444,30 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}batch "rotatemap rush" "serverinfo rush"`
         """
+        embed = discord.Embed(title="batch execute")
+        before = datetime.now()
         for args in batch_commands:
             _args = args.split(" ")
             cmd = _args[0]
             command = self.bot.all_commands.get(cmd.lower())
+            ctx.batch_exec = True
             if command:
                 # await ctx.send(f"batch execute: `{args}`.. ")
                 try:
                     # await ctx.trigger_typing()
-                    await command(ctx, *_args[1:])
+                    data = await command(ctx, *_args[1:])
+                    embed.add_field(name=args, value=data, inline=False)
                 except Exception as ex:
                     logging.error(f"BATCH: {command} failed with {ex}")
+                    embed.add_field(name=args, value="execution failed", inline=False)
             else:
-                await ctx.send(f"BATCH execute: `{args}` ERROR: command not found")
+                embed.add_field(
+                    name=args,
+                    value="execution failed - command not found",
+                    inline=False,
+                )
+        embed.set_footer(text=f"Execution time: {datetime.now() - before}")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
