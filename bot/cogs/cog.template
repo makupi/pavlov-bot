@@ -1,3 +1,5 @@
+import logging
+
 import discord
 from discord.ext import commands
 
@@ -8,7 +10,7 @@ class Name(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f'{type(self).__name__} Cog ready.')
+        logging.info(f"{type(self).__name__} Cog ready.")
 
 
 def setup(bot):

@@ -1,3 +1,5 @@
+import logging
+from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
 import discord
@@ -5,8 +7,6 @@ from discord.ext import commands
 
 from bot.utils import config, servers
 from pavlov import PavlovRCON
-
-from asyncio.exceptions import TimeoutError
 
 # Admin – GiveItem, GiveCash, GiveTeamCash, SetPlayerSkin
 # Mod – Ban, Kick, Unban, RotateMap, SwitchTeam
@@ -40,6 +40,11 @@ async def check_perm_admin(ctx, server_name: str, sub_check=False):
     server = servers.get(server_name)
     if ctx.author.id not in server.get("admins", []):
         if not sub_check:
+            user_action_log(
+                ctx,
+                f"ADMIN CHECK FAILED for server {server_name}",
+                log_level=logging.WARNING,
+            )
             await ctx.send(
                 embed=discord.Embed(description=f"This command is only for Admins.")
             )
@@ -54,6 +59,11 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
         if not sub_check:
+            user_action_log(
+                ctx,
+                f"MOD CHECK FAILED for server {server_name}",
+                log_level=logging.WARNING,
+            )
             await ctx.send(
                 embed=discord.Embed(
                     description=f"This command is only for Moderators and above."
@@ -69,6 +79,11 @@ async def check_perm_captain(ctx, server_name: str):
     role_name = CAPTAIN_ROLE.format(server_name)
     role = discord.utils.get(ctx.author.roles, name=role_name)
     if role is None:
+        user_action_log(
+            ctx,
+            f"CAPTAIN CHECK FAILED for server {server_name}",
+            log_level=logging.WARNING,
+        )
         await ctx.send(
             embed=discord.Embed(
                 description=f"This command is only for Captains and above."
@@ -78,13 +93,18 @@ async def check_perm_captain(ctx, server_name: str):
     return True
 
 
+def user_action_log(ctx, message, log_level=logging.INFO):
+    name = f"{ctx.author.name}#{ctx.author.discriminator}"
+    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
+
+
 class Pavlov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{type(self).__name__} Cog ready.")
+        logging.info(f"{type(self).__name__} Cog ready.")
 
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
@@ -105,9 +125,8 @@ class Pavlov(commands.Cog):
 
     async def cog_before_invoke(self, ctx):
         await ctx.trigger_typing()
-        name = f"{ctx.author.name}#{ctx.author.discriminator}"
-        print(
-            f"{datetime.now()} INVOKE: {name} <{ctx.author.id}> : {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
+        user_action_log(
+            ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
         )
 
     @commands.command()
@@ -403,7 +422,7 @@ class Pavlov(commands.Cog):
                     await ctx.trigger_typing()
                     await command(ctx, *_args[1:])
                 except Exception as ex:
-                    print(f"BATCH: {command} failed with {ex}")
+                    logging.error(f"BATCH: {command} failed with {ex}")
             else:
                 await ctx.send(f"BATCH execute: `{args}` ERROR: command not found")
 
