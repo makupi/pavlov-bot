@@ -379,7 +379,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def batch(self, ctx, *batch_commands):
-        """`{prefix}batch "<command with arguments>" "<command with args>"
+        """`{prefix}batch "<command with arguments>" "<command with args>"`
 
         **Example**: `{prefix}batch "rotatemap rush" "serverinfo rush"`
         """
