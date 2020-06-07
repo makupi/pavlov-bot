@@ -1,11 +1,20 @@
 import asyncio
+import logging
 import random
+import sys
 from pathlib import Path
 
 import discord
 from discord.ext import commands
 
 from bot.utils import config
+
+logger = logging.getLogger()
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 __version__ = "0.1.2"
 
@@ -28,7 +37,7 @@ bot.remove_command("help")
 async def on_ready():
     bot.invite = invite_link.format(bot.user.id)
     await bot.change_presence(activity=discord.Game(f"v{__version__}"))
-    print(
+    logging.info(
         f"""Logged in as {bot.user}..
         Serving {len(bot.users)} users in {len(bot.guilds)} guilds
         Invite: {invite_link.format(bot.user.id)}
@@ -47,7 +56,7 @@ def load_extensions(_bot):
         try:
             _bot.load_extension(ext)
         except Exception as ex:
-            print(f"Failed to load extension {ext} - exception: {ex}")
+            logging.error(f"Failed to load extension {ext} - exception: {ex}")
 
 
 def run():

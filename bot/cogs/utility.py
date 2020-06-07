@@ -1,3 +1,4 @@
+import logging
 import sys
 import time
 from datetime import datetime
@@ -17,7 +18,7 @@ class Utility(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{type(self).__name__} Cog ready.")
+        logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
     async def ping(self, ctx):
