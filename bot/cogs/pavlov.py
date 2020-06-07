@@ -34,9 +34,10 @@ async def check_perm_admin(ctx, server_name: str, sub_check=False):
                 f"ADMIN CHECK FAILED for server {server_name}",
                 log_level=logging.WARNING,
             )
-            await ctx.send(
-                embed=discord.Embed(description=f"This command is only for Admins.")
-            )
+            if not ctx.batch_exec:
+                await ctx.send(
+                    embed=discord.Embed(description=f"This command is only for Admins.")
+                )
         return False
     return True
 
@@ -53,11 +54,12 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
                 f"MOD CHECK FAILED for server {server_name}",
                 log_level=logging.WARNING,
             )
-            await ctx.send(
-                embed=discord.Embed(
-                    description=f"This command is only for Moderators and above."
+            if not ctx.batch_exec:
+                await ctx.send(
+                    embed=discord.Embed(
+                        description=f"This command is only for Moderators and above."
+                    )
                 )
-            )
         return False
     return True
 
@@ -73,11 +75,12 @@ async def check_perm_captain(ctx, server_name: str):
             f"CAPTAIN CHECK FAILED for server {server_name}",
             log_level=logging.WARNING,
         )
-        await ctx.send(
-            embed=discord.Embed(
-                description=f"This command is only for Captains and above."
+        if not ctx.batch_exec:
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"This command is only for Captains and above."
+                )
             )
-        )
         return False
     return True
 
@@ -456,7 +459,14 @@ class Pavlov(commands.Cog):
                 try:
                     # await ctx.trigger_typing()
                     data = await command(ctx, *_args[1:])
-                    embed.add_field(name=args, value=data, inline=False)
+                    if data is None:
+                        embed.add_field(
+                            name=args,
+                            value="Command failed due to lack of permissions.",
+                            inline=False,
+                        )
+                    else:
+                        embed.add_field(name=args, value=data, inline=False)
                 except Exception as ex:
                     logging.error(f"BATCH: {command} failed with {ex}")
                     embed.add_field(name=args, value="execution failed", inline=False)
