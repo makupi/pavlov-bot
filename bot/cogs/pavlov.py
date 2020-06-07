@@ -6,6 +6,8 @@ from discord.ext import commands
 from bot.utils import config, servers
 from pavlov import PavlovRCON
 
+from asyncio.exceptions import TimeoutError
+
 # Admin – GiveItem, GiveCash, GiveTeamCash, SetPlayerSkin
 # Mod – Ban, Kick, Unban, RotateMap, SwitchTeam
 # Captain – SwitchMap, ResetSND
@@ -93,7 +95,9 @@ class Pavlov(commands.Cog):
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
             )
-        elif isinstance(error.original, (ConnectionRefusedError, OSError)):
+        elif isinstance(
+            error.original, (ConnectionRefusedError, OSError, TimeoutError)
+        ):
             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
         else:
             raise error
