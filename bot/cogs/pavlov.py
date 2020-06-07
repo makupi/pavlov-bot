@@ -15,11 +15,17 @@ from pavlov import PavlovRCON
 
 MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
+RCON_TIMEOUT = 5
 
 
 async def exec_server_command(server_name: str, command: str):
     server = servers.get(server_name)
-    pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"))
+    pavlov = PavlovRCON(
+        server.get("ip"),
+        server.get("port"),
+        server.get("password"),
+        timeout=RCON_TIMEOUT,
+    )
     return await pavlov.send(command)
 
 
