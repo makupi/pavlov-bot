@@ -1,4 +1,6 @@
 import logging
+import sys
+import traceback
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
@@ -130,6 +132,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     async def cog_before_invoke(self, ctx):
+        ctx.batch_exec = False
         await ctx.trigger_typing()
         user_action_log(
             ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
@@ -476,6 +479,7 @@ class Pavlov(commands.Cog):
                         embed.add_field(name=args, value=data, inline=False)
                 except Exception as ex:
                     logging.error(f"BATCH: {command} failed with {ex}")
+                    traceback.print_exc(file=sys.stdout)
                     embed.add_field(name=args, value="execution failed", inline=False)
             else:
                 embed.add_field(
