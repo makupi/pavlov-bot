@@ -132,3 +132,15 @@ Test bot... if all is good, then bot will start with server boot and restart if 
 
 Follow the logs with:    
 `journalctl -n 20 -f -u pavlov-bot`
+
+# Roles and permissions
+The bot has 4 permission levels:
+* Banned (can do nothing)
+* Everyone (can run ;servers, ;serverinfo, ;players, ;playersinfo)
+* Captain (can run Everyone commands plus ;switchmap, ;resetsnd, ;switchteam, ;rotatemap, ;batch)
+* Mod (can run Captain commands plus ;ban, ;unban, ;kick)
+* Admin (can do everything)
+
+## Administration of permissions
+* Admins are defined in servers.json all other groups are configured using discord roles. 
+* Roles need to be setup in discord using the following format {role name}-{server} where Role names are (Mod,Captain,Banned) and server is as returned by ;server command. Eg: Mod-testserver or Captain-rush
