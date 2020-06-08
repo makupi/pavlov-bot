@@ -137,7 +137,7 @@ Follow the logs with:
 The bot has 4 permission levels:
 * Banned (can do nothing)
 * Everyone (can run ;servers, ;serverinfo, ;players, ;playersinfo)
-* Captain (can run Everyone commands plus ;switchmap, ;resetsnd, ;switchteam, ;rotatemap)
+* Captain (can run Everyone commands plus ;switchmap, ;resetsnd, ;switchteam, ;rotatemap, ;batch)
 * Mod (can run Captain commands plus ;ban, ;unban, ;kick)
 * Admin (can do everything)
 
