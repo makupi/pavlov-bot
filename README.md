@@ -136,11 +136,15 @@ Follow the logs with:
 # Roles and permissions
 The bot has 4 permission levels:
 * Banned (can do nothing)
-* Everyone (can run ;servers, ;serverinfo, ;players, ;playersinfo)
-* Captain (can run Everyone commands plus ;switchmap, ;resetsnd, ;switchteam, ;rotatemap, ;batch)
+* Everyone (can run ;servers, ;serverinfo, ;players, ;playersinfo ;batch)
+* Captain (can run Everyone commands plus ;switchmap, ;resetsnd, ;switchteam, ;rotatemap)
 * Mod (can run Captain commands plus ;ban, ;unban, ;kick)
 * Admin (can do everything)
 
 ## Administration of permissions
 * Admins are defined in servers.json all other groups are configured using discord roles. 
 * Roles need to be setup in discord using the following format {role name}-{server} where Role names are (Mod,Captain,Banned) and server is as returned by ;server command. Eg: Mod-testserver or Captain-rush
+
+# Known issues with Rcon that bot can't fix
+* When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
+* When a SwitchMap Rcon command is successful in changing map, subsequent ServerInfo requests return previous map's data for duration of current map until either a RotateMap command is issued or map ends naturally and rotates to next map.
