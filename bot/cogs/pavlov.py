@@ -92,32 +92,29 @@ def user_action_log(ctx, message, log_level=logging.INFO):
     logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
 
 
+async def exec_server_command(ctx, server_name: str, command: str):
+    if not hasattr(ctx, "pavlov"):
+        server = servers.get(server_name)
+        pavlov = PavlovRCON(
+            server.get("ip"),
+            server.get("port"),
+            server.get("password"),
+            timeout=RCON_TIMEOUT,
+        )
+        ctx.pavlov = pavlov
+    else:
+        pavlov = ctx.pavlov
+    data = await pavlov.send(command)
+    return data
+
+
 class Pavlov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self._connections = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
-
-    async def exec_server_command(self, server_name: str, command: str):
-        logging.info(f"{self._connections=}")
-        connections = self._connections.get(server_name, [])
-
-        if not connections:
-            server = servers.get(server_name)
-            pavlov = PavlovRCON(
-                server.get("ip"),
-                server.get("port"),
-                server.get("password"),
-                timeout=RCON_TIMEOUT,
-            )
-        else:
-            pavlov = connections.pop()
-        data = await pavlov.send(command)
-        self._connections[server_name] = [pavlov]
-        return data
 
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
@@ -158,7 +155,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}serverinfo rush`
         """
-        data = await self.exec_server_command(server_name, "ServerInfo")
+        data = await exec_server_command(ctx, server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
         if ctx.batch_exec:
             return (
@@ -185,7 +182,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}players rush`
         """
-        data = await self.exec_server_command(server_name, "RefreshList")
+        data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
         embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
         if len(player_list) == 0:
@@ -204,7 +201,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        data = await self.exec_server_command(server_name, f"InspectPlayer {player_id}")
+        data = await exec_server_command(ctx, server_name, f"InspectPlayer {player_id}")
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
@@ -228,8 +225,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"SwitchMap {map_name} {game_mode}"
+        data = await exec_server_command(
+            ctx, server_name, f"SwitchMap {map_name} {game_mode}"
         )
         switch_map = data.get("SwitchMap")
         if ctx.batch_exec:
@@ -253,7 +250,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await self.exec_server_command(server_name, "ResetSND")
+        data = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
         if ctx.batch_exec:
             return reset_snd
@@ -272,8 +269,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"SwitchTeam {unique_id} {team_id}"
+        data = await exec_server_command(
+            ctx, server_name, f"SwitchTeam {unique_id} {team_id}"
         )
         switch_team = data.get("SwitchTeam")
         if ctx.batch_exec:
@@ -297,7 +294,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await self.exec_server_command(server_name, f"RotateMap")
+        data = await exec_server_command(ctx, server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
         if ctx.batch_exec:
             return rotate_map
@@ -316,7 +313,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await self.exec_server_command(server_name, f"Ban {unique_id}")
+        data = await exec_server_command(ctx, server_name, f"Ban {unique_id}")
         ban = data.get("Ban")
         if ctx.batch_exec:
             return ban
@@ -335,7 +332,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await self.exec_server_command(server_name, f"Kick {unique_id}")
+        data = await exec_server_command(ctx, server_name, f"Kick {unique_id}")
         kick = data.get("Kick")
         if ctx.batch_exec:
             return kick
@@ -354,7 +351,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await self.exec_server_command(server_name, f"Unban {unique_id}")
+        data = await exec_server_command(ctx, server_name, f"Unban {unique_id}")
         unban = data.get("Unban")
         if ctx.batch_exec:
             return unban
@@ -373,8 +370,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"GiveItem {unique_id} {item_id}"
+        data = await exec_server_command(
+            ctx, server_name, f"GiveItem {unique_id} {item_id}"
         )
         give_team = data.get("GiveItem")
         if ctx.batch_exec:
@@ -396,8 +393,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"GiveCash {unique_id} {cash_amount}"
+        data = await exec_server_command(
+            ctx, server_name, f"GiveCash {unique_id} {cash_amount}"
         )
         give_cash = data.get("GiveCash")
         if ctx.batch_exec:
@@ -419,8 +416,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"GiveTeamCash {team_id} {cash_amount}"
+        data = await exec_server_command(
+            ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
         give_team_cash = data.get("GiveTeamCash")
         if ctx.batch_exec:
@@ -442,8 +439,8 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await self.exec_server_command(
-            server_name, f"SetPlayerSkin {unique_id} {skin_id}"
+        data = await exec_server_command(
+            ctx, server_name, f"SetPlayerSkin {unique_id} {skin_id}"
         )
         set_player_skin = data.get("SetPlayerSkin")
         if ctx.batch_exec:
