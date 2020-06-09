@@ -93,7 +93,10 @@ def user_action_log(ctx, message, log_level=logging.INFO):
 
 
 async def exec_server_command(ctx, server_name: str, command: str):
-    if not hasattr(ctx, "pavlov"):
+    pavlov = None
+    if hasattr(ctx, "pavlov"):
+        pavlov = ctx.pavlov.get(server_name)
+    if not hasattr(ctx, "pavlov") or pavlov is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
             server.get("ip"),
@@ -101,9 +104,10 @@ async def exec_server_command(ctx, server_name: str, command: str):
             server.get("password"),
             timeout=RCON_TIMEOUT,
         )
-        ctx.pavlov = pavlov
-    else:
-        pavlov = ctx.pavlov
+        if not hasattr(ctx, "pavlov"):
+            ctx.pavlov = {server_name: pavlov}
+        else:
+            ctx.pavlov[server_name] = pavlov
     data = await pavlov.send(command)
     return data
 
