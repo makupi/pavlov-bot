@@ -102,8 +102,10 @@ class Pavlov(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     async def exec_server_command(self, server_name: str, command: str):
-        pavlov = self._connections.get(server_name)
-        if not pavlov:
+        logging.info(f"{self._connections=}")
+        connections = self._connections.get(server_name, [])
+
+        if not connections:
             server = servers.get(server_name)
             pavlov = PavlovRCON(
                 server.get("ip"),
@@ -111,8 +113,11 @@ class Pavlov(commands.Cog):
                 server.get("password"),
                 timeout=RCON_TIMEOUT,
             )
-            self._connections[server_name] = pavlov
-        return await pavlov.send(command)
+        else:
+            pavlov = connections.pop()
+        data = await pavlov.send(command)
+        self._connections[server_name] = [pavlov]
+        return data
 
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
