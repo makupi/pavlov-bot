@@ -33,11 +33,11 @@
         },
         "async-pavlov": {
             "hashes": [
-                "sha256:c82459cad43101e1a77aa78bd426c0b31d0addf4d37ab486b8af0698b68e81da",
-                "sha256:cf60ac47642192109936b7cfd2b7e939c19a273678fd75f826fce2fce9ec7a4f"
+                "sha256:7470ebe05ab1e8fc094f836b9ea0f52bfd17c7b9c83b4c20a6350c420cb0787f",
+                "sha256:b2496029176db6161f0c0e302b3c7887a83559bdf8e8d241fcbbe806cdd99d99"
             ],
             "index": "pypi",
-            "version": "==0.2.3"
+            "version": "==0.3.0"
         },
         "async-timeout": {
             "hashes": [
