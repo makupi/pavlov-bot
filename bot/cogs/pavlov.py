@@ -1,13 +1,16 @@
 import logging
+import re
 import sys
 import traceback
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
+import aiohttp
 import discord
 from discord.ext import commands
 
 from bot.utils import config, servers
+from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 
 # Admin – GiveItem, GiveCash, GiveTeamCash, SetPlayerSkin
@@ -24,6 +27,15 @@ RCON_TIMEOUT = 5
 
 async def check_banned(ctx):
     pass
+
+
+async def fetch(session, url):
+    print(url)
+    response = await session.get(url)
+    try:
+        return await response.text()
+    except aiohttp.ContentTypeError:
+        return None
 
 
 async def check_perm_admin(ctx, server_name: str, sub_check=False):
@@ -115,10 +127,36 @@ async def exec_server_command(ctx, server_name: str, command: str):
 class Pavlov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self._map_aliases = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
+
+    async def get_map_alias(self, map_label: str) -> [str, str]:
+        print(self._map_aliases)
+        if map_label in self._map_aliases:
+            _map = self._map_aliases.get(map_label)
+            return _map.get("name"), _map.get("image")
+        try:
+            map_id = map_label.split("UGC")[1]
+            data = await fetch(
+                self.bot.aiohttp,
+                f"https://steamcommunity.com/sharedfiles/filedetails/?id={map_id}",
+            )
+            soup = BeautifulSoup(data, "html.parser")
+            # url_regex = r"/(\b(https?|ftp|file):\/\/[-A-Z0-9+&Q#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig"
+            regex = r"(https:\/\/steamuserimages-a\.akamaihd\.net\/ugc\/[A-Z0-9\/]*)"
+            match = re.findall(regex, data)[0]
+            map_image = match
+            print(soup.title.string)
+            map_name = soup.title.string.split("::")[1]
+            self._map_aliases[map_label] = {"name": map_name, "image": map_image}
+            print(map_name, map_image)
+            return map_name, map_image
+        except Exception as ex:
+            logging.error(f"Getting map label failed with {ex}")
+        return map_label, None
 
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
@@ -161,6 +199,7 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
+        map_name, map_image = await self.get_map_alias(server_info.get("MapLabel"))
         if ctx.batch_exec:
             return (
                 f"```"
@@ -168,16 +207,18 @@ class Pavlov(commands.Cog):
                 f'Round State: {server_info.get("RoundState")}\n'
                 f'Players:     {server_info.get("PlayerCount")}\n'
                 f'Game Mode:   {server_info.get("GameMode")}\n'
-                f'Map Label:   {server_info.get("MapLabel")}```'
+                f"Map Label:   {map_name}```"
             )
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
+        if map_image:
+            embed.set_thumbnail(url=map_image)
         embed.add_field(
             name="Server Name", value=server_info.get("ServerName"), inline=False
         )
         embed.add_field(name="Round State", value=server_info.get("RoundState"))
         embed.add_field(name="Players", value=server_info.get("PlayerCount"))
         embed.add_field(name="Game Mode", value=server_info.get("GameMode"))
-        embed.add_field(name="Map Label", value=server_info.get("MapLabel"))
+        embed.add_field(name="Map", value=map_name)
         await ctx.send(embed=embed)
 
     @commands.command()
