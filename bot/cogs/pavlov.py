@@ -156,7 +156,7 @@ class Pavlov(commands.Cog):
             return map_name, map_image
         except Exception as ex:
             logging.error(f"Getting map label failed with {ex}")
-        return map_label, None
+        return None, None
 
     async def cog_command_error(self, ctx, error):
         embed = discord.Embed()
@@ -199,7 +199,8 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
-        map_name, map_image = await self.get_map_alias(server_info.get("MapLabel"))
+        map_label = server_info.get("MapLabel")
+        map_name, map_image = await self.get_map_alias(map_label)
         if ctx.batch_exec:
             return (
                 f"```"
@@ -207,7 +208,8 @@ class Pavlov(commands.Cog):
                 f'Round State: {server_info.get("RoundState")}\n'
                 f'Players:     {server_info.get("PlayerCount")}\n'
                 f'Game Mode:   {server_info.get("GameMode")}\n'
-                f"Map Label:   {map_name}```"
+                f"Map:         {map_name}\n"
+                f"Map Label:   {map_label}```"
             )
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
         if map_image:
@@ -218,7 +220,9 @@ class Pavlov(commands.Cog):
         embed.add_field(name="Round State", value=server_info.get("RoundState"))
         embed.add_field(name="Players", value=server_info.get("PlayerCount"))
         embed.add_field(name="Game Mode", value=server_info.get("GameMode"))
-        embed.add_field(name="Map", value=map_name)
+        if map_name:
+            embed.add_field(name="Map", value=f"{map_name}", inline=False)
+        embed.add_field(name="Map Label", value=map_label, inline=False)
         await ctx.send(embed=embed)
 
     @commands.command()
