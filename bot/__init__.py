@@ -1,9 +1,8 @@
-import asyncio
 import logging
-import random
 import sys
 from pathlib import Path
 
+import aiohttp
 import discord
 from discord.ext import commands
 
@@ -36,6 +35,7 @@ bot.remove_command("help")
 @bot.event
 async def on_ready():
     bot.invite = invite_link.format(bot.user.id)
+    bot.aiohttp = aiohttp.ClientSession()
     await bot.change_presence(activity=discord.Game(f"v{__version__}"))
     logging.info(
         f"""Logged in as {bot.user}..
