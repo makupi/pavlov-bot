@@ -145,7 +145,9 @@ To update from master as steam user:
 
 ``pipenv sync``
 
-Then restart your bot to run version with recent changes. If following this guide: ``systemctl restart pavlov-bot``
+Then restart your bot to run version with recent changes. If following this guide:
+
+``systemctl restart pavlov-bot``
 
 
 # Roles and permissions
