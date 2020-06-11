@@ -1,7 +1,23 @@
 import json
 import os
+import re
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
+MAP_NAME_REGEX = r"UGC[0-9]*"
+
+
+def check_map_already_label(name):
+    if re.match(MAP_NAME_REGEX, name):
+        return True
+    return False
+
+
+def check_player_already_int(name):
+    try:
+        int(name)
+        return True
+    except ValueError:
+        return False
 
 
 class AliasNotFoundError(Exception):
@@ -35,9 +51,13 @@ class Aliases:
         return alias
 
     def get_map(self, name: str):
+        if check_map_already_label(name):
+            return name
         return self.get("maps", name)
 
     def get_player(self, name: str):
+        if check_player_already_int(name):
+            return name
         return self.get("players", name)
 
     def get_team(self, name: str):

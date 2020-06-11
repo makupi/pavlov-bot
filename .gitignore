@@ -133,3 +133,5 @@ dmypy.json
 config.json
 
 servers.json
+
+aliases.json

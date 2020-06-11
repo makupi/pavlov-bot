@@ -9,7 +9,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import config, servers
+from bot.utils import SteamPlayer, aliases, config, servers
 from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 
@@ -134,7 +134,6 @@ class Pavlov(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     async def get_map_alias(self, map_label: str) -> [str, str]:
-        print(self._map_aliases)
         if map_label in self._map_aliases:
             _map = self._map_aliases.get(map_label)
             return _map.get("name"), _map.get("image")
@@ -149,10 +148,8 @@ class Pavlov(commands.Cog):
             regex = r"(https:\/\/steamuserimages-a\.akamaihd\.net\/ugc\/[A-Z0-9\/]*)"
             match = re.findall(regex, data)[0]
             map_image = match
-            print(soup.title.string)
             map_name = soup.title.string.split("::")[1]
             self._map_aliases[map_label] = {"name": map_name, "image": map_image}
-            print(map_name, map_image)
             return map_name, map_image
         except Exception as ex:
             logging.error(f"Getting map label failed with {ex}")
@@ -166,6 +163,11 @@ class Pavlov(commands.Cog):
             embed.description = (
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
+            )
+        elif isinstance(error.original, aliases.AliasNotFoundError):
+            embed.description = (
+                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
+                f"Please try again or use `{config.prefix}aliases` to list the available servers."
             )
         elif isinstance(
             error.original, (ConnectionRefusedError, OSError, TimeoutError)
@@ -245,19 +247,21 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def playerinfo(self, ctx, player_id: str, server_name: str):
+    async def playerinfo(self, ctx, player: SteamPlayer, server_name: str):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        data = await exec_server_command(ctx, server_name, f"InspectPlayer {player_id}")
+        data = await exec_server_command(
+            ctx, server_name, f"InspectPlayer {player.unique_id}"
+        )
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
         if not player_info:
-            embed = discord.Embed(description=f"Player <{player_id}> not found.")
+            embed = discord.Embed(description=f"Player <{player.name}> not found.")
         else:
-            embed = discord.Embed(description=f"**Player info** for <{player_id}>")
+            embed = discord.Embed(description=f"**Player info** for <{player.name}>")
             embed.add_field(name="Name", value=player_info.get("PlayerName"))
             embed.add_field(name="UniqueId", value=player_info.get("UniqueId"))
             embed.add_field(name="KDA", value=player_info.get("KDA"))
@@ -274,8 +278,9 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        map_label = aliases.get_map(map_name)
         data = await exec_server_command(
-            ctx, server_name, f"SwitchMap {map_name} {game_mode}"
+            ctx, server_name, f"SwitchMap {map_label} {game_mode}"
         )
         switch_map = data.get("SwitchMap")
         if ctx.batch_exec:
