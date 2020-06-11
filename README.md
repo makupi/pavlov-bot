@@ -74,7 +74,7 @@ Create file `/home/steam/pavlov-bot/servers.json` following format below:
         "port": 9102,
         "password": "someotherpassword"
     },
-    "rush": {
+    "FL_Rush": {
         "admins": [445232625892065282, 456868612788092938],
         "ip": "127.0.0.1",
         "port": 9103,
@@ -85,6 +85,7 @@ Create file `/home/steam/pavlov-bot/servers.json` following format below:
 
 Where admins are discordIDs of the admin users ([how to find user-ids](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and IP, port are as required to get to the rcon severs and password is the unhashed password setup in RconSettings.txt.
 
+Note that server names are processed case insensitive, so FL_Rush can be called by ;serverinfo fl_rush
 
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
@@ -132,6 +133,20 @@ Test bot... if all is good, then bot will start with server boot and restart if 
 
 Follow the logs with:    
 `journalctl -n 20 -f -u pavlov-bot`
+
+## Updating codebase
+pavlov-bot is in active developement and new features will need to be checked out of the 'master' branch which we will try and keep stable. 
+
+To update from master as steam user:
+
+``cd /home/steam/pavlov-bot`` (or wherever you have installed)
+
+``git pull``
+
+``pipenv sync``
+
+Then restart your bot to run version with recent changes. If following this guide: ``systemctl restart pavlov-bot``
+
 
 # Roles and permissions
 The bot has 4 permission levels:
