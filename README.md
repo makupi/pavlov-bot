@@ -48,42 +48,12 @@ su - steam
 
 cd ~ && git clone https://github.com/makupi/pavlov-bot
 ```
-Create file `/home/steam/pavlov-bot/config.json` with following single line:
+Copy file config.json.default file from Examples directory to `/home/steam/pavlov-bot/config.json` with following single line:
 ```json
 {"prefix": ";", "token": "replacemewithdiscordtoken"}
 ```
 
-Create file `/home/steam/pavlov-bot/servers.json` following format below:
-```json
-{
-    "test-server": {
-        "admins": [445232625892065282, 456868612788092938],
-        "ip": "13.75.174.32",
-        "port": 9104,
-        "password": "testing123"
-    },
-    "snd1": {
-        "admins": [445232625892065282, 456868612788092938],
-        "ip": "127.0.0.1",
-        "port": 9101,
-        "password": "somepassword"
-    },
-    "snd2": {
-        "admins": [445232625892065282, 456868612788092938],
-        "ip": "127.0.0.1",
-        "port": 9102,
-        "password": "someotherpassword"
-    },
-    "FL_Rush": {
-        "admins": [445232625892065282, 456868612788092938],
-        "ip": "127.0.0.1",
-        "port": 9103,
-        "password": "notmypassword"
-    }
-}
-```
-
-Where admins are discordIDs of the admin users ([how to find user-ids](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and IP, port are as required to get to the rcon severs and password is the unhashed password setup in RconSettings.txt.
+Copy servers.json.default file from Examples directory to `/home/steam/pavlov-bot/servers.json` and edit as required for your servers. Admins in servers.json are discordIDs of the admin users ([how to find user-ids](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and IP, port are as required to get to the rcon severs and password is the unhashed password setup in RconSettings.txt.
 
 Note that server names are processed case insensitive, so FL_Rush can be called by ;serverinfo fl_rush
 
