@@ -73,6 +73,8 @@ login as steam user
 As steam user run the following command    
 `cd ~/pavlov-bot && /usr/local/bin/pipenv run python3.8 run.py`
 
+Go to your discord channel that the bot has been invited to and allowed to read and write to and try a few commands to test. Suggest ``;help`` and ``;info`` as good starters, then ``;servers`` to see if your server.json was read correctly. 
+
 ## Make bot run as a systemd service
 As root create `/etc/systemd/system/pavlov-bot.service` file with following config:
 
