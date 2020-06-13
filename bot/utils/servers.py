@@ -21,7 +21,12 @@ class Servers:
     def get(self, name: str):
         server = self._servers.get(name)
         if server is None:
-            ServerNotFoundError(name)
+            for key in self._servers.keys():
+                if key.lower() == name.lower():
+                    server = self._servers.get(key)
+                    break
+            else:
+                raise ServerNotFoundError(name)
         return server
 
     def get_names(self):

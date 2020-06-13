@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c981370304cc249d328b9dadf47478507bcb4239b69be1398a568c21fd05e4b9"
+            "sha256": "d895343185e21184d1475a7e99f057bfb04c50dedc0c6ff61f901826eaf2ecdf"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -33,11 +33,11 @@
         },
         "async-pavlov": {
             "hashes": [
-                "sha256:40b10b430c2f1d688062dfbe5042a6f2fbd1bd86fe1792fb08046f769d9aecfb",
-                "sha256:87f32411cadb0bfd902c61ea8aa7344e3c03915c54b7c10ad67ed20d5c8ea657"
+                "sha256:7470ebe05ab1e8fc094f836b9ea0f52bfd17c7b9c83b4c20a6350c420cb0787f",
+                "sha256:b2496029176db6161f0c0e302b3c7887a83559bdf8e8d241fcbbe806cdd99d99"
             ],
             "index": "pypi",
-            "version": "==0.1.1"
+            "version": "==0.3.0"
         },
         "async-timeout": {
             "hashes": [
@@ -52,6 +52,15 @@
                 "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"
             ],
             "version": "==19.3.0"
+        },
+        "beautifulsoup4": {
+            "hashes": [
+                "sha256:73cc4d115b96f79c7d77c1c7f7a0a8d4c57860d1041df407dd1aae7f07a77fd7",
+                "sha256:a6237df3c32ccfaee4fd201c8f5f9d9df619b93121d01353a64a73ce8c6ef9a8",
+                "sha256:e718f2342e2e099b640a34ab782407b7b676f47ee272d6739e60b8ea23829f2c"
+            ],
+            "index": "pypi",
+            "version": "==4.9.1"
         },
         "chardet": {
             "hashes": [
@@ -95,6 +104,13 @@
                 "sha256:feed85993dbdb1dbc29102f50bca65bdc68f2c0c8d352468c25b54874f23c39d"
             ],
             "version": "==4.7.6"
+        },
+        "soupsieve": {
+            "hashes": [
+                "sha256:1634eea42ab371d3d346309b93df7870a88610f0725d47528be902a0d95ecc55",
+                "sha256:a59dc181727e95d25f781f0eb4fd1825ff45590ec8ff49eadfd7f1a537cc0232"
+            ],
+            "version": "==2.0.1"
         },
         "websockets": {
             "hashes": [
