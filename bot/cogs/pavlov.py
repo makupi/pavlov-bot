@@ -506,10 +506,10 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str):
-        """`{prefix}giveteamcash <player_id> <cash_amount> <server_name>`
+        """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveteamcash 89374583439127 5000 rush`
+        **Example**: `{prefix}giveteamcash 0 5000 rush`
         """
         if not await check_perm_admin(ctx, server_name):
             return
