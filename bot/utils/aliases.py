@@ -62,3 +62,12 @@ class Aliases:
 
     def get_team(self, name: str):
         return self.get("teams", name)
+
+    def get_maps(self):
+        return self._aliases.get("maps", {})
+
+    def get_players(self):
+        return self._aliases.get("players", {})
+
+    def get_teams(self):
+        return self._aliases.get("teams", {})

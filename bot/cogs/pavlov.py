@@ -194,6 +194,26 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def aliases(self, ctx):
+        """`{prefix}aliases` - *Lists available aliases*"""
+        embed = discord.Embed()
+        maps = aliases.get_maps()
+        maps_str = "```"
+        for alias, label in maps.items():
+            maps_str += f"{alias:<15} - {label}\n"
+        maps_str += "```"
+        if maps:
+            embed.add_field(name="Maps", value=maps_str, inline=False)
+        players = aliases.get_players()
+        players_str = "```"
+        for alias, unique_id in players.items():
+            players_str += f"{alias:<15} <{unique_id}>\n"
+        players_str += "```"
+        if players_str:
+            embed.add_field(name="Players", value=players_str, inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def serverinfo(self, ctx, server_name: str):
         """`{prefix}serverinfo <server_name>`
 
