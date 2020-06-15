@@ -30,7 +30,6 @@ async def check_banned(ctx):
 
 
 async def fetch(session, url):
-    print(url)
     response = await session.get(url)
     try:
         return await response.text()
@@ -290,6 +289,8 @@ class Pavlov(commands.Cog):
             embed.add_field(name="KDA", value=player_info.get("KDA"))
             embed.add_field(name="Cash", value=player_info.get("Cash"))
             embed.add_field(name="TeamId", value=player_info.get("TeamId"))
+            if player.has_alias:
+                embed.add_field(name="Alias", value=player.name)
         await ctx.send(embed=embed)
 
     @commands.command()
