@@ -9,7 +9,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import config, servers
+from bot.utils import SteamPlayer, aliases, config, servers
 from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 
@@ -30,7 +30,6 @@ async def check_banned(ctx):
 
 
 async def fetch(session, url):
-    print(url)
     response = await session.get(url)
     try:
         return await response.text()
@@ -134,7 +133,6 @@ class Pavlov(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     async def get_map_alias(self, map_label: str) -> [str, str]:
-        print(self._map_aliases)
         if map_label in self._map_aliases:
             _map = self._map_aliases.get(map_label)
             return _map.get("name"), _map.get("image")
@@ -149,10 +147,8 @@ class Pavlov(commands.Cog):
             regex = r"(https:\/\/steamuserimages-a\.akamaihd\.net\/ugc\/[A-Z0-9\/]*)"
             match = re.findall(regex, data)[0]
             map_image = match
-            print(soup.title.string)
             map_name = soup.title.string.split("::")[1]
             self._map_aliases[map_label] = {"name": map_name, "image": map_image}
-            print(map_name, map_image)
             return map_name, map_image
         except Exception as ex:
             logging.error(f"Getting map label failed with {ex}")
@@ -166,6 +162,11 @@ class Pavlov(commands.Cog):
             embed.description = (
                 f"⚠️ Server `{error.original.server_name}` not found.\n "
                 f"Please try again or use `{config.prefix}servers` to list the available servers."
+            )
+        elif isinstance(error.original, aliases.AliasNotFoundError):
+            embed.description = (
+                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
+                f"Please try again or use `{config.prefix}aliases` to list the available servers."
             )
         elif isinstance(
             error.original, (ConnectionRefusedError, OSError, TimeoutError)
@@ -192,6 +193,26 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def aliases(self, ctx):
+        """`{prefix}aliases` - *Lists available aliases*"""
+        embed = discord.Embed()
+        maps = aliases.get_maps()
+        maps_str = "```"
+        for alias, label in maps.items():
+            maps_str += f"{alias:<15} - {label}\n"
+        maps_str += "```"
+        if maps:
+            embed.add_field(name="Maps", value=maps_str, inline=False)
+        players = aliases.get_players()
+        players_str = "```"
+        for alias, unique_id in players.items():
+            players_str += f"{alias:<15} <{unique_id}>\n"
+        players_str += "```"
+        if players_str:
+            embed.add_field(name="Players", value=players_str, inline=False)
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def serverinfo(self, ctx, server_name: str):
         """`{prefix}serverinfo <server_name>`
 
@@ -201,7 +222,11 @@ class Pavlov(commands.Cog):
         server_info = data.get("ServerInfo")
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
+        map_alias = aliases.find_map_alias(map_label)
         if ctx.batch_exec:
+            map_alias_str = ""
+            if map_alias:
+                map_alias_str = f"Map Alias:   {map_alias}\n"
             return (
                 f"```"
                 f'Server Name: {server_info.get("ServerName")}\n'
@@ -209,6 +234,7 @@ class Pavlov(commands.Cog):
                 f'Players:     {server_info.get("PlayerCount")}\n'
                 f'Game Mode:   {server_info.get("GameMode")}\n'
                 f"Map:         {map_name}\n"
+                f"{map_alias_str}"
                 f"Map Label:   {map_label}```"
             )
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
@@ -223,6 +249,8 @@ class Pavlov(commands.Cog):
         if map_name:
             embed.add_field(name="Map", value=f"{map_name}", inline=False)
         embed.add_field(name="Map Label", value=map_label, inline=False)
+        if map_alias:
+            embed.add_field(name="Map Alias", value=map_alias)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -245,24 +273,31 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def playerinfo(self, ctx, player_id: str, server_name: str):
+    async def playerinfo(self, ctx, player_arg: str, server_name: str):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        data = await exec_server_command(ctx, server_name, f"InspectPlayer {player_id}")
+        player = await SteamPlayer.convert(ctx, player_arg)
+        data = await exec_server_command(
+            ctx, server_name, f"InspectPlayer {player.unique_id}"
+        )
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
         if not player_info:
-            embed = discord.Embed(description=f"Player <{player_id}> not found.")
+            embed = discord.Embed(
+                description=f"Player <{player.unique_id}> not found on `{server_name}`."
+            )
         else:
-            embed = discord.Embed(description=f"**Player info** for <{player_id}>")
+            embed = discord.Embed(description=f"**Player info** for `{player.name}`")
             embed.add_field(name="Name", value=player_info.get("PlayerName"))
             embed.add_field(name="UniqueId", value=player_info.get("UniqueId"))
             embed.add_field(name="KDA", value=player_info.get("KDA"))
             embed.add_field(name="Cash", value=player_info.get("Cash"))
             embed.add_field(name="TeamId", value=player_info.get("TeamId"))
+            if player.has_alias:
+                embed.add_field(name="Alias", value=player.name)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -274,8 +309,9 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        map_label = aliases.get_map(map_name)
         data = await exec_server_command(
-            ctx, server_name, f"SwitchMap {map_name} {game_mode}"
+            ctx, server_name, f"SwitchMap {map_label} {game_mode}"
         )
         switch_map = data.get("SwitchMap")
         if ctx.batch_exec:
@@ -310,7 +346,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def switchteam(self, ctx, unique_id: str, team_id: str, server_name: str):
+    async def switchteam(self, ctx, player_arg: str, team_id: str, server_name: str):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -318,19 +354,20 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        player = await SteamPlayer.convert(ctx, player_arg)
         data = await exec_server_command(
-            ctx, server_name, f"SwitchTeam {unique_id} {team_id}"
+            ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
         switch_team = data.get("SwitchTeam")
         if ctx.batch_exec:
             return switch_team
         if not switch_team:
             embed = discord.Embed(
-                description=f"**Failed** to switch <{unique_id}> to team {team_id}"
+                description=f"**Failed** to switch <{player.unique_id}> to team {team_id}"
             )
         else:
             embed = discord.Embed(
-                description=f"<{unique_id}> switched to team {team_id}"
+                description=f"<{player.unique_id}> switched to team {team_id}"
             )
         await ctx.send(embed=embed)
 
@@ -354,7 +391,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def ban(self, ctx, unique_id: str, server_name: str):
+    async def ban(self, ctx, player_arg: str, server_name: str):
         """`{prefix}ban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -362,18 +399,21 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, f"Ban {unique_id}")
+        player = await SteamPlayer.convert(ctx, player_arg)
+        data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
         ban = data.get("Ban")
         if ctx.batch_exec:
             return ban
         if not ban:
-            embed = discord.Embed(description=f"**Failed** to ban <{unique_id}>")
+            embed = discord.Embed(description=f"**Failed** to ban <{player.unique_id}>")
         else:
-            embed = discord.Embed(description=f"<{unique_id}> successfully banned")
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully banned"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kick(self, ctx, unique_id: str, server_name: str):
+    async def kick(self, ctx, player_arg: str, server_name: str):
         """`{prefix}kick <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -381,18 +421,23 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, f"Kick {unique_id}")
+        player = await SteamPlayer.convert(ctx, player_arg)
+        data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
         kick = data.get("Kick")
         if ctx.batch_exec:
             return kick
         if not kick:
-            embed = discord.Embed(description=f"**Failed** to kick <{unique_id}>")
+            embed = discord.Embed(
+                description=f"**Failed** to kick <{player.unique_id}>"
+            )
         else:
-            embed = discord.Embed(description=f"<{unique_id}> successfully kicked")
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully kicked"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def unban(self, ctx, unique_id: str, server_name: str):
+    async def unban(self, ctx, player_arg: str, server_name: str):
         """`{prefix}unban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -400,18 +445,23 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, f"Unban {unique_id}")
+        player = await SteamPlayer.convert(ctx, player_arg)
+        data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
         unban = data.get("Unban")
         if ctx.batch_exec:
             return unban
         if not unban:
-            embed = discord.Embed(description=f"**Failed** to unban <{unique_id}>")
+            embed = discord.Embed(
+                description=f"**Failed** to unban <{player.unique_id}>"
+            )
         else:
-            embed = discord.Embed(description=f"<{unique_id}> successfully unbanned")
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully unbanned"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def giveitem(self, ctx, unique_id: str, item_id: str, server_name: str):
+    async def giveitem(self, ctx, player_arg: str, item_id: str, server_name: str):
         """`{prefix}giveitem <player_id> <item_id> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -419,22 +469,25 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
+        player = await SteamPlayer.convert(ctx, player_arg)
         data = await exec_server_command(
-            ctx, server_name, f"GiveItem {unique_id} {item_id}"
+            ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
         )
         give_team = data.get("GiveItem")
         if ctx.batch_exec:
             return give_team
         if not give_team:
             embed = discord.Embed(
-                description=f"**Failed** to give {item_id} to <{unique_id}>"
+                description=f"**Failed** to give {item_id} to <{player.unique_id}>"
             )
         else:
-            embed = discord.Embed(description=f"{item_id} given to <{unique_id}>")
+            embed = discord.Embed(
+                description=f"{item_id} given to <{player.unique_id}>"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def givecash(self, ctx, unique_id: str, cash_amount: str, server_name: str):
+    async def givecash(self, ctx, player_arg: str, cash_amount: str, server_name: str):
         """`{prefix}givecash <player_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -442,26 +495,29 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
+        player = await SteamPlayer.convert(ctx, player_arg)
         data = await exec_server_command(
-            ctx, server_name, f"GiveCash {unique_id} {cash_amount}"
+            ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
         )
         give_cash = data.get("GiveCash")
         if ctx.batch_exec:
             return give_cash
         if not give_cash:
             embed = discord.Embed(
-                description=f"**Failed** to give {cash_amount} to <{unique_id}>"
+                description=f"**Failed** to give {cash_amount} to <{player.unique_id}>"
             )
         else:
-            embed = discord.Embed(description=f"{cash_amount} given to <{unique_id}>")
+            embed = discord.Embed(
+                description=f"{cash_amount} given to <{player.unique_id}>"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
     async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str):
-        """`{prefix}giveteamcash <player_id> <cash_amount> <server_name>`
+        """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveteamcash 89374583439127 5000 rush`
+        **Example**: `{prefix}giveteamcash 0 5000 rush`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -480,7 +536,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def setplayerskin(self, ctx, unique_id: str, skin_id: str, server_name: str):
+    async def setplayerskin(self, ctx, player_arg: str, skin_id: str, server_name: str):
         """`{prefix}setplayerskin <player_id> <skin_id> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -488,18 +544,21 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
+        player = await SteamPlayer.convert(ctx, player_arg)
         data = await exec_server_command(
-            ctx, server_name, f"SetPlayerSkin {unique_id} {skin_id}"
+            ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
         )
         set_player_skin = data.get("SetPlayerSkin")
         if ctx.batch_exec:
             return set_player_skin
         if not set_player_skin:
             embed = discord.Embed(
-                description=f"**Failed** to set <{unique_id}>'s skin to {skin_id}"
+                description=f"**Failed** to set <{player.unique_id}>'s skin to {skin_id}"
             )
         else:
-            embed = discord.Embed(description=f"<{unique_id}>'s skin set to {skin_id}")
+            embed = discord.Embed(
+                description=f"<{player.unique_id}>'s skin set to {skin_id}"
+            )
         await ctx.send(embed=embed)
 
     @commands.command()
