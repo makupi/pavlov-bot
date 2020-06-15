@@ -63,6 +63,18 @@ class Aliases:
     def get_team(self, name: str):
         return self.get("teams", name)
 
+    def find_alias(self, alias_type: str, search: str):
+        data = self._aliases.get(alias_type, {})
+        for alias, label in data.items():
+            if str(label) == search:
+                return alias
+
+    def find_map_alias(self, map_label: str):
+        return self.find_alias("maps", map_label)
+
+    def find_player_alias(self, unique_id: str):
+        return self.find_alias("players", unique_id)
+
     def get_maps(self):
         return self._aliases.get("maps", {})
 
