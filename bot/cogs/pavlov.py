@@ -222,7 +222,11 @@ class Pavlov(commands.Cog):
         server_info = data.get("ServerInfo")
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
+        map_alias = aliases.find_map_alias(map_label)
         if ctx.batch_exec:
+            map_alias_str = ""
+            if map_alias:
+                map_alias_str = f"Map Alias:   {map_alias}\n"
             return (
                 f"```"
                 f'Server Name: {server_info.get("ServerName")}\n'
@@ -230,6 +234,7 @@ class Pavlov(commands.Cog):
                 f'Players:     {server_info.get("PlayerCount")}\n'
                 f'Game Mode:   {server_info.get("GameMode")}\n'
                 f"Map:         {map_name}\n"
+                f"{map_alias_str}"
                 f"Map Label:   {map_label}```"
             )
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
@@ -244,6 +249,8 @@ class Pavlov(commands.Cog):
         if map_name:
             embed.add_field(name="Map", value=f"{map_name}", inline=False)
         embed.add_field(name="Map Label", value=map_label, inline=False)
+        if map_alias:
+            embed.add_field(name="Map Alias", value=map_alias)
         await ctx.send(embed=embed)
 
     @commands.command()
