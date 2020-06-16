@@ -20,6 +20,20 @@ def check_player_already_int(name):
         return False
 
 
+class Team:
+    def __init__(self, name: str, members: list):
+        self.name = name
+        self._original_members = members
+        self._ringers = list()
+
+    @property
+    def members(self):
+        return self._original_members + self._ringers
+
+    def to_embed(self):
+        pass
+
+
 class AliasNotFoundError(Exception):
     def __init__(self, alias_type: str, alias: str):
         self.alias_type = alias_type
@@ -37,6 +51,7 @@ class Aliases:
         with open(filename) as file:
             data = json.load(file)
             self._aliases = data
+        self.teams = self.load_teams()
 
     def get(self, alias_type: str, name: str):
         data = self._aliases.get(alias_type, {})
@@ -50,6 +65,14 @@ class Aliases:
                 raise AliasNotFoundError(alias_type, name)
         return alias
 
+    def load_teams(self):
+        _teams = self._aliases.get("teams", {})
+        teams = {}
+        for team_name, members in _teams.items():
+            team = Team(name=team_name, members=members)
+            teams[team_name] = team
+        return teams
+
     def get_map(self, name: str):
         if check_map_already_label(name):
             return name
@@ -61,7 +84,15 @@ class Aliases:
         return self.get("players", name)
 
     def get_team(self, name: str):
-        return self.get("teams", name)
+        team = self.teams.get(name)
+        if team is None:
+            for team_name, t in self.teams.items():
+                if name.lower() == team_name.lower():
+                    team = t
+                    break
+            else:
+                raise AliasNotFoundError("teams", name)
+        return team
 
     def find_alias(self, alias_type: str, search: str):
         data = self._aliases.get(alias_type, {})

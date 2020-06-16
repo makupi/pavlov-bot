@@ -600,6 +600,19 @@ class Pavlov(commands.Cog):
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def matchsetup(
+        self, ctx, team_a_name: str, team_b_name: str, server_name: str
+    ):
+        """`{prefix}matchsetup <team a name> <team b name> <server name>`
+
+        **Example**: `{prefix}matchsetup team_a team_b rush`
+        """
+        if not await check_perm_captain(ctx, server_name):
+            return
+        team_a = aliases.get_team(team_a_name)
+        team_b = aliases.get_team(team_b_name)
+
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))
