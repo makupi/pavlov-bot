@@ -25,6 +25,9 @@ MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
 RCON_TIMEOUT = 5
 
+MATCH_DELAY_RESETSND = 10
+RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
+
 
 async def check_banned(ctx):
     pass
@@ -624,13 +627,14 @@ class Pavlov(commands.Cog):
                 await exec_server_command(
                     ctx, server_name, f"SwitchTeam {member} {index}"
                 )
+                await asyncio.sleep(RCON_COMMAND_PAUSE)
 
         await ctx.send(
             embed=discord.Embed(
-                description="Teams set up. Resetting SND in 30 seconds."
+                description=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds."
             )
         )
-        await asyncio.sleep(30)
+        await asyncio.sleep(MATCH_DELAY_RESETSND)
         await exec_server_command(ctx, server_name, "ResetSND")
         embed = discord.Embed(description="Reset SND. Good luck!")
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
