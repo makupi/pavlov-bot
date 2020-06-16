@@ -2,6 +2,8 @@ import json
 import os
 import re
 
+import discord
+
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
 
@@ -30,8 +32,11 @@ class Team:
     def members(self):
         return self._original_members + self._ringers
 
-    def to_embed(self):
-        pass
+    def __repr__(self):
+        s = f"{self.name} members:\n"
+        for member in self.members:
+            s += f" - <{member}>\n"
+        return s
 
 
 class AliasNotFoundError(Exception):

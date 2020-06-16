@@ -610,8 +610,17 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        team_a = aliases.get_team(team_a_name)
-        team_b = aliases.get_team(team_b_name)
+        teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
+        embed = discord.Embed()
+        for team in teams:
+            embed.add_field(name=team.name, value=f"```{team}```", inline=False)
+        await ctx.send(embed=embed)
+
+        for index, team in enumerate(teams):
+            for member in team.members:
+                await exec_server_command(
+                    ctx, server_name, f"SwitchTeam {member} {index}"
+                )
 
 
 def setup(bot):
