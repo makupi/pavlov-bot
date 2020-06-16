@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import re
 import sys
@@ -610,6 +611,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        before = datetime.now()
         teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
         embed = discord.Embed()
         for team in teams:
@@ -621,6 +623,17 @@ class Pavlov(commands.Cog):
                 await exec_server_command(
                     ctx, server_name, f"SwitchTeam {member} {index}"
                 )
+
+        await ctx.send(
+            embed=discord.Embed(
+                description="Teams set up. Resetting SND in 30 seconds."
+            )
+        )
+        await asyncio.sleep(30)
+        await exec_server_command(ctx, server_name, "ResetSND")
+        embed = discord.Embed(description="Reset SND. Good luck!")
+        embed.set_footer(text=f"Execution time: {datetime.now() - before}")
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
