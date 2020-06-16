@@ -607,6 +607,7 @@ class Pavlov(commands.Cog):
     ):
         """`{prefix}matchsetup <team a name> <team b name> <server name>`
 
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup team_a team_b rush`
         """
         if not await check_perm_captain(ctx, server_name):
