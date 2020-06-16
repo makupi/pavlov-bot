@@ -27,7 +27,7 @@ async def get_prefix(_bot, message):
     return commands.when_mentioned_or(prefix)(_bot, message)
 
 
-bot = commands.AutoShardedBot(command_prefix=get_prefix)
+bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
 
