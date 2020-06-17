@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from typing import List
 
 from bot.utils.steamplayer import SteamPlayer
 
@@ -23,7 +24,7 @@ def check_player_already_int(name):
 
 
 class Team:
-    def __init__(self, name: str, members: list[SteamPlayer]):
+    def __init__(self, name: str, members: List[SteamPlayer]):
         self.name = name
         self._original_members = members
         self._ringers = list()
@@ -56,7 +57,7 @@ class Aliases:
         with open(filename) as file:
             data = json.load(file)
             self._aliases = data
-        self.teams = self.load_teams()
+        self.teams = None
 
     def get(self, alias_type: str, name: str):
         data = self._aliases.get(alias_type, {})
@@ -79,7 +80,7 @@ class Aliases:
                 steam_members.append(SteamPlayer.convert(member))
             team = Team(name=team_name, members=steam_members)
             teams[team_name] = team
-        return teams
+        self.teams = teams
 
     def get_map(self, name: str):
         if check_map_already_label(name):
