@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-import discord
+from bot.utils import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
@@ -23,7 +23,7 @@ def check_player_already_int(name):
 
 
 class Team:
-    def __init__(self, name: str, members: list):
+    def __init__(self, name: str, members: list[SteamPlayer]):
         self.name = name
         self._original_members = members
         self._ringers = list()
@@ -74,7 +74,10 @@ class Aliases:
         _teams = self._aliases.get("teams", {})
         teams = {}
         for team_name, members in _teams.items():
-            team = Team(name=team_name, members=members)
+            steam_members = list()
+            for member in members:
+                steam_members.append(SteamPlayer.convert(member))
+            team = Team(name=team_name, members=steam_members)
             teams[team_name] = team
         return teams
 
