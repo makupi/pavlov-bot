@@ -282,7 +282,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"InspectPlayer {player.unique_id}"
         )
@@ -358,7 +358,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
@@ -403,7 +403,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
         ban = data.get("Ban")
         if ctx.batch_exec:
@@ -425,7 +425,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
         kick = data.get("Kick")
         if ctx.batch_exec:
@@ -449,7 +449,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
         unban = data.get("Unban")
         if ctx.batch_exec:
@@ -473,7 +473,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
         )
@@ -499,7 +499,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
         )
@@ -548,7 +548,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
         )

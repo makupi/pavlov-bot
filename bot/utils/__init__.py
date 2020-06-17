@@ -13,7 +13,7 @@ class SteamPlayer:
         self.unique_id = unique_id
 
     @classmethod
-    async def convert(cls, ctx, argument):
+    def convert(cls, argument):
         """argument is either unique_id or name"""
         unique_id = aliases.get_player(argument)
         name = unique_id
