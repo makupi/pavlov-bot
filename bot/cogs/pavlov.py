@@ -10,7 +10,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, aliases, config, servers
+from bot.utils import aliases, config, servers
+from bot.utils.steamplayer import SteamPlayer
 from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 

@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-from bot.utils import SteamPlayer
+from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
