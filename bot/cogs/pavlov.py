@@ -606,7 +606,7 @@ class Pavlov(commands.Cog):
         for index, team in enumerate(teams):
             for member in team.members:
                 await exec_server_command(
-                    ctx, server_name, f"SwitchTeam {member} {index}"
+                    ctx, server_name, f"SwitchTeam {member.unique_id} {index}"
                 )
                 await asyncio.sleep(RCON_COMMAND_PAUSE)
 
