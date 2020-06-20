@@ -8,7 +8,6 @@ class SteamPlayer:
     @classmethod
     def set_aliases(cls, aliases):
         cls.aliases = aliases
-        print(cls.aliases)
 
     @classmethod
     def convert(cls, argument):

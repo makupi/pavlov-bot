@@ -34,9 +34,13 @@ class Team:
         return self._original_members + self._ringers
 
     def __repr__(self):
-        s = f"{self.name} members:\n"
+        return self.member_repr()
+
+    def member_repr(self):
+        s = f"```"
         for member in self.members:
-            s += f" - <{member}>\n"
+            s += f" {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
+        s += "```"
         return s
 
 
@@ -106,7 +110,7 @@ class Aliases:
     def find_alias(self, alias_type: str, search: str):
         data = self._aliases.get(alias_type, {})
         for alias, label in data.items():
-            if str(label) == search:
+            if str(label) == str(search):
                 return alias
 
     def find_map_alias(self, map_label: str):

@@ -620,7 +620,9 @@ class Pavlov(commands.Cog):
         teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
         embed = discord.Embed()
         for team in teams:
-            embed.add_field(name=team.name, value=f"```{team}```", inline=False)
+            embed.add_field(
+                name=f"{team.name} members", value=team.member_repr(), inline=False
+            )
         await ctx.send(embed=embed)
 
         for index, team in enumerate(teams):
