@@ -33,6 +33,12 @@ class Team:
     def members(self):
         return self._original_members + self._ringers
 
+    def ringer_add(self, ringer: SteamPlayer):
+        self._ringers.append(ringer)
+
+    def ringers_reset(self):
+        self._ringers = list()
+
     def __repr__(self):
         return self.member_repr()
 
