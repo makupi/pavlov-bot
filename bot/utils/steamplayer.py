@@ -13,7 +13,7 @@ class SteamPlayer:
     def convert(cls, argument):
         """argument is either unique_id or name"""
         unique_id = cls.aliases.get_player(argument)
-        name = unique_id
+        name = argument
         if unique_id == argument:
             alias = cls.aliases.find_player_alias(argument)
             if alias:
