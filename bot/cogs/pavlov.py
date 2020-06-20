@@ -159,28 +159,6 @@ class Pavlov(commands.Cog):
             logging.error(f"Getting map label failed with {ex}")
         return None, None
 
-    async def cog_command_error(self, ctx, error):
-        embed = discord.Embed()
-        if isinstance(error, commands.MissingRequiredArgument):
-            embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
-        elif isinstance(error.original, servers.ServerNotFoundError):
-            embed.description = (
-                f"⚠️ Server `{error.original.server_name}` not found.\n "
-                f"Please try again or use `{config.prefix}servers` to list the available servers."
-            )
-        elif isinstance(error.original, aliases.AliasNotFoundError):
-            embed.description = (
-                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
-                f"Please try again or use `{config.prefix}aliases` to list the available servers."
-            )
-        elif isinstance(
-            error.original, (ConnectionRefusedError, OSError, TimeoutError)
-        ):
-            embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
-        else:
-            raise error
-        await ctx.send(embed=embed)
-
     async def cog_before_invoke(self, ctx):
         ctx.batch_exec = False
         await ctx.trigger_typing()
