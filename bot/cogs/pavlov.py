@@ -12,6 +12,7 @@ from discord.ext import commands
 
 from bot.utils import aliases, config, servers
 from bot.utils.steamplayer import SteamPlayer
+from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 
@@ -28,6 +29,7 @@ RCON_TIMEOUT = 5
 
 MATCH_DELAY_RESETSND = 10
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
+ANYONEPLAYING_ROW_FORMAT = "{alias:^12} | {server_name:^36} | {player_count:^6}"
 
 
 async def check_banned(ctx):
@@ -620,6 +622,33 @@ class Pavlov(commands.Cog):
         embed = discord.Embed(description="Reset SND. Good luck!")
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def anyoneplaying(self, ctx, server_group: str = None):
+        """`{prefix}anyoneplaying [server_group]`"""
+        before = datetime.now()
+        embed = discord.Embed()
+        ctx.batch_exec = True
+        players_header = ANYONEPLAYING_ROW_FORMAT.format(
+            alias="Alias", server_name="Server Name", player_count="Players"
+        )
+        desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
+        for server_alias in servers.get_names(server_group):
+            data = await exec_server_command(ctx, server_alias, "ServerInfo")
+            # players = await self.players(ctx, server_name)
+            server_info = data.get("ServerInfo", {})
+            players_count = server_info.get("PlayerCount", "0/0")
+            server_name = server_info.get("ServerName", "")
+            desc += ANYONEPLAYING_ROW_FORMAT.format(
+                alias=server_alias, server_name=server_name, player_count=players_count
+            )
+            desc += "\n"
+        embed.description = f"```{desc}```"
+        embed.set_footer(text=f"Execution time: {datetime.now()-before}")
+        await ctx.send(embed=embed)
+        await ctx.send(f"```{desc}```")
+        file = text_to_image(desc)
+        await ctx.send(file=file)
 
 
 def setup(bot):

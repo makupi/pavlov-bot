@@ -9,3 +9,4 @@ verify_ssl = true
 discord-py = "*"
 async-pavlov = "*"
 beautifulsoup4 = "*"
+pillow = "*"
