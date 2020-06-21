@@ -136,12 +136,12 @@ The bot has 4 permission levels:
 * Roles need to be setup in discord using the following format {role name}-{server} where Role names are (Mod,Captain,Banned) and server is as returned by ;server command. Eg: Mod-testserver or Captain-rush
 
 
-##Advanced bot functions
+## Advanced bot functions
 In addition to the implemented RCON commands, the bot has a few advanced functions:
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * ;matchsetup <CT Team> <T Team> <server> using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
 
-##Rcon commands not yet implemented
+## Rcon commands not yet implemented
 A recent update has provided the following commands which are not yet implemented in the bot
 * BlackList- returns list of banned players
 * MapList - Lists maps in rotation
