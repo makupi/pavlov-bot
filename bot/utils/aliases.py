@@ -43,9 +43,13 @@ class Team:
         return self.member_repr()
 
     def member_repr(self):
-        s = f"```"
-        for member in self.members:
-            s += f" {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
+        s = f"original members:```\n"
+        for member in self._original_members:
+            s += f" - {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
+        if self._ringers:
+            s += "```ringers:```\n"
+            for member in self._ringers:
+                s += f" - {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
         s += "```"
         return s
 
