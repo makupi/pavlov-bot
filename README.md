@@ -57,6 +57,8 @@ Copy servers.json.default file from Examples directory to `/home/steam/pavlov-bo
 
 Note that server names are processed case insensitive, so FL_Rush can be called by ;serverinfo fl_rush
 
+Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. 
+
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
 Obtain the bot token and install in config.json
@@ -132,6 +134,20 @@ The bot has 4 permission levels:
 ## Administration of permissions
 * Admins are defined in servers.json all other groups are configured using discord roles. 
 * Roles need to be setup in discord using the following format {role name}-{server} where Role names are (Mod,Captain,Banned) and server is as returned by ;server command. Eg: Mod-testserver or Captain-rush
+
+
+##Advanced bot functions
+In addition to the implemented RCON commands, the bot has a few advanced functions:
+* Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
+* ;matchsetup <CT Team> <T Team> <server> using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
+
+##Rcon commands not yet implemented
+A recent update has provided the following commands which are not yet implemented in the bot
+* BlackList- returns list of banned players
+* MapList - Lists maps in rotation
+* Itemlist - gives full list of items available
+* Kill- kills given player
+
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
