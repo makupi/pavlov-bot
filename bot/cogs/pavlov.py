@@ -186,23 +186,6 @@ class Pavlov(commands.Cog):
         await self.maps_aliases(ctx)
         await self.players_aliases(ctx)
         await self.teams_aliases(ctx)
-        return
-        embed = discord.Embed()
-        maps = aliases.get_maps()
-        maps_str = "```"
-        for alias, label in maps.items():
-            maps_str += f"{alias:<15} - {label}\n"
-        maps_str += "```"
-        if maps:
-            embed.add_field(name="Maps", value=maps_str, inline=False)
-        players = aliases.get_players()
-        players_str = "```"
-        for alias, unique_id in players.items():
-            players_str += f"{alias:<15} <{unique_id}>\n"
-        players_str += "```"
-        if players_str:
-            embed.add_field(name="Players", value=players_str, inline=False)
-        await ctx.send(embed=embed)
 
     @aliases.command(name="maps")
     async def maps_aliases(self, ctx):
@@ -670,8 +653,6 @@ class Pavlov(commands.Cog):
     @commands.command()
     async def anyoneplaying(self, ctx, server_group: str = None):
         """`{prefix}anyoneplaying [server_group]`"""
-        # before = datetime.now()
-        # embed = discord.Embed()
         ctx.batch_exec = True
         players_header = ANYONEPLAYING_ROW_FORMAT.format(
             alias="Alias",
@@ -683,7 +664,6 @@ class Pavlov(commands.Cog):
         desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
         for server_alias in servers.get_names(server_group):
             data = await exec_server_command(ctx, server_alias, "ServerInfo")
-            # players = await self.players(ctx, server_name)
             server_info = data.get("ServerInfo", {})
             players_count = server_info.get("PlayerCount", "0/0")
             server_name = server_info.get("ServerName", "")
@@ -700,11 +680,7 @@ class Pavlov(commands.Cog):
                 player_count=players_count,
             )
             desc += "\n"
-        # embed.description = f"```{desc}```"
-        # embed.set_footer(text=f"Execution time: {datetime.now()-before}")
-        # await ctx.send(embed=embed)
-        # await ctx.send(f"```{desc}```")
-        file = text_to_image(desc)
+        file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
 
 

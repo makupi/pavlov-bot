@@ -12,7 +12,7 @@ ROBOTO_MONO = "bot/utils/fonts/RobotoMono-Light.ttf"
 FONT = ImageFont.truetype(ROBOTO_MONO, FONTSIZE)
 
 
-def text_to_image(text: str) -> discord.File:
+def text_to_image(text: str, file_name: str) -> discord.File:
 
     text_w, text_h = list(), list()
 
@@ -30,4 +30,4 @@ def text_to_image(text: str) -> discord.File:
     data = io.BytesIO()
     image.save(data, format="PNG")
     data.seek(0)
-    return discord.File(data, "anyoneplaying.png")
+    return discord.File(data, file_name)
