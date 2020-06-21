@@ -131,5 +131,5 @@ class Aliases:
     def get_players(self):
         return self._aliases.get("players", {})
 
-    def get_teams(self):
-        return self._aliases.get("teams", {})
+    def get_teams_list(self):
+        return self.teams.values()

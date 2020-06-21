@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from bot.utils import aliases
+from bot.utils import aliases, config
 from bot.utils.steamplayer import SteamPlayer
 
 
@@ -45,10 +45,23 @@ class Teams(commands.Cog):
         )
 
     @commands.command()
-    async def teaminfo(self, ctx, team_name: str):
-        """`{prefix}teaminfo <team_name>`"""
-        team = aliases.get_team(team_name)
-        embed = discord.Embed(title=team.name, description=team.member_repr())
+    async def teams(self, ctx, team_name: str = None):
+        """`{prefix}team [team_name]`
+
+        team_name is optional. Without it will list all possible teams."""
+        if not team_name:
+            teams = aliases.get_teams_list()
+            embed = discord.Embed(title="Teams")
+            desc = ""
+            for team in teams:
+                desc += f"- {team.name}\n"
+            embed.description = desc
+            embed.set_footer(
+                text=f"Use {config.prefix}teams [team_name] for more infos about a team."
+            )
+        else:
+            team = aliases.get_team(team_name)
+            embed = discord.Embed(title=team.name, description=team.member_repr())
         await ctx.send(embed=embed)
 
 
