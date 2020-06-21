@@ -180,9 +180,13 @@ class Pavlov(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.group(invoke_without_command=True, pass_context=True, aliases=["alias"])
     async def aliases(self, ctx):
         """`{prefix}aliases` - *Lists available aliases*"""
+        await self.maps_aliases(ctx)
+        await self.players_aliases(ctx)
+        await self.teams_aliases(ctx)
+        return
         embed = discord.Embed()
         maps = aliases.get_maps()
         maps_str = "```"
@@ -199,6 +203,43 @@ class Pavlov(commands.Cog):
         if players_str:
             embed.add_field(name="Players", value=players_str, inline=False)
         await ctx.send(embed=embed)
+
+    @aliases.command(name="maps")
+    async def maps_aliases(self, ctx):
+        """`{prefix}aliases maps` - *Lists all map aliases*"""
+        embed = discord.Embed(title="Maps Aliases")
+        maps = aliases.get_maps()
+        if maps:
+            maps_str = "```"
+            for alias, label in maps.items():
+                maps_str += f"{alias:<15} - {label}\n"
+            maps_str += "```"
+            embed.description = maps_str
+        else:
+            embed.description = "No aliases exist for maps."
+        await ctx.send(embed=embed)
+
+    @aliases.command(name="players")
+    async def players_aliases(self, ctx):
+        """`{prefix}aliases players` - *Lists all player aliases*"""
+        embed = discord.Embed(title="Player Aliases")
+        players = aliases.get_players()
+
+        if players:
+            players_str = "```"
+            for alias, unique_id in players.items():
+                players_str += f"{alias:<15} <{unique_id}>\n"
+            players_str += "```"
+            embed.description = players_str
+        else:
+            embed.description = "No aliases exist for players."
+        await ctx.send(embed=embed)
+
+    @aliases.command(name="teams")
+    async def teams_aliases(self, ctx):
+        """`{prefix}aliases teams` - *Lists all teams like* `{prefix}teams`"""
+        teams_cog = self.bot.get_cog("Teams")
+        await teams_cog.teams(ctx)
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):

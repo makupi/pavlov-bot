@@ -15,7 +15,7 @@ class Teams(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.group(invoke_without_command=True, pass_context=True, aliases=["ringer"])
+    @commands.group(pass_context=True, aliases=["ringer"])
     async def ringers(self, ctx):
         pass
 
@@ -46,7 +46,7 @@ class Teams(commands.Cog):
 
     @commands.command()
     async def teams(self, ctx, team_name: str = None):
-        """`{prefix}team [team_name]`
+        """`{prefix}teams [team_name]`
 
         team_name is optional. Without it will list all possible teams."""
         if not team_name:
