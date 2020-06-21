@@ -53,6 +53,8 @@ async def fetch(session, url):
 
 async def check_perm_admin(ctx, server_name: str, sub_check=False):
     """ Admin permissions are stored per server in the servers.json """
+    if not server_name:
+        return False
     server = servers.get(server_name)
     if ctx.author.id not in server.get("admins", []):
         if not sub_check:
@@ -69,11 +71,13 @@ async def check_perm_admin(ctx, server_name: str, sub_check=False):
     return True
 
 
-async def check_perm_moderator(ctx, server_name: str, sub_check=False):
+async def check_perm_moderator(ctx, server_name: str = None, sub_check=False):
     if await check_perm_admin(ctx, server_name, sub_check=True):
         return True
-    role_name = MODERATOR_ROLE.format(server_name)
-    role = discord.utils.get(ctx.author.roles, name=role_name)
+    role = None
+    if server_name:
+        role_name = MODERATOR_ROLE.format(server_name)
+        role = discord.utils.get(ctx.author.roles, name=role_name)
     super_role = discord.utils.get(ctx.author.roles, name=SUPER_MODERATOR)
     if role is None and super_role is None:
         if not sub_check:
@@ -92,11 +96,13 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
     return True
 
 
-async def check_perm_captain(ctx, server_name: str):
+async def check_perm_captain(ctx, server_name: str = None):
     if await check_perm_moderator(ctx, server_name, sub_check=True):
         return True
-    role_name = CAPTAIN_ROLE.format(server_name)
-    role = discord.utils.get(ctx.author.roles, name=role_name)
+    role = None
+    if server_name is not None:
+        role_name = CAPTAIN_ROLE.format(server_name)
+        role = discord.utils.get(ctx.author.roles, name=role_name)
     super_role = discord.utils.get(ctx.author.roles, name=SUPER_CAPTAIN)
     if role is None and super_role is None:
         user_action_log(
