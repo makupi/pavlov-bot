@@ -25,6 +25,10 @@ from pavlov import PavlovRCON
 
 MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
+
+SUPER_MODERATOR = "Super-Mod"
+SUPER_CAPTAIN = "Super-Captain"
+
 RCON_TIMEOUT = 5
 
 MATCH_DELAY_RESETSND = 10
@@ -70,7 +74,8 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
         return True
     role_name = MODERATOR_ROLE.format(server_name)
     role = discord.utils.get(ctx.author.roles, name=role_name)
-    if role is None:
+    super_role = discord.utils.get(ctx.author.roles, name=SUPER_MODERATOR)
+    if role is None and super_role is None:
         if not sub_check:
             user_action_log(
                 ctx,
@@ -92,7 +97,8 @@ async def check_perm_captain(ctx, server_name: str):
         return True
     role_name = CAPTAIN_ROLE.format(server_name)
     role = discord.utils.get(ctx.author.roles, name=role_name)
-    if role is None:
+    super_role = discord.utils.get(ctx.author.roles, name=SUPER_CAPTAIN)
+    if role is None and super_role is None:
         user_action_log(
             ctx,
             f"CAPTAIN CHECK FAILED for server {server_name}",
