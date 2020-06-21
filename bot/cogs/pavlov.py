@@ -616,10 +616,10 @@ class Pavlov(commands.Cog):
     async def matchsetup(
         self, ctx, team_a_name: str, team_b_name: str, server_name: str
     ):
-        """`{prefix}matchsetup <team a name> <team b name> <server name>`
+        """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}matchsetup team_a team_b rush`
+        **Example**: `{prefix}matchsetup ct_team t_team rush`
         """
         if not await check_perm_captain(ctx, server_name):
             return
