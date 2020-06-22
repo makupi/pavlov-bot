@@ -26,8 +26,8 @@ from pavlov import PavlovRCON
 MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
 
-SUPER_MODERATOR = "Super-Mod"
-SUPER_CAPTAIN = "Super-Captain"
+SUPER_MODERATOR = "Mod-bot"
+SUPER_CAPTAIN = "Captain-bot"
 
 RCON_TIMEOUT = 5
 
