@@ -3,6 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 
+from bot.cogs.pavlov import check_perm_captain
 from bot.utils import aliases, config
 from bot.utils.steamplayer import SteamPlayer
 
@@ -24,6 +25,8 @@ class Teams(commands.Cog):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
 
         **Examples**: `{prefix}ringers add maku team_a`"""
+        if not await check_perm_captain(ctx):
+            return
         team = aliases.get_team(team_name)
         player = SteamPlayer.convert(player_arg)
         team.ringer_add(player)
@@ -36,8 +39,10 @@ class Teams(commands.Cog):
     @ringers.command()
     async def reset(self, ctx, team_name: str):
         """`{prefix}ringers reset <team_name>`
-
+        
         **Examples**: `{prefix}ringers reset team_a`"""
+        if not await check_perm_captain(ctx):
+            return
         team = aliases.get_team(team_name)
         team.ringers_reset()
         await ctx.send(
