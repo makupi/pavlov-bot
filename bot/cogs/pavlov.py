@@ -30,9 +30,10 @@ RCON_TIMEOUT = 5
 MATCH_DELAY_RESETSND = 10
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
 
-SERVERNAME_LENGTH = 36
-MAP_NAME_LENGTH = 40
-ANYONEPLAYING_ROW_FORMAT = "{alias:^10} | {server_name:^36} | {map_name:^40} | {map_alias:^15} | {player_count:^6}"
+ANYONEPLAYING_ROW_FORMAT = (
+    "{alias:^15} | {server_name:^36.36} | {map_name:^36.36} "
+    "| {map_alias:^15} | {player_count:^6}"
+)
 
 
 async def check_banned(ctx):
@@ -663,23 +664,33 @@ class Pavlov(commands.Cog):
         )
         desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
         for server_alias in servers.get_names(server_group):
-            data = await exec_server_command(ctx, server_alias, "ServerInfo")
-            server_info = data.get("ServerInfo", {})
-            players_count = server_info.get("PlayerCount", "0/0")
-            server_name = server_info.get("ServerName", "")
-            map_label = server_info.get("MapLabel")
-            map_name, map_image = await self.get_map_alias(map_label)
-            map_alias = aliases.find_map_alias(map_label)
-            if not map_alias:
-                map_alias = ""
-            desc += ANYONEPLAYING_ROW_FORMAT.format(
-                alias=server_alias,
-                server_name=server_name[:SERVERNAME_LENGTH],
-                map_name=map_name[:MAP_NAME_LENGTH],
-                map_alias=map_alias,
-                player_count=players_count,
-            )
-            desc += "\n"
+            try:
+                data = await exec_server_command(ctx, server_alias, "ServerInfo")
+                server_info = data.get("ServerInfo", {})
+                players_count = server_info.get("PlayerCount", "0/0")
+                server_name = server_info.get("ServerName", "")
+                map_label = server_info.get("MapLabel")
+                map_name, map_image = await self.get_map_alias(map_label)
+                map_alias = aliases.find_map_alias(map_label)
+                if not map_alias:
+                    map_alias = ""
+                desc += ANYONEPLAYING_ROW_FORMAT.format(
+                    alias=server_alias,
+                    server_name=server_name,
+                    map_name=map_name,
+                    map_alias=map_alias,
+                    player_count=players_count,
+                )
+                desc += "\n"
+            except (ConnectionRefusedError, OSError, TimeoutError):
+                desc += ANYONEPLAYING_ROW_FORMAT.format(
+                    alias=server_alias,
+                    server_name="SERVER UNAVAILABLE",
+                    map_name="N/A",
+                    map_alias="N/A",
+                    player_count="N/A",
+                )
+                desc += "\n"
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
 
