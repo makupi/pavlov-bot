@@ -400,10 +400,10 @@ class Pavlov(commands.Cog):
     async def rotatemap(self, ctx, server_name: str):
         """`{prefix}rotatemap <server_name>`
 
-        **Requires**: Moderator permissions or higher for the server
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap rush`
         """
-        if not await check_perm_moderator(ctx, server_name):
+        if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
