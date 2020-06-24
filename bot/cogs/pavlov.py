@@ -299,7 +299,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def itemlist(self, ctx, server_name: str):
-        """`{prefix}itemlist <servername.` 
+        """`{prefix}itemlist <servername>` 
 
         **Example**: `{prefix}itemlist snd1`
         """
@@ -311,6 +311,25 @@ class Pavlov(commands.Cog):
         for item in item_list:
             embed.description += (
                 f"\n - <{str(item)}>"
+            )
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def maplist(self, ctx, server_name: str):
+        """`{prefix}maplist <server_name>`
+
+        **Example**: `{prefix}maplist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "MapList")
+        map_list = data.get("MapList")
+        embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
+        if len(player_list) == 0:
+            embed.description = f"Currently no active players on `{server_name}`"
+        for map in map_list:
+            embed.description += (
+                f"\n - {map.get('MapId', '')} <{map.get('GameMode')}>"
             )
         if ctx.batch_exec:
             return embed.description
