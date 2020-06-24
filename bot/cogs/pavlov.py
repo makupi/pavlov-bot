@@ -438,6 +438,30 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def kill(self, ctx, player_arg: str, server_name: str):
+        """`{prefix}kill <player_id> <server_name>`
+
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}kill 89374583439127 rush`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        player = SteamPlayer.convert(player_arg)
+        data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
+        kill = data.get("Kill")
+        if ctx.batch_exec:
+            return kill
+        if not kill:
+            embed = discord.Embed(
+                description=f"**Failed** to kill <{player.unique_id}>"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully killed"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def kick(self, ctx, player_arg: str, server_name: str):
         """`{prefix}kick <player_id> <server_name>`
 
