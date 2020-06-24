@@ -324,9 +324,9 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
-        embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
-        if len(player_list) == 0:
-            embed.description = f"Currently no active players on `{server_name}`"
+        embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
+        if len(map_list) == 0:
+            embed.description = f"Currently no active maps on `{server_name}`"
         for map in map_list:
             embed.description += (
                 f"\n - {map.get('MapId', '')} <{map.get('GameMode')}>"
