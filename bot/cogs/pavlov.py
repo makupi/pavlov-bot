@@ -325,8 +325,10 @@ class Pavlov(commands.Cog):
         embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
-        for map in map_list:
-            embed.description += f"\n - {map.get('MapId', '')} <{map.get('GameMode')}>"
+        for _map in map_list:
+            embed.description += (
+                f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            )
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
