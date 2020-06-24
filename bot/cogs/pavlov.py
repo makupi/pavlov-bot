@@ -280,7 +280,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def blacklist(self, ctx, server_name: str):
-        """`{prefix} blacklist <server_name>`
+        """`{prefix}blacklist <server_name> - *Lists all blacklisted players*`
 
         **Example**: `{prefix}blacklist rush`
         """
@@ -292,6 +292,25 @@ class Pavlov(commands.Cog):
         for player in black_list:
             embed.description += (
                 f"\n - <{str(player)}>"
+            )
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def itemlist(self, ctx, server_name: str):
+        """`{prefix}itemlist - *Lists all available items for giveitem*`
+
+        **Example**: `{prefix}itemlist snd1`
+        """
+        data = await exec_server_command(ctx, server_name, "ItemList")
+        item_list = data.get("ItemList")
+        embed = discord.Embed(description=f"Items available:\n")
+        if len(item_list) == 0:
+            embed.description = f"Currently no Items available"
+        for item in item_list:
+            embed.description += (
+                f"\n - <{str(item)}>"
             )
         if ctx.batch_exec:
             return embed.description
