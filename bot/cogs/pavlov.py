@@ -279,6 +279,25 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def blacklist(self, ctx, server_name: str):
+        """`{prefix} blacklist <server_name>`
+
+        **Example**: `{prefix}blacklist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "Blacklist")
+        black_list = data.get("BlackList")
+        embed = discord.Embed(description=f"**Blacklisted players** on `{server_name}`:\n")
+        if len(black_list) == 0:
+            embed.description = f"Currently no Blacklisted players on `{server_name}`"
+        for player in black_list:
+            embed.description += (
+                f"\n - <{str(player)}>"
+            )
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def players(self, ctx, server_name: str):
         """`{prefix}players <server_name>`
 
