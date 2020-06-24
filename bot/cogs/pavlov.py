@@ -10,7 +10,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import aliases, config, servers
+from bot.utils import aliases, servers
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -52,39 +52,72 @@ async def fetch(session, url):
         return None
 
 
-async def check_perm_admin(ctx, server_name: str, sub_check=False):
+async def check_perm_admin(
+    ctx, server_name: str, sub_check: bool = False, global_check: bool = False
+):
     """ Admin permissions are stored per server in the servers.json """
-    if not server_name:
+    if not server_name and not global_check:
         return False
-    server = servers.get(server_name)
-    if ctx.author.id not in server.get("admins", []):
-        if not sub_check:
-            user_action_log(
-                ctx,
-                f"ADMIN CHECK FAILED for server {server_name}",
-                log_level=logging.WARNING,
-            )
-            if not ctx.batch_exec:
-                await ctx.send(
-                    embed=discord.Embed(description=f"This command is only for Admins.")
-                )
-        return False
-    return True
-
-
-async def check_perm_moderator(ctx, server_name: str = None, sub_check=False):
-    if await check_perm_admin(ctx, server_name, sub_check=True):
-        return True
-    role = None
+    _servers = list()
     if server_name:
-        role_name = MODERATOR_ROLE.format(server_name)
-        role = discord.utils.get(ctx.author.roles, name=role_name)
-    super_role = discord.utils.get(ctx.author.roles, name=SUPER_MODERATOR)
-    if role is None and super_role is None:
+        _servers.append(servers.get(server_name))
+    elif global_check:
+        _servers = servers.get_servers()
+    for server in _servers:
+        if ctx.author.id in server.get("admins", []):
+            return True
+    if not sub_check:
+        user_action_log(
+            ctx,
+            f"ADMIN CHECK FAILED server={server_name}, global_check={global_check}",
+            log_level=logging.WARNING,
+        )
+        if not ctx.batch_exec:
+            await ctx.send(
+                embed=discord.Embed(description=f"This command is only for Admins.")
+            )
+    return False
+
+
+def check_has_any_role(
+    ctx,
+    super_role: str,
+    role_format: str,
+    server_name: str = None,
+    global_check: bool = True,
+):
+    super_role = discord.utils.get(ctx.author.roles, name=super_role)
+    if super_role is not None:
+        return True
+
+    role_names = list()
+    if global_check:
+        for server_name in servers.get_names():
+            role_names.append(role_format.format(server_name))
+    elif server_name:
+        role_names.append(role_format.format(server_name))
+
+    for role_name in role_names:
+        r = discord.utils.get(ctx.author.roles, name=role_name)
+        if r is not None:
+            return True
+    return False
+
+
+async def check_perm_moderator(
+    ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
+):
+    if await check_perm_admin(
+        ctx, server_name, sub_check=True, global_check=global_check
+    ):
+        return True
+    if not check_has_any_role(
+        ctx, SUPER_MODERATOR, MODERATOR_ROLE, server_name, global_check
+    ):
         if not sub_check:
             user_action_log(
                 ctx,
-                f"MOD CHECK FAILED for server {server_name}",
+                f"MOD CHECK FAILED server={server_name}, global_check={global_check}",
                 log_level=logging.WARNING,
             )
             if not ctx.batch_exec:
@@ -97,18 +130,17 @@ async def check_perm_moderator(ctx, server_name: str = None, sub_check=False):
     return True
 
 
-async def check_perm_captain(ctx, server_name: str = None):
-    if await check_perm_moderator(ctx, server_name, sub_check=True):
+async def check_perm_captain(ctx, server_name: str = None, global_check: bool = False):
+    if await check_perm_moderator(
+        ctx, server_name, sub_check=True, global_check=global_check
+    ):
         return True
-    role = None
-    if server_name is not None:
-        role_name = CAPTAIN_ROLE.format(server_name)
-        role = discord.utils.get(ctx.author.roles, name=role_name)
-    super_role = discord.utils.get(ctx.author.roles, name=SUPER_CAPTAIN)
-    if role is None and super_role is None:
+    if not check_has_any_role(
+        ctx, SUPER_CAPTAIN, CAPTAIN_ROLE, server_name, global_check
+    ):
         user_action_log(
             ctx,
-            f"CAPTAIN CHECK FAILED for server {server_name}",
+            f"CAPTAIN CHECK FAILED server={server_name} global_check={global_check}",
             log_level=logging.WARNING,
         )
         if not ctx.batch_exec:

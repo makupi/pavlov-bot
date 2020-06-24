@@ -31,3 +31,6 @@ class Servers:
 
     def get_names(self, server_group: str = None):
         return list(self._servers.keys())
+
+    def get_servers(self, server_group: str = None):
+        return self._servers
