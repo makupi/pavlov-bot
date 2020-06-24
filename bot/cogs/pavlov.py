@@ -286,13 +286,13 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "Blacklist")
         black_list = data.get("BlackList")
-        embed = discord.Embed(description=f"**Blacklisted players** on `{server_name}`:\n")
+        embed = discord.Embed(
+            description=f"**Blacklisted players** on `{server_name}`:\n"
+        )
         if len(black_list) == 0:
             embed.description = f"Currently no Blacklisted players on `{server_name}`"
         for player in black_list:
-            embed.description += (
-                f"\n - <{str(player)}>"
-            )
+            embed.description += f"\n - <{str(player)}>"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
@@ -309,24 +309,24 @@ class Pavlov(commands.Cog):
         if len(item_list) == 0:
             embed.description = f"Currently no Items available"
         for item in item_list:
-            embed.description += (
-                f"\n - <{str(item)}>"
-            )
+            embed.description += f"\n - <{str(item)}>"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(hidden=True)  # Exceeds Helptext embed, maplist hidden for now
     async def maplist(self, ctx, server_name: str):
+        """`{prefix}maplist <server_name>`
+
+        **Example**: `{prefix}maplist rush`
+        """
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
         embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for map in map_list:
-            embed.description += (
-                f"\n - {map.get('MapId', '')} <{map.get('GameMode')}>"
-            )
+            embed.description += f"\n - {map.get('MapId', '')} <{map.get('GameMode')}>"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
