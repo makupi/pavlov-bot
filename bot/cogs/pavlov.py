@@ -318,10 +318,6 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def maplist(self, ctx, server_name: str):
-        """`{prefix}maplist <server_name>`
-
-        **Example**: `{prefix}maplist rush`
-        """
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
         embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
