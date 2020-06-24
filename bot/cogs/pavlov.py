@@ -279,6 +279,61 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def blacklist(self, ctx, server_name: str):
+        """`{prefix}blacklist <server_name>` 
+
+        **Example**: `{prefix}blacklist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "Blacklist")
+        black_list = data.get("BlackList")
+        embed = discord.Embed(
+            description=f"**Blacklisted players** on `{server_name}`:\n"
+        )
+        if len(black_list) == 0:
+            embed.description = f"Currently no Blacklisted players on `{server_name}`"
+        for player in black_list:
+            embed.description += f"\n - <{str(player)}>"
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def itemlist(self, ctx, server_name: str):
+        """`{prefix}itemlist <servername>` 
+
+        **Example**: `{prefix}itemlist snd1`
+        """
+        data = await exec_server_command(ctx, server_name, "ItemList")
+        item_list = data.get("ItemList")
+        embed = discord.Embed(description=f"Items available:\n")
+        if len(item_list) == 0:
+            embed.description = f"Currently no Items available"
+        for item in item_list:
+            embed.description += f"\n - <{str(item)}>"
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)  # Exceeds Helptext embed, maplist hidden for now
+    async def maplist(self, ctx, server_name: str):
+        """`{prefix}maplist <server_name>`
+
+        **Example**: `{prefix}maplist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "MapList")
+        map_list = data.get("MapList")
+        embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
+        if len(map_list) == 0:
+            embed.description = f"Currently no active maps on `{server_name}`"
+        for _map in map_list:
+            embed.description += (
+                f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            )
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def players(self, ctx, server_name: str):
         """`{prefix}players <server_name>`
 
@@ -434,6 +489,30 @@ class Pavlov(commands.Cog):
         else:
             embed = discord.Embed(
                 description=f"<{player.unique_id}> successfully banned"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def kill(self, ctx, player_arg: str, server_name: str):
+        """`{prefix}kill <player_id> <server_name>`
+
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}kill 89374583439127 rush`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        player = SteamPlayer.convert(player_arg)
+        data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
+        kill = data.get("Kill")
+        if ctx.batch_exec:
+            return kill
+        if not kill:
+            embed = discord.Embed(
+                description=f"**Failed** to kill <{player.unique_id}>"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully killed"
             )
         await ctx.send(embed=embed)
 
