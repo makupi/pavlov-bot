@@ -27,6 +27,11 @@ async def get_prefix(_bot, message):
     return commands.when_mentioned_or(prefix)(_bot, message)
 
 
+def user_action_log(ctx, message, log_level=logging.INFO):
+    name = f"{ctx.author.name}#{ctx.author.discriminator}"
+    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
+
+
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
@@ -65,6 +70,13 @@ async def on_command_error(ctx, error):
     else:
         raise error
     await ctx.send(embed=embed)
+
+
+@bot.before_invoke
+async def before_invoke(ctx):
+    ctx.batch_exec = False
+    await ctx.trigger_typing()
+    user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
 
 def extensions():

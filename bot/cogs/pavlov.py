@@ -10,6 +10,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
+from bot import user_action_log
 from bot.utils import aliases, servers
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
@@ -63,7 +64,7 @@ async def check_perm_admin(
         _servers.append(servers.get(server_name))
     elif global_check:
         _servers = servers.get_servers()
-    for server in _servers:
+    for server in _servers.values():
         if ctx.author.id in server.get("admins", []):
             return True
     if not sub_check:
@@ -153,11 +154,6 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
     return True
 
 
-def user_action_log(ctx, message, log_level=logging.INFO):
-    name = f"{ctx.author.name}#{ctx.author.discriminator}"
-    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
-
-
 async def exec_server_command(ctx, server_name: str, command: str):
     pavlov = None
     if hasattr(ctx, "pavlov"):
@@ -208,13 +204,6 @@ class Pavlov(commands.Cog):
         except Exception as ex:
             logging.error(f"Getting map label failed with {ex}")
         return None, None
-
-    async def cog_before_invoke(self, ctx):
-        ctx.batch_exec = False
-        await ctx.trigger_typing()
-        user_action_log(
-            ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
-        )
 
     @commands.command()
     async def servers(self, ctx):
