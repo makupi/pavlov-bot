@@ -280,7 +280,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def blacklist(self, ctx, server_name: str):
-        """`{prefix}blacklist <server_name> - *Lists all blacklisted players*`
+        """`{prefix}blacklist <server_name>` 
 
         **Example**: `{prefix}blacklist rush`
         """
@@ -299,7 +299,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def itemlist(self, ctx, server_name: str):
-        """`{prefix}itemlist - *Lists all available items for giveitem*`
+        """`{prefix}itemlist <servername.` 
 
         **Example**: `{prefix}itemlist snd1`
         """
