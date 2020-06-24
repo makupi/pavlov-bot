@@ -25,7 +25,7 @@ class Teams(commands.Cog):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
 
         **Examples**: `{prefix}ringers add maku team_a`"""
-        if not await check_perm_captain(ctx):
+        if not await check_perm_captain(ctx, global_check=True):
             return
         team = aliases.get_team(team_name)
         player = SteamPlayer.convert(player_arg)
@@ -41,7 +41,7 @@ class Teams(commands.Cog):
         """`{prefix}ringers reset <team_name>`
         
         **Examples**: `{prefix}ringers reset team_a`"""
-        if not await check_perm_captain(ctx):
+        if not await check_perm_captain(ctx, global_check=True):
             return
         team = aliases.get_team(team_name)
         team.ringers_reset()
