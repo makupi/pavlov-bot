@@ -141,14 +141,6 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * ;matchsetup <CT Team> <T Team> <server> using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
 
-## Rcon commands not yet implemented
-A recent update has provided the following commands which are not yet implemented in the bot
-* BlackList- returns list of banned players
-* MapList - Lists maps in rotation
-* Itemlist - gives full list of items available
-* Kill- kills given player
-
-
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * When a SwitchMap Rcon command is successful in changing map, subsequent ServerInfo requests return previous map's data for duration of current map until either a RotateMap command is issued or map ends naturally and rotates to next map.
