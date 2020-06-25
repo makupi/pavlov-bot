@@ -63,8 +63,8 @@ async def check_perm_admin(
     if server_name:
         _servers.append(servers.get(server_name))
     elif global_check:
-        _servers = servers.get_servers()
-    for server in _servers.values():
+        _servers = servers.get_servers().values()
+    for server in _servers:
         if ctx.author.id in server.get("admins", []):
             return True
     if not sub_check:
