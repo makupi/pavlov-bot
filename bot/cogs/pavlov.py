@@ -814,6 +814,8 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}custom ServerInfo rush`
         """
+        if not await check_perm_admin(ctx, server_name):
+            return
         data = await exec_server_command(ctx, server_name, rcon_command)
         if not data:
             data = "No response"
