@@ -141,7 +141,7 @@ The bot has 4 permission levels:
 In addition to the implemented RCON commands, the bot has a few advanced functions:
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * ;matchsetup <CT Team> <T Team> <server> using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
-  * ;anyoneplaying will give a summary report of all servers controlled by the bot
+ * ;anyoneplaying will give a summary report of all servers controlled by the bot
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
