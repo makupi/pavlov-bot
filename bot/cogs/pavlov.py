@@ -335,7 +335,7 @@ class Pavlov(commands.Cog):
             return embed.description
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)  # Exceeds Helptext embed, maplist hidden for now
+    @commands.command()  # Exceeds Helptext embed, maplist hidden for now
     async def maplist(self, ctx, server_name: str):
         """`{prefix}maplist <server_name>`
 

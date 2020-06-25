@@ -9,13 +9,24 @@ from bot.utils import config
 async def create_bot_help(embed, mapping, prefix=";"):
     for cog, cmds in mapping.items():
         cmd_str = ""
+        split_count = 1
         for cmd in cmds:
             if not cmd.hidden:
+                tmp_str = f"{cmd.short_doc.format(prefix=prefix)}\n"
+                if len(cmd_str) + len(tmp_str) >= 1024:
+                    embed.add_field(
+                        name=f"**__{cog.qualified_name} {split_count}__**",
+                        value=cmd_str,
+                        inline=False,
+                    )
+                    split_count += 1
+                    cmd_str = ""
                 cmd_str += f"{cmd.short_doc.format(prefix=prefix)}\n"
         if cmd_str:
-            embed.add_field(
-                name=f"**__{cog.qualified_name}__**", value=cmd_str, inline=False
-            )
+            name = f"**__{cog.qualified_name}__**"
+            if split_count > 1:
+                name = f"**__{cog.qualified_name} {split_count}__**"
+            embed.add_field(name=name, value=cmd_str, inline=False)
     return embed
 
 
