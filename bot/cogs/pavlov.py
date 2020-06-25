@@ -782,8 +782,10 @@ class Pavlov(commands.Cog):
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")
                 map_label = server_info.get("MapLabel")
-                map_name, map_image = await self.get_map_alias(map_label)
+                map_name, _ = await self.get_map_alias(map_label)
                 map_alias = aliases.find_map_alias(map_label)
+                if not map_name:
+                    map_name = ""
                 if not map_alias:
                     map_alias = ""
                 desc += ANYONEPLAYING_ROW_FORMAT.format(
