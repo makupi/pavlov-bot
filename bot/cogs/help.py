@@ -30,7 +30,7 @@ class Help(commands.Cog):
     def get_bot_mapping(self):
         """Retrieves the bot mapping passed to :meth:`send_bot_help`."""
         bot = self.bot
-        mapping = {cog: cog.get_commands() for cog in bot.cogs.values()}
+        mapping = {cog: list(cog.walk_commands()) for cog in bot.cogs.values()}
         # mapping[None] = [c for c in bot.all_commands.values() if c.cog is None]
         return mapping
 

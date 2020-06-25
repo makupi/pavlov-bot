@@ -29,5 +29,8 @@ class Servers:
                 raise ServerNotFoundError(name)
         return server
 
-    def get_names(self):
+    def get_names(self, server_group: str = None):
         return list(self._servers.keys())
+
+    def get_servers(self, server_group: str = None):
+        return self._servers

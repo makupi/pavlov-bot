@@ -6,7 +6,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import config
+from bot.utils import aliases, config, servers
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)
@@ -15,7 +15,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.1.3"
+__version__ = "0.2.0"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
@@ -25,6 +25,11 @@ async def get_prefix(_bot, message):
     # if not isinstance(message.channel, discord.DMChannel):
     #    prefix = get_guild_prefix(_bot, message.guild.id)
     return commands.when_mentioned_or(prefix)(_bot, message)
+
+
+def user_action_log(ctx, message, log_level=logging.INFO):
+    name = f"{ctx.author.name}#{ctx.author.discriminator}"
+    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
 
 
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
@@ -43,6 +48,40 @@ async def on_ready():
         Invite: {invite_link.format(bot.user.id)}
     """
     )
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    embed = discord.Embed()
+    if isinstance(error, commands.MissingRequiredArgument):
+        embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+    elif hasattr(error, "original"):
+        if isinstance(error.original, servers.ServerNotFoundError):
+            embed.description = (
+                f"⚠️ Server `{error.original.server_name}` not found.\n "
+                f"Please try again or use `{config.prefix}servers` to list the available servers."
+            )
+        elif isinstance(error.original, aliases.AliasNotFoundError):
+            embed.description = (
+                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
+                f"Please try again or use `{config.prefix}aliases` to list the available servers."
+            )
+        elif isinstance(
+            error.original, (ConnectionRefusedError, OSError, TimeoutError)
+        ):
+            embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
+        else:
+            raise error
+    else:
+        raise error
+    await ctx.send(embed=embed)
+
+
+@bot.before_invoke
+async def before_invoke(ctx):
+    ctx.batch_exec = False
+    await ctx.trigger_typing()
+    user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
 
 def extensions():

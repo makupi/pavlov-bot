@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import re
 import sys
@@ -9,7 +10,10 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, aliases, config, servers
+from bot import user_action_log
+from bot.utils import aliases, servers
+from bot.utils.steamplayer import SteamPlayer
+from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
 from pavlov import PavlovRCON
 
@@ -22,7 +26,19 @@ from pavlov import PavlovRCON
 
 MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
+
+SUPER_MODERATOR = "Mod-bot"
+SUPER_CAPTAIN = "Captain-bot"
+
 RCON_TIMEOUT = 5
+
+MATCH_DELAY_RESETSND = 10
+RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
+
+ANYONEPLAYING_ROW_FORMAT = (
+    "{alias:^15} | {server_name:^36.36} | {map_name:^36.36} "
+    "| {map_alias:^15} | {player_count:^6}"
+)
 
 
 async def check_banned(ctx):
@@ -37,34 +53,72 @@ async def fetch(session, url):
         return None
 
 
-async def check_perm_admin(ctx, server_name: str, sub_check=False):
+async def check_perm_admin(
+    ctx, server_name: str, sub_check: bool = False, global_check: bool = False
+):
     """ Admin permissions are stored per server in the servers.json """
-    server = servers.get(server_name)
-    if ctx.author.id not in server.get("admins", []):
-        if not sub_check:
-            user_action_log(
-                ctx,
-                f"ADMIN CHECK FAILED for server {server_name}",
-                log_level=logging.WARNING,
-            )
-            if not ctx.batch_exec:
-                await ctx.send(
-                    embed=discord.Embed(description=f"This command is only for Admins.")
-                )
+    if not server_name and not global_check:
         return False
-    return True
+    _servers = list()
+    if server_name:
+        _servers.append(servers.get(server_name))
+    elif global_check:
+        _servers = servers.get_servers().values()
+    for server in _servers:
+        if ctx.author.id in server.get("admins", []):
+            return True
+    if not sub_check:
+        user_action_log(
+            ctx,
+            f"ADMIN CHECK FAILED server={server_name}, global_check={global_check}",
+            log_level=logging.WARNING,
+        )
+        if not ctx.batch_exec:
+            await ctx.send(
+                embed=discord.Embed(description=f"This command is only for Admins.")
+            )
+    return False
 
 
-async def check_perm_moderator(ctx, server_name: str, sub_check=False):
-    if await check_perm_admin(ctx, server_name, sub_check=True):
+def check_has_any_role(
+    ctx,
+    super_role: str,
+    role_format: str,
+    server_name: str = None,
+    global_check: bool = True,
+):
+    super_role = discord.utils.get(ctx.author.roles, name=super_role)
+    if super_role is not None:
         return True
-    role_name = MODERATOR_ROLE.format(server_name)
-    role = discord.utils.get(ctx.author.roles, name=role_name)
-    if role is None:
+
+    role_names = list()
+    if global_check:
+        for server_name in servers.get_names():
+            role_names.append(role_format.format(server_name))
+    elif server_name:
+        role_names.append(role_format.format(server_name))
+
+    for role_name in role_names:
+        r = discord.utils.get(ctx.author.roles, name=role_name)
+        if r is not None:
+            return True
+    return False
+
+
+async def check_perm_moderator(
+    ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
+):
+    if await check_perm_admin(
+        ctx, server_name, sub_check=True, global_check=global_check
+    ):
+        return True
+    if not check_has_any_role(
+        ctx, SUPER_MODERATOR, MODERATOR_ROLE, server_name, global_check
+    ):
         if not sub_check:
             user_action_log(
                 ctx,
-                f"MOD CHECK FAILED for server {server_name}",
+                f"MOD CHECK FAILED server={server_name}, global_check={global_check}",
                 log_level=logging.WARNING,
             )
             if not ctx.batch_exec:
@@ -77,15 +131,17 @@ async def check_perm_moderator(ctx, server_name: str, sub_check=False):
     return True
 
 
-async def check_perm_captain(ctx, server_name: str):
-    if await check_perm_moderator(ctx, server_name, sub_check=True):
+async def check_perm_captain(ctx, server_name: str = None, global_check: bool = False):
+    if await check_perm_moderator(
+        ctx, server_name, sub_check=True, global_check=global_check
+    ):
         return True
-    role_name = CAPTAIN_ROLE.format(server_name)
-    role = discord.utils.get(ctx.author.roles, name=role_name)
-    if role is None:
+    if not check_has_any_role(
+        ctx, SUPER_CAPTAIN, CAPTAIN_ROLE, server_name, global_check
+    ):
         user_action_log(
             ctx,
-            f"CAPTAIN CHECK FAILED for server {server_name}",
+            f"CAPTAIN CHECK FAILED server={server_name} global_check={global_check}",
             log_level=logging.WARNING,
         )
         if not ctx.batch_exec:
@@ -96,11 +152,6 @@ async def check_perm_captain(ctx, server_name: str):
             )
         return False
     return True
-
-
-def user_action_log(ctx, message, log_level=logging.INFO):
-    name = f"{ctx.author.name}#{ctx.author.discriminator}"
-    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
 
 
 async def exec_server_command(ctx, server_name: str, command: str):
@@ -154,35 +205,6 @@ class Pavlov(commands.Cog):
             logging.error(f"Getting map label failed with {ex}")
         return None, None
 
-    async def cog_command_error(self, ctx, error):
-        embed = discord.Embed()
-        if isinstance(error, commands.MissingRequiredArgument):
-            embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
-        elif isinstance(error.original, servers.ServerNotFoundError):
-            embed.description = (
-                f"⚠️ Server `{error.original.server_name}` not found.\n "
-                f"Please try again or use `{config.prefix}servers` to list the available servers."
-            )
-        elif isinstance(error.original, aliases.AliasNotFoundError):
-            embed.description = (
-                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
-                f"Please try again or use `{config.prefix}aliases` to list the available servers."
-            )
-        elif isinstance(
-            error.original, (ConnectionRefusedError, OSError, TimeoutError)
-        ):
-            embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
-        else:
-            raise error
-        await ctx.send(embed=embed)
-
-    async def cog_before_invoke(self, ctx):
-        ctx.batch_exec = False
-        await ctx.trigger_typing()
-        user_action_log(
-            ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}"
-        )
-
     @commands.command()
     async def servers(self, ctx):
         """`{prefix}servers` - *Lists available servers*"""
@@ -192,25 +214,49 @@ class Pavlov(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.group(invoke_without_command=True, pass_context=True, aliases=["alias"])
     async def aliases(self, ctx):
         """`{prefix}aliases` - *Lists available aliases*"""
-        embed = discord.Embed()
+        await self.maps_aliases(ctx)
+        await self.players_aliases(ctx)
+        await self.teams_aliases(ctx)
+
+    @aliases.command(name="maps")
+    async def maps_aliases(self, ctx):
+        """`{prefix}aliases maps` - *Lists all map aliases*"""
+        embed = discord.Embed(title="Maps Aliases")
         maps = aliases.get_maps()
-        maps_str = "```"
-        for alias, label in maps.items():
-            maps_str += f"{alias:<15} - {label}\n"
-        maps_str += "```"
         if maps:
-            embed.add_field(name="Maps", value=maps_str, inline=False)
-        players = aliases.get_players()
-        players_str = "```"
-        for alias, unique_id in players.items():
-            players_str += f"{alias:<15} <{unique_id}>\n"
-        players_str += "```"
-        if players_str:
-            embed.add_field(name="Players", value=players_str, inline=False)
+            maps_str = "```"
+            for alias, label in maps.items():
+                maps_str += f"{alias:<15} - {label}\n"
+            maps_str += "```"
+            embed.description = maps_str
+        else:
+            embed.description = "No aliases exist for maps."
         await ctx.send(embed=embed)
+
+    @aliases.command(name="players")
+    async def players_aliases(self, ctx):
+        """`{prefix}aliases players` - *Lists all player aliases*"""
+        embed = discord.Embed(title="Player Aliases")
+        players = aliases.get_players()
+
+        if players:
+            players_str = "```"
+            for alias, unique_id in players.items():
+                players_str += f"{alias:<15} <{unique_id}>\n"
+            players_str += "```"
+            embed.description = players_str
+        else:
+            embed.description = "No aliases exist for players."
+        await ctx.send(embed=embed)
+
+    @aliases.command(name="teams")
+    async def teams_aliases(self, ctx):
+        """`{prefix}aliases teams` - *Lists all teams like* `{prefix}teams`"""
+        teams_cog = self.bot.get_cog("Teams")
+        await teams_cog.teams(ctx)
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str):
@@ -254,6 +300,61 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def blacklist(self, ctx, server_name: str):
+        """`{prefix}blacklist <server_name>` 
+
+        **Example**: `{prefix}blacklist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "Blacklist")
+        black_list = data.get("BlackList")
+        embed = discord.Embed(
+            description=f"**Blacklisted players** on `{server_name}`:\n"
+        )
+        if len(black_list) == 0:
+            embed.description = f"Currently no Blacklisted players on `{server_name}`"
+        for player in black_list:
+            embed.description += f"\n - <{str(player)}>"
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def itemlist(self, ctx, server_name: str):
+        """`{prefix}itemlist <servername>` 
+
+        **Example**: `{prefix}itemlist snd1`
+        """
+        data = await exec_server_command(ctx, server_name, "ItemList")
+        item_list = data.get("ItemList")
+        embed = discord.Embed(description=f"Items available:\n")
+        if len(item_list) == 0:
+            embed.description = f"Currently no Items available"
+        for item in item_list:
+            embed.description += f"\n - <{str(item)}>"
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)  # Exceeds Helptext embed, maplist hidden for now
+    async def maplist(self, ctx, server_name: str):
+        """`{prefix}maplist <server_name>`
+
+        **Example**: `{prefix}maplist rush`
+        """
+        data = await exec_server_command(ctx, server_name, "MapList")
+        map_list = data.get("MapList")
+        embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
+        if len(map_list) == 0:
+            embed.description = f"Currently no active maps on `{server_name}`"
+        for _map in map_list:
+            embed.description += (
+                f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            )
+        if ctx.batch_exec:
+            return embed.description
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def players(self, ctx, server_name: str):
         """`{prefix}players <server_name>`
 
@@ -278,7 +379,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"InspectPlayer {player.unique_id}"
         )
@@ -354,7 +455,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
@@ -375,10 +476,10 @@ class Pavlov(commands.Cog):
     async def rotatemap(self, ctx, server_name: str):
         """`{prefix}rotatemap <server_name>`
 
-        **Requires**: Moderator permissions or higher for the server
+        **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap rush`
         """
-        if not await check_perm_moderator(ctx, server_name):
+        if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
@@ -399,7 +500,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
         ban = data.get("Ban")
         if ctx.batch_exec:
@@ -413,6 +514,30 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def kill(self, ctx, player_arg: str, server_name: str):
+        """`{prefix}kill <player_id> <server_name>`
+
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}kill 89374583439127 rush`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        player = SteamPlayer.convert(player_arg)
+        data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
+        kill = data.get("Kill")
+        if ctx.batch_exec:
+            return kill
+        if not kill:
+            embed = discord.Embed(
+                description=f"**Failed** to kill <{player.unique_id}>"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"<{player.unique_id}> successfully killed"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def kick(self, ctx, player_arg: str, server_name: str):
         """`{prefix}kick <player_id> <server_name>`
 
@@ -421,7 +546,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
         kick = data.get("Kick")
         if ctx.batch_exec:
@@ -445,7 +570,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
         unban = data.get("Unban")
         if ctx.batch_exec:
@@ -469,7 +594,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
         )
@@ -495,7 +620,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
         )
@@ -544,7 +669,7 @@ class Pavlov(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = await SteamPlayer.convert(ctx, player_arg)
+        player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(
             ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
         )
@@ -599,6 +724,89 @@ class Pavlov(commands.Cog):
                 )
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def matchsetup(
+        self, ctx, team_a_name: str, team_b_name: str, server_name: str
+    ):
+        """`{prefix}matchsetup <CT team name> <T team name> <server name>`
+
+        **Requires**: Captain permissions or higher for the server
+        **Example**: `{prefix}matchsetup ct_team t_team rush`
+        """
+        if not await check_perm_captain(ctx, server_name):
+            return
+        before = datetime.now()
+        teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
+        embed = discord.Embed()
+        for team in teams:
+            embed.add_field(
+                name=f"{team.name} members", value=team.member_repr(), inline=False
+            )
+        await ctx.send(embed=embed)
+
+        for index, team in enumerate(teams):
+            for member in team.members:
+                await exec_server_command(
+                    ctx, server_name, f"SwitchTeam {member.unique_id} {index}"
+                )
+                await asyncio.sleep(RCON_COMMAND_PAUSE)
+
+        await ctx.send(
+            embed=discord.Embed(
+                description=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds."
+            )
+        )
+        await asyncio.sleep(MATCH_DELAY_RESETSND)
+        await exec_server_command(ctx, server_name, "ResetSND")
+        embed = discord.Embed(description="Reset SND. Good luck!")
+        embed.set_footer(text=f"Execution time: {datetime.now() - before}")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def anyoneplaying(self, ctx, server_group: str = None):
+        """`{prefix}anyoneplaying [server_group]`"""
+        ctx.batch_exec = True
+        players_header = ANYONEPLAYING_ROW_FORMAT.format(
+            alias="Alias",
+            server_name="Server Name",
+            map_name="Map Name",
+            map_alias="Map Alias",
+            player_count="Players",
+        )
+        desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
+        for server_alias in servers.get_names(server_group):
+            try:
+                data = await exec_server_command(ctx, server_alias, "ServerInfo")
+                server_info = data.get("ServerInfo", {})
+                players_count = server_info.get("PlayerCount", "0/0")
+                server_name = server_info.get("ServerName", "")
+                map_label = server_info.get("MapLabel")
+                map_name, _ = await self.get_map_alias(map_label)
+                map_alias = aliases.find_map_alias(map_label)
+                if not map_name:
+                    map_name = ""
+                if not map_alias:
+                    map_alias = ""
+                desc += ANYONEPLAYING_ROW_FORMAT.format(
+                    alias=server_alias,
+                    server_name=server_name,
+                    map_name=map_name,
+                    map_alias=map_alias,
+                    player_count=players_count,
+                )
+                desc += "\n"
+            except (ConnectionRefusedError, OSError, TimeoutError):
+                desc += ANYONEPLAYING_ROW_FORMAT.format(
+                    alias=server_alias,
+                    server_name="SERVER UNAVAILABLE",
+                    map_name="N/A",
+                    map_alias="N/A",
+                    player_count="N/A",
+                )
+                desc += "\n"
+        file = text_to_image(desc, "anyoneplaying.png")
+        await ctx.send(file=file)
 
 
 def setup(bot):
