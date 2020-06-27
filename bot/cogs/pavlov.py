@@ -11,7 +11,7 @@ import discord
 from discord.ext import commands
 
 from bot import user_action_log
-from bot.utils import aliases, servers
+from bot.utils import Paginator, aliases, servers
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -226,31 +226,28 @@ class Pavlov(commands.Cog):
         """`{prefix}aliases maps` - *Lists all map aliases*"""
         embed = discord.Embed(title="Maps Aliases")
         maps = aliases.get_maps()
+        paginator = Paginator(max_lines=20)
         if maps:
-            maps_str = "```"
             for alias, label in maps.items():
-                maps_str += f"{alias:<15} - {label}\n"
-            maps_str += "```"
-            embed.description = maps_str
+                paginator.add_line(f"{alias:<15} - {label}")
+            await paginator.create(ctx, embed=embed)
         else:
             embed.description = "No aliases exist for maps."
-        await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
 
     @aliases.command(name="players")
     async def players_aliases(self, ctx):
         """`{prefix}aliases players` - *Lists all player aliases*"""
         embed = discord.Embed(title="Player Aliases")
         players = aliases.get_players()
-
+        paginator = Paginator(max_lines=20)
         if players:
-            players_str = "```"
             for alias, unique_id in players.items():
-                players_str += f"{alias:<15} <{unique_id}>\n"
-            players_str += "```"
-            embed.description = players_str
+                paginator.add_line(f"{alias:<15} <{unique_id}>")
+            await paginator.create(ctx, embed=embed)
         else:
-            embed.description = "No aliases exist for players."
-        await ctx.send(embed=embed)
+            embed.description = "No player aliases found."
+            await ctx.send(embed=embed)
 
     @aliases.command(name="teams")
     async def teams_aliases(self, ctx):
