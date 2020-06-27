@@ -116,7 +116,7 @@ class Paginator:
 
         def check(reaction_, user_):
             return (
-                user_ == ctx.author
+                not user_.bot
                 and reaction_.emoji in PAGINATION_EMOJI
                 and reaction_.message.id == message.id
             )
