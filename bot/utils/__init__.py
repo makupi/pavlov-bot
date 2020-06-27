@@ -1,5 +1,6 @@
 from .aliases import Aliases
 from .config import Config
+from .paginator import Paginator
 from .servers import Servers
 from .steamplayer import SteamPlayer
 
@@ -10,4 +11,4 @@ SteamPlayer.set_aliases(aliases)
 aliases.load_teams()
 
 
-__all__ = ["config", "servers", "aliases", "SteamPlayer"]
+__all__ = ["config", "servers", "aliases", "SteamPlayer", "Paginator"]
