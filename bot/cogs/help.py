@@ -5,6 +5,8 @@ from discord.ext import commands
 
 from bot.utils import config
 
+COG_ORDER = ["Pavlov", "PavlovCaptain", "PavlovMod", "PavlovAdmin"]
+
 
 async def create_bot_help(embed, mapping, prefix=";"):
     for cog, cmds in mapping.items():
@@ -38,10 +40,21 @@ class Help(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
+    def ordered_cogs(self):
+        cogs = self.bot.cogs
+        ordered = list()
+        for cog_name in COG_ORDER:
+            if cog_name in cogs:
+                ordered.append(cogs.get(cog_name))
+        for k, v in cogs.items():
+            if k not in COG_ORDER:
+                ordered.append(v)
+        return ordered
+
     def get_bot_mapping(self):
         """Retrieves the bot mapping passed to :meth:`send_bot_help`."""
-        bot = self.bot
-        mapping = {cog: list(cog.walk_commands()) for cog in bot.cogs.values()}
+        cogs = self.ordered_cogs()
+        mapping = {cog: list(cog.walk_commands()) for cog in cogs}
         # mapping[None] = [c for c in bot.all_commands.values() if c.cog is None]
         return mapping
 
