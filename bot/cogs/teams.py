@@ -3,9 +3,8 @@ import logging
 import discord
 from discord.ext import commands
 
-from bot.cogs.pavlov import check_perm_captain
-from bot.utils import aliases, config
-from bot.utils.steamplayer import SteamPlayer
+from bot.utils import SteamPlayer, aliases, config
+from bot.utils.pavlov import check_perm_captain
 
 
 class Teams(commands.Cog):
