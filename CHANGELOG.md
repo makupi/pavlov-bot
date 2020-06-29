@@ -3,6 +3,10 @@
 ## unreleased
 - Added `;custom` command with admin permission to execute custom RCON commands
 
+## v0.2.3 - 2020-06-29
+- Pavlov Cog refactored, for more info see PR [#51](https://github.com/makupi/pavlov-bot/pull/51)
+- Fixed `;help` properly by splitting pavlov commands into separate categories (Pavlov, PavlovCaptain, PavlovMod, PavlovAdmin)
+
 ## v0.2.2 - 2020-06-28
 - Fixed aliases character limit issue with pagination for aliases maps and players
 
