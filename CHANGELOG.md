@@ -3,6 +3,9 @@
 ## unreleased
 - Added `;custom` command with admin permission to execute custom RCON commands
 
+## v0.2.2 - 2020-06-28
+- Fixed aliases character limit issue with pagination for aliases maps and players
+
 ## v0.2.1 - 2020-06-25
 - Fixed `;help` command exceeding 1024 character field limit temporarily, refactor pending
 
