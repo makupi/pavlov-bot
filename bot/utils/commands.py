@@ -45,11 +45,14 @@ class Command:
                 return
 
         proc = await self._get_process()
-        stdout, stderr = await proc.communicate()
-        if stdout:
-            await ctx.send(f"**stdout**\n```{stdout.decode()}```")
-        if stderr:
-            await ctx.send(f"**stderr**\n```{stderr.decode()}```")
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=10)
+            if stdout:
+                await ctx.send(f"**stdout**\n```{stdout.decode()}```")
+            if stderr:
+                await ctx.send(f"**stderr**\n```{stderr.decode()}```")
+        except asyncio.TimeoutError:
+            pass
 
     async def _get_process(self) -> asyncio.subprocess.Process:
         return await asyncio.create_subprocess_shell(
