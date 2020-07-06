@@ -6,7 +6,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import aliases, config, servers
+from bot.utils import aliases, config, servers, user_action_log
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)
@@ -25,11 +25,6 @@ async def get_prefix(_bot, message):
     # if not isinstance(message.channel, discord.DMChannel):
     #    prefix = get_guild_prefix(_bot, message.guild.id)
     return commands.when_mentioned_or(prefix)(_bot, message)
-
-
-def user_action_log(ctx, message, log_level=logging.INFO):
-    name = f"{ctx.author.name}#{ctx.author.discriminator}"
-    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
 
 
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
@@ -54,7 +49,9 @@ async def on_ready():
 async def on_command_error(ctx, error):
     embed = discord.Embed()
     if isinstance(error, commands.MissingRequiredArgument):
-        embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+        embed.description = (
+            f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+        )
     elif hasattr(error, "original"):
         if isinstance(error.original, servers.ServerNotFoundError):
             embed.description = (
@@ -66,9 +63,7 @@ async def on_command_error(ctx, error):
                 f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
                 f"Please try again or use `{config.prefix}aliases` to list the available servers."
             )
-        elif isinstance(
-            error.original, (ConnectionRefusedError, OSError, TimeoutError)
-        ):
+        elif isinstance(error.original, (ConnectionRefusedError, OSError, TimeoutError)):
             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
         else:
             raise error

@@ -2,8 +2,7 @@ import logging
 
 import discord
 
-from bot import user_action_log
-from bot.utils import servers
+from bot.utils import servers, user_action_log
 from pavlov import PavlovRCON
 
 RCON_TIMEOUT = 5
@@ -21,7 +20,7 @@ async def check_banned(ctx):
 
 
 async def check_perm_admin(
-    ctx, server_name: str, sub_check: bool = False, global_check: bool = False
+    ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
 ):
     """ Admin permissions are stored per server in the servers.json """
     if not server_name and not global_check:
@@ -41,18 +40,12 @@ async def check_perm_admin(
             log_level=logging.WARNING,
         )
         if not ctx.batch_exec:
-            await ctx.send(
-                embed=discord.Embed(description=f"This command is only for Admins.")
-            )
+            await ctx.send(embed=discord.Embed(description=f"This command is only for Admins."))
     return False
 
 
 def check_has_any_role(
-    ctx,
-    super_role: str,
-    role_format: str,
-    server_name: str = None,
-    global_check: bool = True,
+    ctx, super_role: str, role_format: str, server_name: str = None, global_check: bool = True,
 ):
     super_role = discord.utils.get(ctx.author.roles, name=super_role)
     if super_role is not None:
@@ -75,13 +68,9 @@ def check_has_any_role(
 async def check_perm_moderator(
     ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
 ):
-    if await check_perm_admin(
-        ctx, server_name, sub_check=True, global_check=global_check
-    ):
+    if await check_perm_admin(ctx, server_name, sub_check=True, global_check=global_check):
         return True
-    if not check_has_any_role(
-        ctx, SUPER_MODERATOR, MODERATOR_ROLE, server_name, global_check
-    ):
+    if not check_has_any_role(ctx, SUPER_MODERATOR, MODERATOR_ROLE, server_name, global_check):
         if not sub_check:
             user_action_log(
                 ctx,
@@ -99,13 +88,9 @@ async def check_perm_moderator(
 
 
 async def check_perm_captain(ctx, server_name: str = None, global_check: bool = False):
-    if await check_perm_moderator(
-        ctx, server_name, sub_check=True, global_check=global_check
-    ):
+    if await check_perm_moderator(ctx, server_name, sub_check=True, global_check=global_check):
         return True
-    if not check_has_any_role(
-        ctx, SUPER_CAPTAIN, CAPTAIN_ROLE, server_name, global_check
-    ):
+    if not check_has_any_role(ctx, SUPER_CAPTAIN, CAPTAIN_ROLE, server_name, global_check):
         user_action_log(
             ctx,
             f"CAPTAIN CHECK FAILED server={server_name} global_check={global_check}",
@@ -113,9 +98,7 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
         )
         if not ctx.batch_exec:
             await ctx.send(
-                embed=discord.Embed(
-                    description=f"This command is only for Captains and above."
-                )
+                embed=discord.Embed(description=f"This command is only for Captains and above.")
             )
         return False
     return True
@@ -128,10 +111,7 @@ async def exec_server_command(ctx, server_name: str, command: str):
     if not hasattr(ctx, "pavlov") or pavlov is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
-            server.get("ip"),
-            server.get("port"),
-            server.get("password"),
-            timeout=RCON_TIMEOUT,
+            server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT,
         )
         if not hasattr(ctx, "pavlov"):
             ctx.pavlov = {server_name: pavlov}
