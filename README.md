@@ -55,11 +55,11 @@ Copy file config.json.default file from Examples directory to `/home/steam/pavlo
 
 Copy servers.json.default file from Examples directory to `/home/steam/pavlov-bot/servers.json` and edit as required for your servers. Admins in servers.json are discordIDs of the admin users ([how to find user-ids](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and IP, port are as required to get to the rcon severs and password is the unhashed password setup in RconSettings.txt.
 
-Note that server names are processed case insensitive, so FL_Rush can be called by ;serverinfo fl_rush
+Note that server names are processed case insensitive, so server named "Rush" can be called by `;serverinfo rush` or `;serverinfo RUSH` 
 
-Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. 
+*Optional but recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. Team aliases are required to used ``;matchsetup`` command.  
 
-Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, command require Admin permission unless the "permission" field contains "Mod" or "Captain". Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
+*Optional advanced feature*: Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, command require Admin permission unless the "permission" field contains "Mod" or "Captain". Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
 
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
