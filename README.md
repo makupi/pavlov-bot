@@ -59,6 +59,8 @@ Note that server names are processed case insensitive, so FL_Rush can be called 
 
 Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. 
 
+Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, command require Admin permission unless the "permission" field contains "Mod" or "Captain". Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
+
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
 Obtain the bot token and install in config.json
@@ -142,7 +144,9 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * `;matchsetup <CT Team> <T Team> <server>`` using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
+ * ``;command <predefined command>`` will instruct the bot to run the shell command as defined in commands.json on the local host. 
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * When a SwitchMap Rcon command is successful in changing map, subsequent ServerInfo requests return previous map's data for duration of current map until either a RotateMap command is issued or map ends naturally and rotates to next map.
+* After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
