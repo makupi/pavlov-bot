@@ -9,6 +9,8 @@ from bot.utils.pavlov import (
 )
 
 PERMISSIONS = {
+    "any": None,
+    "all": None,
     "captain": check_perm_captain,
     "mod": check_perm_moderator,
     "moderator": check_perm_moderator,
@@ -35,7 +37,7 @@ class Command:
         if self.command is None:
             raise InvalidCommand(self.name)
         self.permission = data.get("permission", "admin")
-        self._perm_check = None
+        self._perm_check = check_perm_admin
         if self.permission.lower() in PERMISSIONS:
             self._perm_check = PERMISSIONS.get(self.permission.lower())
 
