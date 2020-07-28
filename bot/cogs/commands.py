@@ -18,6 +18,7 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def command(self, ctx, command_name: str):
+        """`{prefix}command <command_name>`"""
         command = server_commands.get(command_name)
         await command(ctx)
         await ctx.send(f"Execution of command `{command_name}` done.")
