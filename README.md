@@ -55,9 +55,11 @@ Copy file config.json.default file from Examples directory to `/home/steam/pavlo
 
 Copy servers.json.default file from Examples directory to `/home/steam/pavlov-bot/servers.json` and edit as required for your servers. Admins in servers.json are discordIDs of the admin users ([how to find user-ids](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and IP, port are as required to get to the rcon severs and password is the unhashed password setup in RconSettings.txt.
 
-Note that server names are processed case insensitive, so FL_Rush can be called by ;serverinfo fl_rush
+Note that server names are processed case insensitive, so server named "Rush" can be called by `;serverinfo rush` or `;serverinfo RUSH` 
 
-Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. 
+*Optional but recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. Team aliases are required to used ``;matchsetup`` command.  
+
+*Optional advanced feature*: Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, all commands require Admin permission unless the "permission" field contains "All", "Captain" or "Mod" which grants execution rights to that level and higher.  Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
 
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
@@ -144,6 +146,8 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 
+
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * When a SwitchMap Rcon command is successful in changing map, subsequent ServerInfo requests return previous map's data for duration of current map until either a RotateMap command is issued or map ends naturally and rotates to next map.
+* After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).

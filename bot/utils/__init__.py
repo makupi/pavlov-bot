@@ -1,3 +1,5 @@
+import logging
+
 from .aliases import Aliases
 from .config import Config
 from .paginator import Paginator
@@ -11,4 +13,16 @@ SteamPlayer.set_aliases(aliases)
 aliases.load_teams()
 
 
-__all__ = ["config", "servers", "aliases", "SteamPlayer", "Paginator"]
+def user_action_log(ctx, message, log_level=logging.INFO):
+    name = f"{ctx.author.name}#{ctx.author.discriminator}"
+    logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
+
+
+__all__ = [
+    "config",
+    "servers",
+    "aliases",
+    "SteamPlayer",
+    "Paginator",
+    "user_action_log",
+]

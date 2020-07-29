@@ -1,0 +1,5 @@
+{
+	"ifconfig": {"command": "ifconfig"},
+	"ps": {"command": "ps -ef | grep pavlov", "permission": "Mod"},
+	"restart_all": {"command": "sudo /usr/local/bin/restart_all.sh", "permission": "Admin"}
+}
