@@ -344,6 +344,23 @@ class Pavlov(commands.Cog):
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
 
+    @commands.command()
+    async def custom(self, ctx, rcon_command: str, server_name: str):
+        """`{prefix}custom "<rcon_command with args>" server_name`
+
+        **Example**: `{prefix}custom ServerInfo rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        data = await exec_server_command(ctx, server_name, rcon_command)
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        embed = discord.Embed()
+        embed.add_field(name=rcon_command, value=str(data))
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))

@@ -13,7 +13,7 @@ Discord bot to inferface with Pavlov VR RCON
 ## Installing pip3
 `sudo apt install python3-pip`
 
-## Installing python3.8
+## Installing python3.8 (required for Ubuntu prior to 20.04)
 Get your system up to date and install some prerequisites 
 ```
 sudo apt update
@@ -142,6 +142,7 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * `;matchsetup <CT Team> <T Team> <server>`` using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
+ * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
