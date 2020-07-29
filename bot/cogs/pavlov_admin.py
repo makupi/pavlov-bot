@@ -25,9 +25,7 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
-            ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
-        )
+        data = await exec_server_command(ctx, server_name, f"GiveItem {player.unique_id} {item_id}")
         give_team = data.get("GiveItem")
         if ctx.batch_exec:
             return give_team
@@ -36,9 +34,7 @@ class PavlovAdmin(commands.Cog):
                 description=f"**Failed** to give {item_id} to <{player.unique_id}>"
             )
         else:
-            embed = discord.Embed(
-                description=f"{item_id} given to <{player.unique_id}>"
-            )
+            embed = discord.Embed(description=f"{item_id} given to <{player.unique_id}>")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -62,9 +58,7 @@ class PavlovAdmin(commands.Cog):
                 description=f"**Failed** to give {cash_amount} to <{player.unique_id}>"
             )
         else:
-            embed = discord.Embed(
-                description=f"{cash_amount} given to <{player.unique_id}>"
-            )
+            embed = discord.Embed(description=f"{cash_amount} given to <{player.unique_id}>")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -76,16 +70,12 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await exec_server_command(
-            ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}"
-        )
+        data = await exec_server_command(ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}")
         give_team_cash = data.get("GiveTeamCash")
         if ctx.batch_exec:
             return give_team_cash
         if not give_team_cash:
-            embed = discord.Embed(
-                description=f"**Failed** to give {cash_amount} to <{team_id}>"
-            )
+            embed = discord.Embed(description=f"**Failed** to give {cash_amount} to <{team_id}>")
         else:
             embed = discord.Embed(description=f"{cash_amount} given to <{team_id}>")
         await ctx.send(embed=embed)
@@ -111,9 +101,24 @@ class PavlovAdmin(commands.Cog):
                 description=f"**Failed** to set <{player.unique_id}>'s skin to {skin_id}"
             )
         else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}>'s skin set to {skin_id}"
-            )
+            embed = discord.Embed(description=f"<{player.unique_id}>'s skin set to {skin_id}")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def custom(self, ctx, rcon_command: str, server_name: str):
+        """`{prefix}custom "<rcon_command with args>" server_name`
+
+        **Example**: `{prefix}custom ServerInfo rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        data = await exec_server_command(ctx, server_name, rcon_command)
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        embed = discord.Embed()
+        embed.add_field(name=rcon_command, value=str(data))
         await ctx.send(embed=embed)
 
 
