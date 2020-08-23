@@ -11,8 +11,8 @@ RCON_TIMEOUT = 5
 MODERATOR_ROLE = "Mod-{}"
 CAPTAIN_ROLE = "Captain-{}"
 
-SUPER_MODERATOR = "Mod-bot"
-SUPER_CAPTAIN = "Captain-bot"
+SUPER_MODERATOR = ["Mod-bot"]
+SUPER_CAPTAIN = ["Captain-bot"]
 
 
 async def check_banned(ctx):
@@ -45,11 +45,12 @@ async def check_perm_admin(
 
 
 def check_has_any_role(
-    ctx, super_role: str, role_format: str, server_name: str = None, global_check: bool = True,
+    ctx, super_roles: list, role_format: str, server_name: str = None, global_check: bool = True,
 ):
-    super_role = discord.utils.get(ctx.author.roles, name=super_role)
-    if super_role is not None:
-        return True
+    for super_role in super_roles:
+        super_role = discord.utils.get(ctx.author.roles, name=super_role)
+        if super_role is not None:
+            return True
 
     role_names = list()
     if global_check:
