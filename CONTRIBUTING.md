@@ -3,11 +3,11 @@
 ## Who can contribute?
 
 * Anyone can follow, fork, clone, or create issues and suggestions in line with the license (GPL3.0).
-* Any pull requests into this repo will be managed by Makupi and Invictus-nz
+* Any pull requests into this repo will be managed by Makupi and Invicta-nz
 
 ## Find a bug?
 
-First off, if it's a security bug, start off with a private message to @invictus-nz or @makupi so that any known users of the software can patch it before we create a public issue.
+First off, if it's a security bug, start off with a private message to @invicta-nz or @makupi so that any known users of the software can patch it before we create a public issue.
 
 For any other kind of bug, feel free to search through existing issues. If you're unable to find an open issue addressing the problem, open a new one. Be sure to include a title and clear description, as much relevant information as possible, and a code sample or an executable test case demonstrating the expected behavior that is not occurring. A template for submitting bugs exists, so try and use that.
 
@@ -25,9 +25,9 @@ Changes that are cosmetic in nature and do not add anything substantial to the s
 
 ## Do you have questions about the source code?
 
-Ask any question about how to use Pavlov-bot in the community discord for APAC Pavlov VR - search Discord's community servers.
+Ask any question about how to use Pavlov-bot in the Pavlov VR #pc-custom-servers channel.
 
-If you can't find the server, message invictus-nz privately, but don't expect a fast reply - we've got lives.
+If you can't find the server, message invicta-nz privately, but don't expect a fast reply - we've got lives.
 
 ## Do you want to contribute to the documentation?
 
