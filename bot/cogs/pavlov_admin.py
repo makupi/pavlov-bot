@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer
+from bot.utils import SteamPlayer, config
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 
 
@@ -16,7 +16,7 @@ class PavlovAdmin(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def giveitem(self, ctx, player_arg: str, item_id: str, server_name: str):
+    async def giveitem(self, ctx, player_arg: str, item_id: str, server_name: str=config.default_server):
         """`{prefix}giveitem <player_id> <item_id> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -38,7 +38,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def givecash(self, ctx, player_arg: str, cash_amount: str, server_name: str):
+    async def givecash(self, ctx, player_arg: str, cash_amount: str, server_name: str=config.default_server):
         """`{prefix}givecash <player_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -62,7 +62,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str):
+    async def giveteamcash(self, ctx, team_id: str, cash_amount: str, server_name: str=config.default_server):
         """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -81,7 +81,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def setplayerskin(self, ctx, player_arg: str, skin_id: str, server_name: str):
+    async def setplayerskin(self, ctx, player_arg: str, skin_id: str, server_name: str=config.default_server):
         """`{prefix}setplayerskin <player_id> <skin_id> <server_name>`
 
         **Requires**: Admin permissions for the server
@@ -105,7 +105,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def custom(self, ctx, rcon_command: str, server_name: str):
+    async def custom(self, ctx, rcon_command: str, server_name: str=config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name`
 
         **Example**: `{prefix}custom ServerInfo rush`

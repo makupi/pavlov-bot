@@ -145,6 +145,7 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * ``;matchsetup <CT Team> <T Team> <server>`` using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
+* If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 
 
 # Known issues with Rcon that bot can't fix

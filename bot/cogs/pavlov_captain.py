@@ -5,7 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, aliases
+from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 
 
@@ -22,7 +22,7 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str):
+    async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str=config.default_server):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -48,7 +48,7 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def resetsnd(self, ctx, server_name: str):
+    async def resetsnd(self, ctx, server_name: str=config.default_server):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -67,7 +67,7 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def switchteam(self, ctx, player_arg: str, team_id: str, server_name: str):
+    async def switchteam(self, ctx, player_arg: str, team_id: str, server_name: str=config.default_server):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -93,7 +93,7 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def rotatemap(self, ctx, server_name: str):
+    async def rotatemap(self, ctx, server_name: str=config.default_server):
         """`{prefix}rotatemap <server_name>`
 
         **Requires**: Captain permissions or higher for the server

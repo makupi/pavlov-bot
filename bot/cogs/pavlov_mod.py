@@ -5,7 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer
+from bot.utils import SteamPlayer, config
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 
 
@@ -18,7 +18,7 @@ class PavlovMod(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def ban(self, ctx, player_arg: str, server_name: str):
+    async def ban(self, ctx, player_arg: str, server_name: str=config.default_server):
         """`{prefix}ban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -40,7 +40,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kill(self, ctx, player_arg: str, server_name: str):
+    async def kill(self, ctx, player_arg: str, server_name: str=config.default_server):
         """`{prefix}kill <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -64,7 +64,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kick(self, ctx, player_arg: str, server_name: str):
+    async def kick(self, ctx, player_arg: str, server_name: str=config.default_server):
         """`{prefix}kick <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
@@ -88,7 +88,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def unban(self, ctx, player_arg: str, server_name: str):
+    async def unban(self, ctx, player_arg: str, server_name: str=config.default_server):
         """`{prefix}unban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
