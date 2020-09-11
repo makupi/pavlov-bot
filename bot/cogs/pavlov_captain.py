@@ -113,7 +113,7 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def matchsetup(
-        self, ctx, team_a_name: str, team_b_name: str, server_name: str
+        self, ctx, team_a_name: str, team_b_name: str, server_name: str=config.default_server
     ):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
