@@ -9,7 +9,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from bot.utils import Paginator, aliases, servers
+from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
@@ -116,7 +116,7 @@ class Pavlov(commands.Cog):
         await teams_cog.teams(ctx)
 
     @commands.command()
-    async def serverinfo(self, ctx, server_name: str):
+    async def serverinfo(self, ctx, server_name: str=config.default_server):
         """`{prefix}serverinfo <server_name>`
 
         **Example**: `{prefix}serverinfo rush`
@@ -155,7 +155,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def blacklist(self, ctx, server_name: str):
+    async def blacklist(self, ctx, server_name: str=config.default_server):
         """`{prefix}blacklist <server_name>` 
 
         **Example**: `{prefix}blacklist rush`
@@ -172,7 +172,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def itemlist(self, ctx, server_name: str):
+    async def itemlist(self, ctx, server_name: str=config.default_server):
         """`{prefix}itemlist <servername>` 
 
         **Example**: `{prefix}itemlist snd1`
@@ -189,7 +189,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()  # Exceeds Helptext embed, maplist hidden for now
-    async def maplist(self, ctx, server_name: str):
+    async def maplist(self, ctx, server_name: str=config.default_server):
         """`{prefix}maplist <server_name>`
 
         **Example**: `{prefix}maplist rush`
@@ -206,7 +206,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def players(self, ctx, server_name: str):
+    async def players(self, ctx, server_name: str=config.default_server):
         """`{prefix}players <server_name>`
 
         **Example**: `{prefix}players rush`
@@ -223,7 +223,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def playerinfo(self, ctx, player_arg: str, server_name: str):
+    async def playerinfo(self, ctx, player_arg: str, server_name: str=config.default_server):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
