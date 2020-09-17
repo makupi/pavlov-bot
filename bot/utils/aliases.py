@@ -7,7 +7,7 @@ from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
-STRING_ID_CHARACTER_LENGTH = 24
+STRING_ID_CHARACTER_LENGTH = 16
 
 
 def check_map_already_label(name):
