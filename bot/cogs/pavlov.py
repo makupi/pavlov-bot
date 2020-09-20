@@ -71,7 +71,9 @@ class Pavlov(commands.Cog):
     async def servers(self, ctx):
         """`{prefix}servers` - *Lists available servers*"""
         server_names = servers.get_names()
-        embed = discord.Embed(title="Servers", description="\n- ".join([""] + server_names))
+        embed = discord.Embed(
+            title="Servers", description="\n- ".join([""] + server_names)
+        )
         await ctx.send(embed=embed)
 
     @commands.group(invoke_without_command=True, pass_context=True, aliases=["alias"])
@@ -116,7 +118,7 @@ class Pavlov(commands.Cog):
         await teams_cog.teams(ctx)
 
     @commands.command()
-    async def serverinfo(self, ctx, server_name: str=config.default_server):
+    async def serverinfo(self, ctx, server_name: str = config.default_server):
         """`{prefix}serverinfo <server_name>`
 
         **Example**: `{prefix}serverinfo rush`
@@ -143,7 +145,9 @@ class Pavlov(commands.Cog):
         embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
         if map_image:
             embed.set_thumbnail(url=map_image)
-        embed.add_field(name="Server Name", value=server_info.get("ServerName"), inline=False)
+        embed.add_field(
+            name="Server Name", value=server_info.get("ServerName"), inline=False
+        )
         embed.add_field(name="Round State", value=server_info.get("RoundState"))
         embed.add_field(name="Players", value=server_info.get("PlayerCount"))
         embed.add_field(name="Game Mode", value=server_info.get("GameMode"))
@@ -155,14 +159,16 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def blacklist(self, ctx, server_name: str=config.default_server):
-        """`{prefix}blacklist <server_name>` 
+    async def blacklist(self, ctx, server_name: str = config.default_server):
+        """`{prefix}blacklist <server_name>`
 
         **Example**: `{prefix}blacklist rush`
         """
         data = await exec_server_command(ctx, server_name, "Blacklist")
         black_list = data.get("BlackList")
-        embed = discord.Embed(description=f"**Blacklisted players** on `{server_name}`:\n")
+        embed = discord.Embed(
+            description=f"**Blacklisted players** on `{server_name}`:\n"
+        )
         if len(black_list) == 0:
             embed.description = f"Currently no Blacklisted players on `{server_name}`"
         for player in black_list:
@@ -172,8 +178,8 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def itemlist(self, ctx, server_name: str=config.default_server):
-        """`{prefix}itemlist <servername>` 
+    async def itemlist(self, ctx, server_name: str = config.default_server):
+        """`{prefix}itemlist <servername>`
 
         **Example**: `{prefix}itemlist snd1`
         """
@@ -189,7 +195,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()  # Exceeds Helptext embed, maplist hidden for now
-    async def maplist(self, ctx, server_name: str=config.default_server):
+    async def maplist(self, ctx, server_name: str = config.default_server):
         """`{prefix}maplist <server_name>`
 
         **Example**: `{prefix}maplist rush`
@@ -200,13 +206,15 @@ class Pavlov(commands.Cog):
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
-            embed.description += f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            embed.description += (
+                f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            )
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def players(self, ctx, server_name: str=config.default_server):
+    async def players(self, ctx, server_name: str = config.default_server):
         """`{prefix}players <server_name>`
 
         **Example**: `{prefix}players rush`
@@ -217,19 +225,25 @@ class Pavlov(commands.Cog):
         if len(player_list) == 0:
             embed.description = f"Currently no active players on `{server_name}`"
         for player in player_list:
-            embed.description += f"\n - {player.get('Username', '')} <{player.get('UniqueId')}>"
+            embed.description += (
+                f"\n - {player.get('Username', '')} <{player.get('UniqueId')}>"
+            )
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def playerinfo(self, ctx, player_arg: str, server_name: str=config.default_server):
+    async def playerinfo(
+        self, ctx, player_arg: str, server_name: str = config.default_server
+    ):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"InspectPlayer {player.unique_id}")
+        data = await exec_server_command(
+            ctx, server_name, f"InspectPlayer {player.unique_id}"
+        )
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
@@ -280,7 +294,9 @@ class Pavlov(commands.Cog):
                     embed.add_field(name=args, value="execution failed", inline=False)
             else:
                 embed.add_field(
-                    name=args, value="execution failed - command not found", inline=False,
+                    name=args,
+                    value="execution failed - command not found",
+                    inline=False,
                 )
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)

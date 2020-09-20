@@ -22,7 +22,13 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def switchmap(self, ctx, map_name: str, game_mode: str, server_name: str=config.default_server):
+    async def switchmap(
+        self,
+        ctx,
+        map_name: str,
+        game_mode: str,
+        server_name: str = config.default_server,
+    ):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -48,7 +54,7 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def resetsnd(self, ctx, server_name: str=config.default_server):
+    async def resetsnd(self, ctx, server_name: str = config.default_server):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -67,7 +73,13 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def switchteam(self, ctx, player_arg: str, team_id: str, server_name: str=config.default_server):
+    async def switchteam(
+        self,
+        ctx,
+        player_arg: str,
+        team_id: str,
+        server_name: str = config.default_server,
+    ):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -93,7 +105,7 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def rotatemap(self, ctx, server_name: str=config.default_server):
+    async def rotatemap(self, ctx, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -113,7 +125,11 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def matchsetup(
-        self, ctx, team_a_name: str, team_b_name: str, server_name: str=config.default_server
+        self,
+        ctx,
+        team_a_name: str,
+        team_b_name: str,
+        server_name: str = config.default_server,
     ):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 

@@ -7,6 +7,7 @@ from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
+STRING_ID_CHARACTER_LENGTH = 16
 
 
 def check_map_already_label(name):
@@ -15,11 +16,14 @@ def check_map_already_label(name):
     return False
 
 
-def check_player_already_int(name):
+def check_player_already_id(name):
     try:
         int(name)
         return True
     except ValueError:
+        if len(name) >= STRING_ID_CHARACTER_LENGTH:
+            if int(name, 16):  # check if hexadecimal
+                return True
         return False
 
 
@@ -102,7 +106,7 @@ class Aliases:
         return self.get("maps", name)
 
     def get_player(self, name: str):
-        if check_player_already_int(name):
+        if check_player_already_id(name):
             return name
         return self.get("players", name)
 
