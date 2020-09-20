@@ -57,7 +57,9 @@ Copy servers.json.default file from Examples directory to `/home/steam/pavlov-bo
 
 Note that server names are processed case insensitive, so server named "Rush" can be called by `;serverinfo rush` or `;serverinfo RUSH` 
 
-*Optional but recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC###/SteamID or aliases defined in this file. Teams are setup as arrays of SteamIDs for use with ;matchsetup command. Team aliases are required to used ``;matchsetup`` command.  
+If you only have one server, if you name it `default` in servers.json and you can skip defining a server in all commands that require one as `default` will be used automatically. This default name can be changed in `config.json` 
+
+*Optional but recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC### for maps or SteamID/EOSID or aliases defined in this file using these ID formats. Teams are setup as arrays of SteamIDs/EOSIDs for use with ;matchsetup command. Team aliases are required to used ``;matchsetup`` command.    
 
 *Optional advanced feature*: Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, all commands require Admin permission unless the "permission" field contains "All", "Captain" or "Mod" which grants execution rights to that level and higher.  Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
 
