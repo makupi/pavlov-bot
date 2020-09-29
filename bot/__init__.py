@@ -15,7 +15,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
@@ -49,9 +49,7 @@ async def on_ready():
 async def on_command_error(ctx, error):
     embed = discord.Embed()
     if isinstance(error, commands.MissingRequiredArgument):
-        embed.description = (
-            f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
-        )
+        embed.description = f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
     elif hasattr(error, "original"):
         if isinstance(error.original, servers.ServerNotFoundError):
             embed.description = (
@@ -61,9 +59,11 @@ async def on_command_error(ctx, error):
         elif isinstance(error.original, aliases.AliasNotFoundError):
             embed.description = (
                 f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
-                f"Please try again or use `{config.prefix}aliases` to list the available servers."
+                f"Please try again or use `{config.prefix}aliases` to list the available `{error.original.alias_type}`."
             )
-        elif isinstance(error.original, (ConnectionRefusedError, OSError, TimeoutError)):
+        elif isinstance(
+            error.original, (ConnectionRefusedError, OSError, TimeoutError)
+        ):
             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
         else:
             raise error
