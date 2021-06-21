@@ -342,13 +342,22 @@ class Pavlov(commands.Cog):
             check = aliases.find_player_alias(player.unique_id)
             if check is None:
                 non_alias_player_ids.append(player.unique_id)
+        if len(non_alias_player_ids) == 0:
+            await ctx.send(
+                embed=discord.Embed(description=f"No players to flush on `{server_name}`")
+            )
+            return
         to_kick_id = random.choice(non_alias_player_ids)
         data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
         kick = data.get("Kick")
         if not kick:
-            await ctx.send("failed to kick")
+            await ctx.send(
+                embed=discord.Embed(
+                    description=f"Encountered error while flushing on `{server_name}`"
+                )
+            )
         else:
-            await ctx.send("kicked successfully")
+            await ctx.send(embed=discord.Embed(description=f"Successfully flushed `{server_name}`"))
 
 
 def setup(bot):
