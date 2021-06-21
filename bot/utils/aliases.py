@@ -24,7 +24,9 @@ def check_player_already_id(name):
         if len(name) >= STRING_ID_CHARACTER_LENGTH:
             if int(name, 16):  # check if hexadecimal
                 return True
-        return False
+        elif name.lower().startswith("q-"):
+            return True  # special exception for Quest IDs, have to start with q- since they are strings
+    return False
 
 
 class Team:
