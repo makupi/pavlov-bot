@@ -149,6 +149,12 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 
+## Quest IDs 
+
+Since some quest IDs are handled as strings we cannot keep them apart from aliases.    
+Therefore, Quest IDs have to be entered with a `Q-` prefix **when using commands**.
+
+**IMPORTANT**: Do not use that for the aliases file!
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
