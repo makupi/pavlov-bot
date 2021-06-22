@@ -335,6 +335,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def flush(self, ctx: commands.Context, server_name: str = config.default_server):
+        """`{prefix}flush [server_group]`"""
         data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
         non_alias_player_ids = list()
