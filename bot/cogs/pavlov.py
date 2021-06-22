@@ -339,9 +339,9 @@ class Pavlov(commands.Cog):
         player_list = data.get("PlayerList")
         non_alias_player_ids = list()
         for player in player_list:
-            check = aliases.find_player_alias(player.unique_id)
+            check = aliases.find_player_alias(player.get("UniqueId"))
             if check is None:
-                non_alias_player_ids.append(player.unique_id)
+                non_alias_player_ids.append(player.get("UniqueId"))
         if len(non_alias_player_ids) == 0:
             await ctx.send(
                 embed=discord.Embed(description=f"No players to flush on `{server_name}`")
