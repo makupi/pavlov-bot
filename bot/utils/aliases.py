@@ -47,7 +47,9 @@ class Team:
         self._ringers = list()
 
     def ringer_delete(self, ringer: SteamPlayer):
-        self._ringers.remove(ringer)
+        for r in self._ringers:
+            if r.unique_id == ringer.unique_id:
+                self._ringers.remove(r)
 
     def __repr__(self):
         return self.member_repr()
