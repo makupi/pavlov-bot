@@ -30,22 +30,32 @@ class Teams(commands.Cog):
         player = SteamPlayer.convert(player_arg)
         team.ringer_add(player)
         await ctx.send(
-            embed=discord.Embed(
-                description=f"Ringer {player.name} added to team {team.name}."
-            )
+            embed=discord.Embed(description=f"Ringer {player.name} added to team {team.name}.")
         )
 
     @ringers.command()
     async def reset(self, ctx, team_name: str):
         """`{prefix}ringers reset <team_name>`
-        
+
         **Examples**: `{prefix}ringers reset team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
         team = aliases.get_team(team_name)
         team.ringers_reset()
+        await ctx.send(embed=discord.Embed(description=f"Ringers for team {team.name} reset."))
+
+    @ringers.command(aliases=["remove"])
+    async def delete(self, ctx, player_arg: str, team_name: str):
+        """`{prefix}ringers delete <unique_id or alias> <team_name>`
+
+        **Examples**: `{prefix}ringers delete maku team_a`"""
+        if not await check_perm_captain(ctx, global_check=True):
+            return
+        team = aliases.get_team(team_name)
+        player = SteamPlayer.convert(player_arg)
+        team.ringer_delete(player)
         await ctx.send(
-            embed=discord.Embed(description=f"Ringers for team {team.name} reset.")
+            embed=discord.Embed(description=f"Ringer {player.name} removed from team {team.name}.")
         )
 
     @commands.command()

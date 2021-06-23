@@ -46,6 +46,9 @@ class Team:
     def ringers_reset(self):
         self._ringers = list()
 
+    def ringer_delete(self, ringer: SteamPlayer):
+        self._ringers.remove(ringer)
+
     def __repr__(self):
         return self.member_repr()
 
