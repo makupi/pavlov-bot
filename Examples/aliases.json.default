@@ -28,11 +28,11 @@
     "desert_rush": "UGC2116639602"
   },
   "players": {
-    "player1": "765611465797498572",
-    "player2": "0029591b8c44a08af17b4b3bc705aa0"
+    "PCplayer1": 765611465797498572,
+    "Questplayer2": "Questplayer2"
   },
   "teams": {
-    "team1": ["76568423451070460", "76568768421070460"],
-    "team2": ["76561194562065632", "76561198223863708"]
+    "PCteam1": [76568423451070460, 76568768421070460],
+    "Questteam2": ["Questplayer1", "Questplayer2"]
   }
 }
