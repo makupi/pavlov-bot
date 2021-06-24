@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from typing import List
+from typing import List, Tuple
 
 from bot.utils.steamplayer import SteamPlayer
 
@@ -16,15 +16,18 @@ def check_map_already_label(name):
     return False
 
 
-def check_player_already_id(name):
+def check_player_already_id(name) -> Tuple[bool, str]:
     try:
         int(name)
-        return True
+        return True, name
     except ValueError:
         if len(name) >= STRING_ID_CHARACTER_LENGTH:
             if int(name, 16):  # check if hexadecimal
-                return True
-        return False
+                return True, name
+        elif name.lower().startswith("q-"):
+            # special exception for Quest IDs, have to start with q- since they are strings
+            return True, name[2:]
+    return False, name
 
 
 class Team:
@@ -42,6 +45,11 @@ class Team:
 
     def ringers_reset(self):
         self._ringers = list()
+
+    def ringer_delete(self, ringer: SteamPlayer):
+        for r in self._ringers:
+            if r.unique_id == ringer.unique_id:
+                self._ringers.remove(r)
 
     def __repr__(self):
         return self.member_repr()
@@ -106,7 +114,8 @@ class Aliases:
         return self.get("maps", name)
 
     def get_player(self, name: str):
-        if check_player_already_id(name):
+        is_id, name = check_player_already_id(name)
+        if is_id:
             return name
         return self.get("players", name)
 

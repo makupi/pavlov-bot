@@ -148,9 +148,16 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
+* ``;flush <server>`` will randomly pick a player who isn't in aliases.json and kick them from the server to make room for a registered player. 
 
+## Quest IDs 
+
+Since quest IDs are handled as strings we cannot easily distinguish them from aliases.    
+Therefore, if you want to do a player action (ban, kick, giveitem, etc) for players *who aren't in aliases.json* then Quest IDs have to be entered with a `q-` prefix.
+For example, you want to ban player "annoying" who isn't in your aliases file ``;ban q-annoying <server>`` but if you want to give cash to player "dude" who is in your aliases.json file ``;givecash 1000 dude <server>`` 
+
+**IMPORTANT**: Do not use the `q-` in the aliases file!  QuestIDs in aliases file need to be quoted (e.g. ``"nickalready": "nickalready",``)
 
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
-* When a SwitchMap Rcon command is successful in changing map, subsequent ServerInfo requests return previous map's data for duration of current map until either a RotateMap command is issued or map ends naturally and rotates to next map.
 * After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
