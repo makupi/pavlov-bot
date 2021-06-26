@@ -165,6 +165,37 @@ class PavlovCaptain(commands.Cog):
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
+    @commands.command() 
+    async def flush(self, ctx: commands.Context, server_name: str = config.default_server): 
+        """`{prefix}flush <servername>` 
+        **Requires**: Captain permissions or higher for the server
+        **Example**: `{prefix}flush snd1`
+        """
+        if not await check_perm_captain(ctx, server_name):
+            return
+        data = await exec_server_command(ctx, server_name, "RefreshList") 
+        player_list = data.get("PlayerList") 
+        non_alias_player_ids = list() 
+        for player in player_list: 
+            check = aliases.find_player_alias(player.get("UniqueId")) 
+            if check is None: 
+                non_alias_player_ids.append(player.get("UniqueId")) 
+        if len(non_alias_player_ids) == 0: 
+            await ctx.send( 
+                embed=discord.Embed(description=f"No players to flush on `{server_name}`") 
+            ) 
+            return 
+        to_kick_id = random.choice(non_alias_player_ids) 
+        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}") 
+        kick = data.get("Kick") 
+        if not kick: 
+            await ctx.send( 
+                embed=discord.Embed( 
+                    description=f"Encountered error while flushing on `{server_name}`" 
+                ) 
+            ) 
+        else: 
+            await ctx.send(embed=discord.Embed(description=f"Successfully flushed `{server_name}`")) 
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))
