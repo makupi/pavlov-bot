@@ -19,6 +19,22 @@ class Teams(commands.Cog):
     async def ringers(self, ctx):
         pass
 
+    @commands.command()
+    async def teamsetup(self, ctx, players_arg: str, team_name: str):
+        """`{prefix}teamsetup <comma seperated list of unique_id or alias> <team_name>`
+
+        **Examples**: `{prefix}teamsetup maku,invicta team_a`"""
+        if not await check_perm_captain(ctx, global_check=True):
+            return
+        team = aliases.get_team(team_name)
+        players = players_arg.split(',')
+        for player in players:
+            player = SteamPlayer.convert(player)
+            team.ringer_add(player)
+        await ctx.send(
+            embed=discord.Embed(description=f"Player list {players_arg} added to team {team.name}.")
+        )
+
     @ringers.command()
     async def add(self, ctx, player_arg: str, team_name: str):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
