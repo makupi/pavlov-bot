@@ -150,6 +150,7 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 * ``;flush <server>`` will randomly pick a player who isn't in aliases.json and kick them from the server to make room for a registered player. 
+* ``;command <command_name> will allow you to execute pre-defined commandline commands in commands.json on the local server running the bot. Useful for automation of things like starting and stopping pavlovserver instances or clearing disk space on server full of maps. 
 
 ## Quest IDs 
 
