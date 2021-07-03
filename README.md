@@ -163,3 +163,4 @@ For example, you want to ban player "annoying" who isn't in your aliases file ``
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
+* Issuing a ``ResetSND`` command to RCON very quickly after a ``SwitchTeam`` command can result in oddities like extra death count in scoreboard or weapons or SND bomb not getting removed from player. 
