@@ -144,7 +144,8 @@ The bot has 4 permission levels:
 ## Advanced bot functions
 In addition to the implemented RCON commands, the bot has a few advanced functions:
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
-* ``;matchsetup <CT Team> <T Team> <server>`` using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
+* Team managment commands (``;ringer add, ;ringer delete, ;ringer reset``) allow dynamic addition of temporary players to teams defined in aliases.json. ``;teamsetup`` allows for quick creation of ad-hoc teams using an empty team name defined in aliases.json
+* ``;matchsetup <CT Team> <T Team> <server>`` using the teams setup in aliases.json and with team management commands will push players to the correct teams in game, pause 10 seconds then issue ResetSND
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
