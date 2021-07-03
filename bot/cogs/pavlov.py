@@ -157,17 +157,17 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def blacklist(self, ctx, server_name: str = config.default_server):
-        """`{prefix}blacklist <server_name>`
+        """`{prefix}blacklist <server_name> - Lists blacklisted players on a server`
 
         **Example**: `{prefix}blacklist rush`
         """
         data = await exec_server_command(ctx, server_name, "Blacklist")
         black_list = data.get("BlackList")
-        paginator = Paginator(max_lines=20)
-        embed = discord.Embed(description=f"**Blacklisted players** on `{server_name}`:\n")
+        embed = discord.Embed(title=f"Blacklisted players on `{server_name}`:")
+        paginator = Paginator(max_lines=50)
         if black_list:
             for player in black_list:
-                paginator.add_line(f"\n - <{str(player)}>")
+                paginator.add_line(f"<{str(player)}>")
             await paginator.create(ctx, embed=embed)
         else: 
             embed.description = "No blacklist players found."
