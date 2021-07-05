@@ -144,11 +144,13 @@ The bot has 4 permission levels:
 ## Advanced bot functions
 In addition to the implemented RCON commands, the bot has a few advanced functions:
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
-* ``;matchsetup <CT Team> <T Team> <server>`` using the team aliases setup in aliases.json will push players to the correct teams in game, pause 10 seconds then issue ResetSND
+* Team managment commands (``;ringer add, ;ringer delete, ;ringer reset``) allow dynamic addition of temporary players to teams defined in aliases.json. ``;teamsetup`` allows for quick creation of ad-hoc teams using an empty team name defined in aliases.json
+* ``;matchsetup <CT Team> <T Team> <server>`` using the teams setup in aliases.json and with team management commands will push players to the correct teams in game, pause 10 seconds then issue ResetSND
  * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
  * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 * ``;flush <server>`` will randomly pick a player who isn't in aliases.json and kick them from the server to make room for a registered player. 
+* ``;command <command_name> will allow you to execute pre-defined commandline commands in commands.json on the local server running the bot. Useful for automation of things like starting and stopping pavlovserver instances or clearing disk space on server full of maps. 
 
 ## Quest IDs 
 
@@ -161,3 +163,4 @@ For example, you want to ban player "annoying" who isn't in your aliases file ``
 # Known issues with Rcon that bot can't fix
 * When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
+* Issuing a ``ResetSND`` command to RCON very quickly after a ``SwitchTeam`` command can result in oddities like extra death count in scoreboard or weapons or SND bomb not getting removed from player. 

@@ -157,20 +157,22 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def blacklist(self, ctx, server_name: str = config.default_server):
-        """`{prefix}blacklist <server_name>`
+        """`{prefix}blacklist <server_name> - Lists blacklisted players on a server`
 
         **Example**: `{prefix}blacklist rush`
         """
         data = await exec_server_command(ctx, server_name, "Blacklist")
         black_list = data.get("BlackList")
-        embed = discord.Embed(description=f"**Blacklisted players** on `{server_name}`:\n")
-        if len(black_list) == 0:
-            embed.description = f"Currently no Blacklisted players on `{server_name}`"
-        for player in black_list:
-            embed.description += f"\n - <{str(player)}>"
-        if ctx.batch_exec:
-            return embed.description
-        await ctx.send(embed=embed)
+        embed = discord.Embed(title=f"Blacklisted players on `{server_name}`:")
+        paginator = Paginator(max_lines=50)
+        if black_list:
+            for player in black_list:
+                paginator.add_line(f"<{str(player)}>")
+            await paginator.create(ctx, embed=embed)
+        else: 
+            embed.description = "No blacklist players found."
+            await ctx.send(embed=embed)
+           
 
     @commands.command()
     async def itemlist(self, ctx, server_name: str = config.default_server):
@@ -332,34 +334,6 @@ class Pavlov(commands.Cog):
                 desc += "\n"
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
-
-    @commands.command()
-    async def flush(self, ctx: commands.Context, server_name: str = config.default_server):
-        """`{prefix}flush <servername>`"""
-        data = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = data.get("PlayerList")
-        non_alias_player_ids = list()
-        for player in player_list:
-            check = aliases.find_player_alias(player.get("UniqueId"))
-            if check is None:
-                non_alias_player_ids.append(player.get("UniqueId"))
-        if len(non_alias_player_ids) == 0:
-            await ctx.send(
-                embed=discord.Embed(description=f"No players to flush on `{server_name}`")
-            )
-            return
-        to_kick_id = random.choice(non_alias_player_ids)
-        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
-        kick = data.get("Kick")
-        if not kick:
-            await ctx.send(
-                embed=discord.Embed(
-                    description=f"Encountered error while flushing on `{server_name}`"
-                )
-            )
-        else:
-            await ctx.send(embed=discord.Embed(description=f"Successfully flushed `{server_name}`"))
-
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))
