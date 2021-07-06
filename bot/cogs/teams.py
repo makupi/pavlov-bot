@@ -27,6 +27,7 @@ class Teams(commands.Cog):
         if not await check_perm_captain(ctx, global_check=True):
             return
         team = aliases.get_team(team_name)
+        team.ringers_reset()
         players = players_arg.split(',')
         for player in players:
             player = SteamPlayer.convert(player)
