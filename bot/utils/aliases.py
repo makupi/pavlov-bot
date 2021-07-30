@@ -2,11 +2,14 @@ import json
 import os
 import re
 from typing import List, Tuple
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
 
 from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
+WORKSHOP_URL = "https://steamcommunity.com/sharedfiles/filedetails/"
 STRING_ID_CHARACTER_LENGTH = 16
 
 
@@ -109,6 +112,11 @@ class Aliases:
         self.teams = teams
 
     def get_map(self, name: str):
+        if name.startswith(WORKSHOP_URL):
+            parsed_url = urlparse.urlparse(name)
+            # try / except for KeyError if URL doesn't have QS / ID
+            id = parse_qs(parsed_url.query)['id'][0]
+            return f"UGC{id}"
         if check_map_already_label(name):
             return name
         return self.get("maps", name)
