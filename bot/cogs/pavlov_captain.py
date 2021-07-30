@@ -21,8 +21,8 @@ class PavlovCaptain(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.command()
-    async def switchmap(
+    @commands.command(aliases=["switchmap"])
+    async def map(
         self,
         ctx,
         map_name: str,
@@ -104,7 +104,7 @@ class PavlovCaptain(commands.Cog):
             )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["next"])
     async def rotatemap(self, ctx, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>`
 
