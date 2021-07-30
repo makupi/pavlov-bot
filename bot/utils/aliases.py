@@ -114,9 +114,11 @@ class Aliases:
     def get_map(self, name: str):
         if name.startswith(WORKSHOP_URL):
             parsed_url = urlparse.urlparse(name)
-            # try / except for KeyError if URL doesn't have QS / ID
-            id = parse_qs(parsed_url.query)['id'][0]
-            return f"UGC{id}"
+            try:
+                id = parse_qs(parsed_url.query)['id'][0]
+                return f"UGC{id}"
+            except KeyError:
+                raise AliasNotFoundError("maps", name)
         if check_map_already_label(name):
             return name
         return self.get("maps", name)
