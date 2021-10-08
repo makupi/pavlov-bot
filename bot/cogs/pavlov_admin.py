@@ -55,10 +55,10 @@ class PavlovAdmin(commands.Cog):
         vehicle_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}giveitem <player_id> <item_id> <server_name>`
+        """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveitem 89374583439127 tazer rush`
+        **Example**: `{prefix}givevehicle 89374583439127 atv rush`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -86,9 +86,9 @@ class PavlovAdmin(commands.Cog):
         item_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}giveitem <player_id> <item_id> <server_name>`
+        """`{prefix}giveall <item_id> <server_name>`
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveitem 89374583439127 tazer rush`
+        **Example**: `{prefix}giveall rl_rpg rush`
         """
         if not await check_perm_admin(ctx, server_name):
             return
