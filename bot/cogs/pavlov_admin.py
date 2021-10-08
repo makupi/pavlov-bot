@@ -48,6 +48,67 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def givevehicle(
+        self,
+        ctx,
+        player_arg: str,
+        vehicle_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
+
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}givevehicle 89374583439127 atv rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        player = SteamPlayer.convert(player_arg)
+        data = await exec_server_command(
+            ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
+        )
+        give_team = data.get("GiveVehicle")
+        if ctx.batch_exec:
+            return give_team
+        if not give_team:
+            embed = discord.Embed(
+                description=f"**Failed** to give {vehicle_id} to <{player.unique_id}>"
+            )
+        else:
+            embed = discord.Embed(
+                description=f"{vehicle_id} given to <{player.unique_id}>"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def giveall(
+        self,
+        ctx,
+        item_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}giveall <item_id> <server_name>`
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}giveall rl_rpg rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(description=f"{item_id} given to all\n")
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
+            )
+            #give_team = data.get("GiveItem")
+            #if ctx.batch_exec:
+            #    return give_team
+            #if not give_team:
+            #    embed.description += f"\n**Failed** to give {item_id} to <{player.unique_id}>"
+            #else:
+            #    embed.description += f"\n{item_id} given to <{player.unique_id}>"
+        await ctx.send(embed=embed)
+    
+    @commands.command()
     async def givecash(
         self,
         ctx,
