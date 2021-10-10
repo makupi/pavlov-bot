@@ -66,10 +66,10 @@ class PavlovAdmin(commands.Cog):
         data = await exec_server_command(
             ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
         )
-        give_team = data.get("GiveVehicle")
+        givev = data.get("GiveVehicle")
         if ctx.batch_exec:
-            return give_team
-        if not give_team:
+            return givev
+        if not givev:
             embed = discord.Embed(
                 description=f"**Failed** to give {vehicle_id} to <{player.unique_id}>"
             )
@@ -218,6 +218,29 @@ class PavlovAdmin(commands.Cog):
             return data
         embed = discord.Embed()
         embed.add_field(name=rcon_command, value=str(data))
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def repeat(
+        self, ctx, cmdr: str, aot: str, server_name: str = config.default_server
+    ):
+        """`{prefix}repeat "<command with args>" amount_of_times server_name`
+
+        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg" 10 rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        for i in range(int(aot)):
+            _args = cmdr.split(" ")
+            cmd = _args[0]
+            command = self.bot.all_commands.get(cmd.lower())
+            ctx.batch_exec = True
+            data = await command(ctx, *_args[1:])
+            if data is None:
+                data = "No response"
+        embed = discord.Embed(
+                description=f"Executed '{cmdr}' {aot} times"
+            )
         await ctx.send(embed=embed)
 
 
