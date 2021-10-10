@@ -222,7 +222,7 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def repeat(
-        self, ctx, rcon_command: str, aot: str, server_name: str = config.default_server
+        self, ctx, cmdr: str, aot: str, server_name: str = config.default_server
     ):
         """`{prefix}repeat "<rcon_command with args>" server_name`
 
@@ -231,13 +231,16 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         for i in range(int(aot)):
-            data = await exec_server_command(ctx, server_name, rcon_command)
-        if not data:
-            data = "No response"
-        if ctx.batch_exec:
-            return data
-        embed = discord.Embed()
-        embed.add_field(name=rcon_command, value=str(data))
+            _args = cmdr.split(" ")
+            cmd = _args[0]
+            command = self.bot.all_commands.get(cmd.lower())
+            ctx.batch_exec = True
+            data = await command(ctx, *_args[1:])
+            if data is None:
+                data = "No response"
+        embed = discord.Embed(
+                description=f"Executed '{cmdr}' {aot} times"
+            )
         await ctx.send(embed=embed)
 
 
