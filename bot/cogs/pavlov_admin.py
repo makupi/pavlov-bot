@@ -220,6 +220,26 @@ class PavlovAdmin(commands.Cog):
         embed.add_field(name=rcon_command, value=str(data))
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def repeat(
+        self, ctx, rcon_command: str, aot: str, server_name: str = config.default_server
+    ):
+        """`{prefix}repeat "<rcon_command with args>" server_name`
+
+        **Example**: `{prefix}repeat ServerInfo rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        for i in range(int(aot)):
+            data = await exec_server_command(ctx, server_name, rcon_command)
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        embed = discord.Embed()
+        embed.add_field(name=rcon_command, value=str(data))
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(PavlovAdmin(bot))
