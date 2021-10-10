@@ -66,10 +66,10 @@ class PavlovAdmin(commands.Cog):
         data = await exec_server_command(
             ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
         )
-        give_team = data.get("GiveVehicle")
+        givev = data.get("GiveVehicle")
         if ctx.batch_exec:
-            return give_team
-        if not give_team:
+            return givev
+        if not givev:
             embed = discord.Embed(
                 description=f"**Failed** to give {vehicle_id} to <{player.unique_id}>"
             )
