@@ -1,5 +1,5 @@
 import logging
-import time
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -234,11 +234,11 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         for i in range(int(aot)):
-            time.sleep(0.2)
             _args = cmdr.split(" ")
             cmd = _args[0]
             command = self.bot.all_commands.get(cmd.lower())
             ctx.batch_exec = True
+            await asyncio.sleep(0.2)
             data = await command(ctx, *_args[1:])
             if data is None:
                 data = "No response"
