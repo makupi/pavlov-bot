@@ -33,6 +33,7 @@ class PavlovCaptain(commands.Cog):
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}switchmap 89374583439127 rush`
+        **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 rush`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -110,6 +111,7 @@ class PavlovCaptain(commands.Cog):
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap rush`
+        **Aliases**: rotatemap can also be called as next `{prefix}next rush`
         """
         if not await check_perm_captain(ctx, server_name):
             return
