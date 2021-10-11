@@ -25,12 +25,12 @@ def check_player_already_id(name) -> Tuple[bool, str]:
         int(name)
         return True, name
     except ValueError:
-        if len(name) >= STRING_ID_CHARACTER_LENGTH:
-            if int(name, 16):  # check if hexadecimal
-                return True, name
-        elif name.lower().startswith("q-"):
+        if name.lower().startswith("q-"):
             # special exception for Quest IDs, have to start with q- since they are strings
             return True, name[2:]
+        elif len(name) >= STRING_ID_CHARACTER_LENGTH:
+            if int(name, 16):  # check if hexadecimal
+                return True, name
     return False, name
 
 
