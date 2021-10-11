@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 import discord
 from discord.ext import commands
@@ -92,20 +93,22 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"{item_id} given to all\n")
+        embed = discord.Embed(
+            description=f"{item_id} given to all"
+        )
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
             data = await exec_server_command(
                 ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
             )
-            #give_team = data.get("GiveItem")
+            #givei = data.get("GiveItem")
             #if ctx.batch_exec:
-            #    return give_team
-            #if not give_team:
-            #    embed.description += f"\n**Failed** to give {item_id} to <{player.unique_id}>"
+            #    return givei
+            #if not givei:
+            #    embed.add_field(name=player.unique_id, value=str(f"**Failed**"))
             #else:
-            #    embed.description += f"\n{item_id} given to <{player.unique_id}>"
+            #    embed.add_field(name=player.unique_id, value=str(f"**Succeeded**"))
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -235,11 +238,12 @@ class PavlovAdmin(commands.Cog):
             cmd = _args[0]
             command = self.bot.all_commands.get(cmd.lower())
             ctx.batch_exec = True
+            await asyncio.sleep(0.2)
             data = await command(ctx, *_args[1:])
             if data is None:
                 data = "No response"
         embed = discord.Embed(
-                description=f"Executed '{cmdr}' {aot} times"
+                description=f"Executed '{cmdr}' {aot} times on {server_name}"
             )
         await ctx.send(embed=embed)
 
