@@ -208,11 +208,11 @@ class PavlovMod(commands.Cog):
             return
         if len(pin) == 4 and pin.isdigit():
             data = await exec_server_command(ctx, server_name, f"SetPin {pin}")
-        elif pin == 'remove':
+        elif pin.lower() == 'remove':
             data = await exec_server_command(ctx, server_name, f"SetPin")
         else:
             embed = discord.Embed(
-                description=f"Pin must be a 4-digit number"
+                description=f"Pin must be either a 4-digit number or remove"
             )
             await ctx.send(embed=embed)
             return
@@ -224,7 +224,7 @@ class PavlovMod(commands.Cog):
                 description=f"**Failed** to set pin {pin}"
             )
         else:
-            if pin == 'remove':
+            if pin.lower() == 'remove':
                 embed = discord.Embed(
                 description=f"Pin removed"
                 )
