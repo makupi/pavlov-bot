@@ -225,18 +225,18 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def repeat(
-        self, ctx, cmdr: str, aot: str, server_name: str = config.default_server
+        self, ctx, cmdr: str, aot: str
     ):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
 
         **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg" 10 rush`
         """
+        _args = cmdr.split(" ")
+        cmd = _args[0]
+        server_name = _args[-1]
         if not await check_perm_admin(ctx, server_name):
             return
-        cmdr = cmdr + " " + server_name
         for i in range(int(aot)):
-            _args = cmdr.split(" ")
-            cmd = _args[0]
             command = self.bot.all_commands.get(cmd.lower())
             ctx.batch_exec = True
             await asyncio.sleep(0.2)
