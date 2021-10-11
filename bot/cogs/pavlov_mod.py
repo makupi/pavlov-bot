@@ -197,7 +197,7 @@ class PavlovMod(commands.Cog):
         
     @commands.command()
     async def setpin(
-        self, ctx, pin = '', server_name: str = config.default_server
+        self, ctx, pin: str, server_name: str = config.default_server
     ):
         """`{prefix}setpin <pin> <server_name>`
 
@@ -206,7 +206,12 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, f"SetPin {pin}")
+        if len(pin) == 4:
+            data = await exec_server_command(ctx, server_name, f"SetPin {pin}")
+        elif pin == 'remove':
+            data = await exec_server_command(ctx, server_name, f"SetPin")
+        else:
+            return
         spin = data.get("Successful")
         if ctx.batch_exec:
             return spin
@@ -215,7 +220,7 @@ class PavlovMod(commands.Cog):
                 description=f"**Failed** to set pin {pin}"
             )
         else:
-            if pin == '':
+            if pin == 'remove':
                 embed = discord.Embed(
                 description=f"Pin removed"
                 )
