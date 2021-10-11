@@ -229,7 +229,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
 
-        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg" 10 rush`
+        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg rush" 10`
         """
         _args = cmdr.split(" ")
         cmd = _args[0]
