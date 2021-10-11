@@ -227,9 +227,9 @@ class PavlovAdmin(commands.Cog):
     async def repeat(
         self, ctx, cmdr: str, aot: str, server_name: str = config.default_server
     ):
-        """`{prefix}repeat "<command with args>" amount_of_times`
+        """`{prefix}repeat "<command with args>" amount_of_times server_name`
 
-        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg rush" 10`
+        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg" 10 rush`
         """
         if not await check_perm_admin(ctx, server_name):
             return
