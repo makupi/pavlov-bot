@@ -27,7 +27,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}giveitem <player_id> <item_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveitem 89374583439127 tazer rush`
+        **Example**: `{prefix}giveitem 89374583439127 tazer servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -59,7 +59,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}givevehicle 89374583439127 atv rush`
+        **Example**: `{prefix}givevehicle 89374583439127 atv servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -89,7 +89,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}giveall <item_id> <server_name>`
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveall rl_rpg rush`
+        **Example**: `{prefix}giveall rl_rpg servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -113,7 +113,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}spsall <skin_id> <server_name>`
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}spsall clown rush`
+        **Example**: `{prefix}spsall clown servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -139,7 +139,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}givecash <player_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}givecash 89374583439127 5000 rush`
+        **Example**: `{prefix}givecash 89374583439127 5000 servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -171,7 +171,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveteamcash 0 5000 rush`
+        **Example**: `{prefix}giveteamcash 0 5000 servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -200,7 +200,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}setplayerskin <player_id> <skin_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}setplayerskin 89374583439127 clown rush`
+        **Example**: `{prefix}setplayerskin 89374583439127 clown servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -227,7 +227,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}custom "<rcon_command with args>" server_name`
 
-        **Example**: `{prefix}custom ServerInfo rush`
+        **Example**: `{prefix}custom ServerInfo servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -246,7 +246,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
 
-        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg rush" 10`
+        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg servername" 10`
         """
         _args = cmdr.split(" ")
         cmd = _args[0]
