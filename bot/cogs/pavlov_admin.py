@@ -128,6 +128,30 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
     
     @commands.command()
+    async def spsall(
+        self,
+        ctx,
+        skin_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}spsall <skin_id> <server_name>`
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}spsall clown rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Set all players skin to {skin_id}"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
+            )
+        await ctx.send(embed=embed)
+    
+    @commands.command()
     async def givecash(
         self,
         ctx,
