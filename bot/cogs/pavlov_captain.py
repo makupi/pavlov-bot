@@ -33,8 +33,8 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}switchmap 89374583439127 rush`
-        **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 rush`
+        **Example**: `{prefix}switchmap 89374583439127 servername`
+        **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -60,7 +60,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}resetsnd rush`
+        **Example**: `{prefix}resetsnd servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -85,7 +85,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}resetsnd 89374583439127 0 rush`
+        **Example**: `{prefix}resetsnd 89374583439127 0 servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -111,8 +111,8 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}rotatemap <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}rotatemap rush`
-        **Aliases**: rotatemap can also be called as next `{prefix}next rush`
+        **Example**: `{prefix}rotatemap servername`
+        **Aliases**: rotatemap can also be called as next `{prefix}next servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -137,7 +137,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}matchsetup ct_team t_team rush`
+        **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
