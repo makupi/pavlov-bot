@@ -27,7 +27,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}giveitem <player_id> <item_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveitem 89374583439127 tazer rush`
+        **Example**: `{prefix}giveitem 89374583439127 tazer servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -59,7 +59,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}givevehicle 89374583439127 atv rush`
+        **Example**: `{prefix}givevehicle 89374583439127 atv servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -89,7 +89,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}giveall <item_id> <server_name>`
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveall rl_rpg rush`
+        **Example**: `{prefix}giveall rl_rpg servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -102,13 +102,30 @@ class PavlovAdmin(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
             )
-            #givei = data.get("GiveItem")
-            #if ctx.batch_exec:
-            #    return givei
-            #if not givei:
-            #    embed.add_field(name=player.unique_id, value=str(f"**Failed**"))
-            #else:
-            #    embed.add_field(name=player.unique_id, value=str(f"**Succeeded**"))
+        await ctx.send(embed=embed)
+    
+    @commands.command()
+    async def spsall(
+        self,
+        ctx,
+        skin_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}spsall <skin_id> <server_name>`
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}spsall clown servername`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Set all players skin to {skin_id}"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
+            )
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -122,7 +139,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}givecash <player_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}givecash 89374583439127 5000 rush`
+        **Example**: `{prefix}givecash 89374583439127 5000 servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -154,7 +171,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveteamcash 0 5000 rush`
+        **Example**: `{prefix}giveteamcash 0 5000 servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -183,7 +200,7 @@ class PavlovAdmin(commands.Cog):
         """`{prefix}setplayerskin <player_id> <skin_id> <server_name>`
 
         **Requires**: Admin permissions for the server
-        **Example**: `{prefix}setplayerskin 89374583439127 clown rush`
+        **Example**: `{prefix}setplayerskin 89374583439127 clown servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -210,7 +227,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}custom "<rcon_command with args>" server_name`
 
-        **Example**: `{prefix}custom ServerInfo rush`
+        **Example**: `{prefix}custom ServerInfo servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -229,7 +246,7 @@ class PavlovAdmin(commands.Cog):
     ):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
 
-        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg rush" 10`
+        **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg servername" 10`
         """
         _args = cmdr.split(" ")
         cmd = _args[0]

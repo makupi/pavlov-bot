@@ -66,6 +66,29 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def killall(
+        self,
+        ctx,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}killall <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}killall servername`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Killed all players"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"Kill {player.get('UniqueId')}"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def kick(
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
@@ -194,7 +217,31 @@ class PavlovMod(commands.Cog):
                 description=f"<{player.unique_id}> successfully slapped for {dmg} hp"
             )
         await ctx.send(embed=embed)
-        
+
+    @commands.command()
+    async def slapall(
+        self,
+        ctx,
+        dmg: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}slapall <damage_amount> <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}slapall 50 servername`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Slapped all players for {dmg} hp"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+            )
+        await ctx.send(embed=embed)  
+
     @commands.command()
     async def setpin(
         self, ctx, pin: str, server_name: str = config.default_server
@@ -203,7 +250,6 @@ class PavlovMod(commands.Cog):
 
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}setpin 0000 servername`
-        **To remove pin**: `{prefix}setpin remove servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
