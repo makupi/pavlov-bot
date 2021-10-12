@@ -86,7 +86,7 @@ class PavlovMod(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"Kill {player.get('UniqueId')}"
             )
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -230,7 +230,7 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}slapall 50 servername`
         """
-        if not await check_perm_admin(ctx, server_name):
+        if not await check_perm_moderator(ctx, server_name):
             return
         embed = discord.Embed(
             description=f"Slapped all players for {dmg} hp"
@@ -241,6 +241,7 @@ class PavlovMod(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
             )
+            await asyncio.sleep(0.1)
         await ctx.send(embed=embed)  
 
     @commands.command()
