@@ -75,7 +75,7 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}killall servername`
         """
-        if not await check_perm_admin(ctx, server_name):
+        if not await check_perm_moderator(ctx, server_name):
             return
         embed = discord.Embed(
             description=f"Killed all players"
@@ -86,6 +86,7 @@ class PavlovMod(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"Kill {player.get('UniqueId')}"
             )
+            await asyncio.sleep(0.2)
         await ctx.send(embed=embed)
 
     @commands.command()
