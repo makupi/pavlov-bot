@@ -22,7 +22,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}ban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}ban 89374583439127 servername`
+        **Example**: `{prefix}ban 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -46,7 +46,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}kill <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}kill 89374583439127 servername`
+        **Example**: `{prefix}kill 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -66,13 +66,36 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def killall(
+        self,
+        ctx,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}killall <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}killall rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Killed all players"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"Kill {player.get('UniqueId')}"
+            )
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def kick(
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}kick <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}kick 89374583439127 servername`
+        **Example**: `{prefix}kick 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -98,7 +121,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}unban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}unban 89374583439127 servername`
+        **Example**: `{prefix}unban 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -124,7 +147,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}addmod <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}addmod 89374583439127 servername`
+        **Example**: `{prefix}addmod 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -150,7 +173,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}removemod <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}removemod 89374583439127 servername`
+        **Example**: `{prefix}removemod 89374583439127 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -176,7 +199,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}slap <player_id> <damage_amount> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slap 89374583439127 10 servername`
+        **Example**: `{prefix}slap 89374583439127 10 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -194,7 +217,31 @@ class PavlovMod(commands.Cog):
                 description=f"<{player.unique_id}> successfully slapped for {dmg} hp"
             )
         await ctx.send(embed=embed)
-        
+
+    @commands.command()
+    async def slapall(
+        self,
+        ctx,
+        dmg: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}slapall <damage_amount> <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}slapall 50 rush`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(
+            description=f"Slapped all players for {dmg} hp"
+        )
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            data = await exec_server_command(
+                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+            )
+        await ctx.send(embed=embed)  
+
     @commands.command()
     async def setpin(
         self, ctx, pin: str, server_name: str = config.default_server
@@ -202,8 +249,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}setpin <pin> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}setpin 0000 servername`
-        **To remove pin**: `{prefix}setpin remove servername`
+        **Example**: `{prefix}setpin 0000 rush`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
