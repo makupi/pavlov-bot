@@ -1,7 +1,31 @@
 # Changelog
 
-## unreleased
+## v0.5 - 2020-10
+- Added support for following new RCON commands
+	- SetPin
+	- AddMod
+	- RemoveMod
+	- GiveVehicle
+	- Slap
+- Added enhanced commands
+	- ;slapall - slap to all players
+	- ;killall - kill all players
+	- ;giveall - give items to all players
+	- ;spsall - Set player skin to all players
+	- ;slapall - Slap all players
+	- ;repeat - Allows repeating a valid pavlov-bot command up to 100 times. Useful for making a pile of nade or something
+- Fixed some issues:
+	- ;flush command bug hopefully fixed
+	- Fixed long Quest/Shack playername issue
+- Some QOL updates:
+	- ;switchmap can now be called by just ;map as well
+	- ;rotatemap can now be called by ;next as well
+	- ;switchmap accepts Steamworkshop URLs as direct copy paste. e.g. ;switchmap https://steamcommunity.com/sharedfiles/filedetails/?id=921873447 dm servername will load DustII without having to extract the number and add UGC
+- The obligatory fixed some small bugs line to cover things I forgot
+
+## Undocumented lots of changes up to 0.4.2 because I am lazy
 - Added `;custom` command with admin permission to execute custom RCON commands
+- Added ;flush command, ;teamsetup command, ;ringer delete option and Quest playername support
 
 ## v0.2.3 - 2020-06-29
 - Pavlov Cog refactored, for more info see PR [#51](https://github.com/makupi/pavlov-bot/pull/51)
