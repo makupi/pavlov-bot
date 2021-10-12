@@ -93,15 +93,19 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(
-            description=f"{item_id} given to all"
-        )
+        embed = discord.Embed(description=f"**{item_id} given to all**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
+            await asyncio.sleep(0.2)
             data = await exec_server_command(
                 ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
             )
+            work = data.get("GiveItem")
+            if not work:
+                embed.description += f"\n **Failed** to give {item_id} to <{player.get('UniqueId')}>"
+            else:
+                embed.description += f"\n {item_id} given to <{player.get('UniqueId')}>"
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -117,15 +121,19 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(
-            description=f"Set all players skin to {skin_id}"
-        )
+        embed = discord.Embed(description=f"**All players skin set to {skin_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
+            await asyncio.sleep(0.2)
             data = await exec_server_command(
                 ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
             )
+            work = data.get("SetPlayerSkin")
+            if not work:
+                embed.description += f"\n **Failed** to set <{player.get('UniqueId')}>'s skin to {skin_id}"
+            else:
+                embed.description += f"\n <{player.get('UniqueId')}>'s skin set to {skin_id}"
         await ctx.send(embed=embed)
     
     @commands.command()
