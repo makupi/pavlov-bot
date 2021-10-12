@@ -103,29 +103,6 @@ class PavlovAdmin(commands.Cog):
                 ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
             )
         await ctx.send(embed=embed)
-
-    @commands.command()
-    async def killall(
-        self,
-        ctx,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}killall <server_name>`
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}killall rush`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        embed = discord.Embed(
-            description=f"Killed all players"
-        )
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        for player in player_list:
-            data = await exec_server_command(
-                ctx, server_name, f"Kill {player.get('UniqueId')}"
-            )
-        await ctx.send(embed=embed)
     
     @commands.command()
     async def spsall(
