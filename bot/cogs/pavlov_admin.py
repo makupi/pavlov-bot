@@ -102,6 +102,7 @@ class PavlovAdmin(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
             )
+            await asyncio.sleep(0.2)
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -126,6 +127,7 @@ class PavlovAdmin(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
             )
+            await asyncio.sleep(0.1)
         await ctx.send(embed=embed)
     
     @commands.command()
