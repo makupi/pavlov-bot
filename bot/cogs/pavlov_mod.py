@@ -22,7 +22,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}ban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}ban 89374583439127 rush`
+        **Example**: `{prefix}ban 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -46,7 +46,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}kill <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}kill 89374583439127 rush`
+        **Example**: `{prefix}kill 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -73,7 +73,7 @@ class PavlovMod(commands.Cog):
     ):
         """`{prefix}killall <server_name>`
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}killall rush`
+        **Example**: `{prefix}killall servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -95,7 +95,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}kick <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}kick 89374583439127 rush`
+        **Example**: `{prefix}kick 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -121,7 +121,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}unban <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}unban 89374583439127 rush`
+        **Example**: `{prefix}unban 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -147,7 +147,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}addmod <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}addmod 89374583439127 rush`
+        **Example**: `{prefix}addmod 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -173,7 +173,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}removemod <player_id> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}removemod 89374583439127 rush`
+        **Example**: `{prefix}removemod 89374583439127 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -199,7 +199,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}slap <player_id> <damage_amount> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slap 89374583439127 10 rush`
+        **Example**: `{prefix}slap 89374583439127 10 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
@@ -227,7 +227,7 @@ class PavlovMod(commands.Cog):
     ):
         """`{prefix}slapall <damage_amount> <server_name>`
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slapall 50 rush`
+        **Example**: `{prefix}slapall 50 servername`
         """
         if not await check_perm_admin(ctx, server_name):
             return
@@ -249,7 +249,7 @@ class PavlovMod(commands.Cog):
         """`{prefix}setpin <pin> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}setpin 0000 rush`
+        **Example**: `{prefix}setpin 0000 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
