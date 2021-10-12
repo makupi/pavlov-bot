@@ -75,17 +75,21 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}killall servername`
         """
-        if not await check_perm_admin(ctx, server_name):
+        if not await check_perm_moderator(ctx, server_name):
             return
-        embed = discord.Embed(
-            description=f"Killed all players"
-        )
+        embed = discord.Embed(description=f"**All players killed**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
+            await asyncio.sleep(0.2)
             data = await exec_server_command(
                 ctx, server_name, f"Kill {player.get('UniqueId')}"
             )
+            work = data.get("Kill")
+            if not work:
+                embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
+            else:
+                embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -229,17 +233,21 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}slapall 50 servername`
         """
-        if not await check_perm_admin(ctx, server_name):
+        if not await check_perm_moderator(ctx, server_name):
             return
-        embed = discord.Embed(
-            description=f"Slapped all players for {dmg} hp"
-        )
+        embed = discord.Embed(description=f"**Slapped all players for {dmg} hp**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
+            await asyncio.sleep(0.2)
             data = await exec_server_command(
                 ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
             )
+            work = data.get("Slap")
+            if not work:
+                embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
+            else:
+                embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
         await ctx.send(embed=embed)  
 
     @commands.command()
