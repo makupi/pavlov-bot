@@ -22,7 +22,7 @@ class PavlovCaptain(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.command()
+    @commands.command(aliases=["map"])
     async def switchmap(
         self,
         ctx,
@@ -34,6 +34,7 @@ class PavlovCaptain(commands.Cog):
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}switchmap 89374583439127 rush`
+        **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 rush`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -105,12 +106,13 @@ class PavlovCaptain(commands.Cog):
             )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["next"])
     async def rotatemap(self, ctx, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>`
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap rush`
+        **Aliases**: rotatemap can also be called as next `{prefix}next rush`
         """
         if not await check_perm_captain(ctx, server_name):
             return

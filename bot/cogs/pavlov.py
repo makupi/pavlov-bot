@@ -65,7 +65,7 @@ class Pavlov(commands.Cog):
             self._map_aliases[map_label] = {"name": map_name, "image": map_image}
             return map_name, map_image
         except Exception as ex:
-            logging.error(f"Getting map label failed with {ex}")
+            logging.error(f"Getting map label {map_label} failed with {ex}")
         return None, None
 
     @commands.command()
