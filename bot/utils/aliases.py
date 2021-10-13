@@ -3,10 +3,14 @@ import os
 import re
 from typing import List, Tuple
 
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
+
 from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
 MAP_NAME_REGEX = r"UGC[0-9]*"
+WORKSHOP_URL = "https://steamcommunity.com/sharedfiles/filedetails/"
 STRING_ID_CHARACTER_LENGTH = 16
 
 
@@ -21,12 +25,12 @@ def check_player_already_id(name) -> Tuple[bool, str]:
         int(name)
         return True, name
     except ValueError:
-        if len(name) >= STRING_ID_CHARACTER_LENGTH:
-            if int(name, 16):  # check if hexadecimal
-                return True, name
-        elif name.lower().startswith("q-"):
+        if name.lower().startswith("q-"):
             # special exception for Quest IDs, have to start with q- since they are strings
             return True, name[2:]
+        elif len(name) >= STRING_ID_CHARACTER_LENGTH:
+            if int(name, 16):  # check if hexadecimal
+                return True, name
     return False, name
 
 
@@ -109,6 +113,15 @@ class Aliases:
         self.teams = teams
 
     def get_map(self, name: str):
+        if name.startswith(WORKSHOP_URL):
+            parsed_url = urlparse.urlparse(name)
+            try:
+                id = parse_qs(parsed_url.query)['id'][0]
+                return f"UGC{id}"
+            except KeyError:
+                raise AliasNotFoundError("maps", name)
+            jid = parse_qs(parsed_url.query)['id'][0]
+            return f"UGC{id}"
         if check_map_already_label(name):
             return name
         return self.get("maps", name)

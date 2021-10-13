@@ -151,6 +151,10 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 * ``;flush <server>`` will randomly pick a player who isn't in aliases.json and kick them from the server to make room for a registered player. 
 * ``;command <command_name>`` will allow you to execute pre-defined commandline commands in commands.json on the local server running the bot. Useful for automation of things like starting and stopping pavlovserver instances or clearing disk space on server full of maps. 
+* ``;repeat <full pavlov-bot command> <number>`` will issue the requested pavlov-bot command requested number of times up to 100. Useful for making a pile of nades or something. 
+* Command shorthands: ;switchmap can be shortened to ;map and ;rotatemap can be shortened to ;next
+* ;switchmap command can accept either map aliases, UGC### or full URLs from workshop like "https://steamcommunity.com/sharedfiles/filedetails/?id=1664873782"
+* A set of commands applying to all players: ;giveall (give item to all players), ;slapall (damage all players a defined bit), ;killall (pretty obvious tool for mass murder) ;spsall (Switch player skins for all players for when clowning around is absolutely required)
 
 ## Quest IDs 
 

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import random
 from datetime import datetime
 
 import discord
@@ -21,7 +22,7 @@ class PavlovCaptain(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.command()
+    @commands.command(aliases=["map"])
     async def switchmap(
         self,
         ctx,
@@ -32,7 +33,8 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}switchmap 89374583439127 rush`
+        **Example**: `{prefix}switchmap 89374583439127 servername`
+        **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -58,7 +60,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}resetsnd rush`
+        **Example**: `{prefix}resetsnd servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -83,7 +85,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}switchteam <player_id> <team_id> <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}resetsnd 89374583439127 0 rush`
+        **Example**: `{prefix}resetsnd 89374583439127 0 servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -104,12 +106,13 @@ class PavlovCaptain(commands.Cog):
             )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=["next"])
     async def rotatemap(self, ctx, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}rotatemap rush`
+        **Example**: `{prefix}rotatemap servername`
+        **Aliases**: rotatemap can also be called as next `{prefix}next servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
@@ -134,7 +137,7 @@ class PavlovCaptain(commands.Cog):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
         **Requires**: Captain permissions or higher for the server
-        **Example**: `{prefix}matchsetup ct_team t_team rush`
+        **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
         if not await check_perm_captain(ctx, server_name):
             return
