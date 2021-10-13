@@ -243,7 +243,7 @@ class PavlovMod(commands.Cog):
             data = await exec_server_command(
                 ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
             )
-            work = data.get("Slap")
+            work = data.get("Successful")
             if not work:
                 embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
             else:
