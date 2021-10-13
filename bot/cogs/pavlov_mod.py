@@ -231,7 +231,7 @@ class PavlovMod(commands.Cog):
     ):
         """`{prefix}slapall <damage_amount> <server_name>`
         **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slapall 50 servername`
+        **Example**: `{prefix}slapall 25 servername`
         """
         if not await check_perm_moderator(ctx, server_name):
             return
