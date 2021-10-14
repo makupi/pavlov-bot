@@ -83,16 +83,16 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(description=f"No players to be killed on {server_name}")
         else:
             embed = discord.Embed(description=f"**All players on {server_name} killed**\n")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"Kill {player.get('UniqueId')}"
-            )
-            work = data.get("Kill")
-            if not work:
-                embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
-            else:
-                embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
+            for player in player_list:
+                await asyncio.sleep(0.2)
+                data = await exec_server_command(
+                    ctx, server_name, f"Kill {player.get('UniqueId')}"
+                )
+                work = data.get("Kill")
+                if not work:
+                    embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
+                else:
+                    embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -108,33 +108,34 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if team_id.casefold() == "blue":
-            team_id = "0"
-        elif team_id.casefold() == "red":
-            team_id = "1"
-        if (team_id.isnumeric()) == False:
-            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
-        else:
-            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} killed**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players on {team_id} to be killed on {server_name}")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-            )
-            playerteam = data.get("PlayerInfo").get("TeamId")
-            if team_id == playerteam:
-                data2 = await exec_server_command(
-                ctx, server_name, f"Kill {player.get('UniqueId')}"
+        else:
+            if team_id.casefold() == "blue":
+                team_id = "0"
+            elif team_id.casefold() == "red":
+                team_id = "1"
+            if (team_id.isnumeric()) == False:
+                embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+            else:
+                embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} killed**\n")
+            for player in player_list:
+                await asyncio.sleep(0.2)
+                data = await exec_server_command(
+                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
                 )
-                work = data2.get("Kill")
-                if not work:
-                    embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
-                else:
-                    embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
+                playerteam = data.get("PlayerInfo").get("TeamId")
+                if team_id == playerteam:
+                    data2 = await exec_server_command(
+                    ctx, server_name, f"Kill {player.get('UniqueId')}"
+                    )
+                    work = data2.get("Kill")
+                    if not work:
+                        embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
+                    else:
+                        embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -151,33 +152,34 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if team_id.casefold() == "blue":
-            team_id = "0"
-        elif team_id.casefold() == "red":
-            team_id = "1"
-        if (team_id.isnumeric()) == False:
-            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
-        else:
-            embed = discord.Embed(description=f"**Slapped all players on {server_name} and on team {team_id} for {dmg} hp**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players to be slapped on {server_name}")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-            )
-            playerteam = data.get("PlayerInfo").get("TeamId")
-            if team_id == playerteam:
-                data2 = await exec_server_command(
-                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+        else:
+            if team_id.casefold() == "blue":
+                team_id = "0"
+            elif team_id.casefold() == "red":
+                team_id = "1"
+            if (team_id.isnumeric()) == False:
+                embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+            else:
+                embed = discord.Embed(description=f"**Slapped all players on {server_name} and on team {team_id} for {dmg} hp**\n")
+            for player in player_list:
+                await asyncio.sleep(0.2)
+                data = await exec_server_command(
+                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
                 )
-                work = data2.get("Successful")
-                if not work:
-                    embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
-                else:
-                    embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
+                playerteam = data.get("PlayerInfo").get("TeamId")
+                if team_id == playerteam:
+                    data2 = await exec_server_command(
+                    ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+                    )
+                    work = data2.get("Successful")
+                    if not work:
+                        embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
+                    else:
+                        embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -329,16 +331,16 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(description=f"No players to be slapped on {server_name}")
         else:
             embed = discord.Embed(description=f"**Slapped all players on {server_name} for {dmg} hp**\n")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
-            )
-            work = data.get("Successful")
-            if not work:
-                embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
-            else:
-                embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
+            for player in player_list:
+                await asyncio.sleep(0.2)
+                data = await exec_server_command(
+                    ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+                )
+                work = data.get("Successful")
+                if not work:
+                    embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
+                else:
+                    embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
         await ctx.send(embed=embed)  
 
     @commands.command()
