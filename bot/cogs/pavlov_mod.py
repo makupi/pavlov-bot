@@ -108,6 +108,12 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
+        if team_id.casefold() == "blue":
+            team_id = "0"
+        elif team_id.casefold() == "red":
+            team_id = "1"
+        if (team_id.isnumeric()) == False:
+            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
@@ -145,6 +151,12 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
+        if team_id.casefold() == "blue":
+            team_id = "0"
+        elif team_id.casefold() == "red":
+            team_id = "1"
+        if (team_id.isnumeric()) == False:
+            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
