@@ -93,6 +93,73 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def killteam(
+        self,
+        ctx,
+        team_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}killteam <team_id> <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}killteam 0 servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        embed = discord.Embed(description=f"**All players on team {team_id} killed**\n")
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            await asyncio.sleep(0.2)
+            data = await exec_server_command(
+                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
+            )
+            playerteam = data.get("PlayerInfo").get("TeamId")
+            if team_id == playerteam:
+                data2 = await exec_server_command(
+                ctx, server_name, f"Kill {player.get('UniqueId')}"
+                )
+                work = data2.get("Kill")
+                if not work:
+                    embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
+                else:
+                    embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def slapteam(
+        self,
+        ctx,
+        team_id: str,
+        dmg: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}slapteam <team_id> <damage_amount> <server_name>`
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}slapteam 0 50 servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        embed = discord.Embed(description=f"**Slapped all players on team {team_id} for {dmg} hp**\n")
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            await asyncio.sleep(0.2)
+            data = await exec_server_command(
+                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
+            )
+            playerteam = data.get("PlayerInfo").get("TeamId")
+            if team_id == playerteam:
+                data2 = await exec_server_command(
+                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+                )
+                work = data2.get("Successful")
+                if not work:
+                    embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
+                else:
+                    embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def kick(
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
