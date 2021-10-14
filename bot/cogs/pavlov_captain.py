@@ -40,18 +40,20 @@ class PavlovCaptain(commands.Cog):
             return
         map_label = aliases.get_map(map_name)
         data = await exec_server_command(
-            ctx, server_name, f"SwitchMap {map_label} {game_mode}"
+            ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
-        switch_map = data.get("SwitchMap")
-        if ctx.batch_exec:
-            return switch_map
-        if not switch_map:
+        await asyncio.sleep(3)
+        data2 = await exec_server_command(
+            ctx, server_name, f"ServerInfo"
+        )
+        switchm = data2.get("ServerInfo").get("MapLabel")
+        if switchm != map_label:
             embed = discord.Embed(
-                description=f"**Failed** to switch map to {map_name} with game mode {game_mode}"
+                description=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()}"
             )
         else:
             embed = discord.Embed(
-                description=f"Switched map to {map_name} with game mode {game_mode}"
+                description=f"Switched map to {map_name} with game mode {game_mode.upper()}"
             )
         await ctx.send(embed=embed)
 
