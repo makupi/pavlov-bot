@@ -107,7 +107,41 @@ class PavlovAdmin(commands.Cog):
             else:
                 embed.description += f"\n {item_id} given to <{player.get('UniqueId')}>"
         await ctx.send(embed=embed)
-    
+
+    @commands.command()
+    async def giveteam(
+        self,
+        ctx,
+        team_id: str,
+        item_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}giveteam <team_id> <item_id> <server_name>`
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}giveteam 0 rl_rpg servername`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(description=f"**{item_id} given to all players on team {team_id}**\n")
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            await asyncio.sleep(0.2)
+            data = await exec_server_command(
+                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
+            )
+            playerteam = data.get("PlayerInfo").get("TeamId")
+            if team_id == playerteam:
+                data2 = await exec_server_command(
+                ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
+                )
+                work = data2.get("GiveItem")
+                if not work:
+                    embed.description += f"\n **Failed** to give {item_id} to <{player.get('UniqueId')}>"
+                else:
+                    embed.description += f"\n {item_id} given to <{player.get('UniqueId')}>"
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def spsall(
         self,
@@ -136,6 +170,40 @@ class PavlovAdmin(commands.Cog):
                 embed.description += f"\n <{player.get('UniqueId')}>'s skin set to {skin_id}"
         await ctx.send(embed=embed)
     
+    @commands.command()
+    async def spsteam(
+        self,
+        ctx,
+        team_id: str,
+        skin_id: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}spsteam <team_id> <skin_id> <server_name>`
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}spsteam 0 clown servername`
+        """
+        if not await check_perm_admin(ctx, server_name):
+            return
+        embed = discord.Embed(description=f"**All players on team {team_id} skin set to {skin_id}**\n")
+        players = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = players.get("PlayerList")
+        for player in player_list:
+            await asyncio.sleep(0.2)
+            data = await exec_server_command(
+                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
+            )
+            playerteam = data.get("PlayerInfo").get("TeamId")
+            if team_id == playerteam:
+                data2 = await exec_server_command(
+                ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
+                )
+                work = data2.get("SetPlayerSkin")
+                if not work:
+                    embed.description += f"\n **Failed** to set <{player.get('UniqueId')}>'s skin to {skin_id}"
+                else:
+                    embed.description += f"\n <{player.get('UniqueId')}>'s skin set to {skin_id}"
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def givecash(
         self,
