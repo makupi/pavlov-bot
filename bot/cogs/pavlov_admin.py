@@ -93,9 +93,12 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"**{item_id} given to all**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
+        if len(player_list) == 0:
+            embed = discord.Embed(description=f"No players to be given {item_id} on {server_name}")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} were given {item_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
@@ -122,9 +125,12 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"**{item_id} given to all players on team {team_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
+        if len(player_list) == 0:
+            embed = discord.Embed(description=f"No players to be given {item_id} on {server_name}")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} were given {item_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
@@ -155,9 +161,12 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"**All players skin set to {skin_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
+        if len(player_list) == 0:
+            embed = discord.Embed(description=f"**No players on {server_name}**\n")
+        else:
+            embed = discord.Embed(description=f"**All players skin set to {skin_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
@@ -187,6 +196,10 @@ class PavlovAdmin(commands.Cog):
         embed = discord.Embed(description=f"**All players on team {team_id} skin set to {skin_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
+        if len(player_list) == 0:
+            embed = discord.Embed(description=f"**No players on {server_name}**\n")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} skin set to {skin_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
