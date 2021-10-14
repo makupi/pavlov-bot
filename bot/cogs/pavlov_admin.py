@@ -122,7 +122,14 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"**{item_id} given to all players on team {team_id}**\n")
+        if team_id.casefold() == "blue":
+            team_id = "0"
+        elif team_id.casefold() == "red":
+            team_id = "1"
+        if (team_id.isnumeric()) == False:
+            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**{item_id} given to all players on team {team_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
@@ -184,7 +191,14 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        embed = discord.Embed(description=f"**All players on team {team_id} skin set to {skin_id}**\n")
+        if team_id.casefold() == "blue":
+            team_id = "0"
+        elif team_id.casefold() == "red":
+            team_id = "1"
+        if (team_id.isnumeric()) == False:
+            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**All players on team {team_id} skin set to {skin_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         for player in player_list:
