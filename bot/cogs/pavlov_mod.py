@@ -114,12 +114,12 @@ class PavlovMod(commands.Cog):
             team_id = "1"
         if (team_id.isnumeric()) == False:
             embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} killed**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players on {team_id} to be killed on {server_name}")
-        else:
-            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} killed**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
@@ -157,12 +157,12 @@ class PavlovMod(commands.Cog):
             team_id = "1"
         if (team_id.isnumeric()) == False:
             embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**Slapped all players on {server_name} and on team {team_id} for {dmg} hp**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players to be slapped on {server_name}")
-        else:
-            embed = discord.Embed(description=f"**Slapped all players on {server_name} and on team {team_id} for {dmg} hp**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(

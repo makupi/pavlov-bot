@@ -131,12 +131,12 @@ class PavlovAdmin(commands.Cog):
             team_id = "1"
         if (team_id.isnumeric()) == False:
             embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} were given {item_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players to be given {item_id} on {server_name}")
-        else:
-            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} were given {item_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
@@ -205,12 +205,12 @@ class PavlovAdmin(commands.Cog):
             team_id = "1"
         if (team_id.isnumeric()) == False:
             embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+        else:
+            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} skin set to {skin_id}**\n")
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
             embed = discord.Embed(description=f"No players on {server_name}\n")
-        else:
-            embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} skin set to {skin_id}**\n")
         for player in player_list:
             await asyncio.sleep(0.2)
             data = await exec_server_command(
