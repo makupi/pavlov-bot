@@ -164,7 +164,7 @@ class PavlovAdmin(commands.Cog):
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
-            embed = discord.Embed(description=f"**No players on {server_name}**\n")
+            embed = discord.Embed(description=f"No players on {server_name}\n")
         else:
             embed = discord.Embed(description=f"**All players skin set to {skin_id}**\n")
         for player in player_list:
@@ -196,7 +196,7 @@ class PavlovAdmin(commands.Cog):
         players = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = players.get("PlayerList")
         if len(player_list) == 0:
-            embed = discord.Embed(description=f"**No players on {server_name}**\n")
+            embed = discord.Embed(description=f"No players on {server_name}\n")
         else:
             embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} skin set to {skin_id}**\n")
         for player in player_list:
