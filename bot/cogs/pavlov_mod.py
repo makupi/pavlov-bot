@@ -50,127 +50,34 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
-        kill = data.get("Kill")
-        if ctx.batch_exec:
-            return kill
-        if not kill:
-            embed = discord.Embed(
-                description=f"**Failed** to kill <{player.unique_id}>"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully killed"
-            )
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def killall(
-        self,
-        ctx,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}killall <server_name>`
-        **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}killall servername`
-        """
-        if not await check_perm_moderator(ctx, server_name):
-            return
-        embed = discord.Embed(description=f"**All players killed**\n")
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"Kill {player.get('UniqueId')}"
-            )
-            work = data.get("Kill")
-            if not work:
-                embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
+        if player_arg == 'all':
+            data = await exec_command_all_players(ctx, server_name, f"Kill all ")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
             else:
-                embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def killteam(
-        self,
-        ctx,
-        team_id: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}killteam <team_id> <server_name>`
-        **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}killteam 0 servername`
-        """
-        if not await check_perm_moderator(ctx, server_name):
-            return
-        if team_id.casefold() == "blue":
-            team_id = "0"
-        elif team_id.casefold() == "red":
-            team_id = "1"
-        if (team_id.isnumeric()) == False:
-            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
+                embed = discord.Embed(description=f"{data}")
+        elif player_arg.startswith('team'):
+            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            elif data == "NotValidTeam":
+                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+            else:
+                embed = discord.Embed(description=f"{data}")
         else:
-            embed = discord.Embed(description=f"**All players on team {team_id} killed**\n")
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-            )
-            playerteam = data.get("PlayerInfo").get("TeamId")
-            if team_id == playerteam:
-                data2 = await exec_server_command(
-                ctx, server_name, f"Kill {player.get('UniqueId')}"
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
+            kill = data.get("Kill")
+            if ctx.batch_exec:
+                return kill
+            if not kill:
+                embed = discord.Embed(
+                    description=f"**Failed** to kill <{player.unique_id}>"
                 )
-                work = data2.get("Kill")
-                if not work:
-                    embed.description += f"\n **Failed** to kill <{player.get('UniqueId')}>"
-                else:
-                    embed.description += f"\n <{player.get('UniqueId')}> successfully killed"
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def slapteam(
-        self,
-        ctx,
-        team_id: str,
-        dmg: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}slapteam <team_id> <damage_amount> <server_name>`
-        **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slapteam 0 50 servername`
-        """
-        if not await check_perm_moderator(ctx, server_name):
-            return
-        if team_id.casefold() == "blue":
-            team_id = "0"
-        elif team_id.casefold() == "red":
-            team_id = "1"
-        if (team_id.isnumeric()) == False:
-            embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
-        else:
-            embed = discord.Embed(description=f"**Slapped all players on team {team_id} for {dmg} hp**\n")
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-            )
-            playerteam = data.get("PlayerInfo").get("TeamId")
-            if team_id == playerteam:
-                data2 = await exec_server_command(
-                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
+            else:
+                embed = discord.Embed(
+                    description=f"<{player.unique_id}> successfully killed"
                 )
-                work = data2.get("Successful")
-                if not work:
-                    embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
-                else:
-                    embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -288,47 +195,35 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"Slap {player.unique_id} {dmg}")
-        slapd = data.get("Successful")
-        if ctx.batch_exec:
-            return slapd
-        if not slapd:
-            embed = discord.Embed(
-                description=f"**Failed** to slap <{player.unique_id}> for {dmg} hp"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully slapped for {dmg} hp"
-            )
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def slapall(
-        self,
-        ctx,
-        dmg: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}slapall <damage_amount> <server_name>`
-        **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}slapall 50 servername`
-        """
-        if not await check_perm_moderator(ctx, server_name):
-            return
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        for player in player_list:
-            await asyncio.sleep(0.2)
-            data = await exec_server_command(
-                ctx, server_name, f"Slap {player.get('UniqueId')} {dmg}"
-            )
-            work = data.get("Successful")
-            if not work:
-                embed.description += f"\n **Failed** to slap <{player.get('UniqueId')}> for {dmg} hp"
+        if player_arg == 'all':
+            data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
             else:
-                embed.description += f"\n <{player.get('UniqueId')}> successfully slapped for {dmg} hp"
-        await ctx.send(embed=embed)  
+                embed = discord.Embed(description=f"{data}")
+        elif player_arg.startswith('team'):
+            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            elif data == "NotValidTeam":
+                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+            else:
+                embed = discord.Embed(description=f"{data}")
+        else:
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(ctx, server_name, f"Slap {player.unique_id} {dmg}")
+            slapd = data.get("Successful")
+            if ctx.batch_exec:
+                return slapd
+            if not slapd:
+                embed = discord.Embed(
+                    description=f"**Failed** to slap <{player.unique_id}> for {dmg} hp"
+                )
+            else:
+                embed = discord.Embed(
+                    description=f"<{player.unique_id}> successfully slapped for {dmg} hp"
+                )
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def setpin(

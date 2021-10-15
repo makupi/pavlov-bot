@@ -220,7 +220,13 @@ class Pavlov(commands.Cog):
         if len(player_list) == 0:
             embed.description = f"Currently no active players on `{server_name}`"
         for player in player_list:
-            embed.description += f"\n - {player.get('Username', '')} <{player.get('UniqueId')}>"
+            data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
+            team_id = data2.get("PlayerInfo").get("TeamId")
+            if team_id == "0":
+                team_name = ":blue_square:"
+            elif team_id == "1":
+                team_name = ":red_square:"
+            embed.description += f"\n - {player.get('Username', '')} <{player.get('UniqueId')}> Team: {team_name}"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
