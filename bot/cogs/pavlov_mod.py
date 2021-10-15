@@ -20,7 +20,7 @@ class PavlovMod(commands.Cog):
     @commands.command()
     async def ban(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}ban <player_id> <server_name>`
-
+        **Description**: Adds a player to blacklist.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 servername`
         """
@@ -44,7 +44,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
-
+        **Description**: Kills a player.
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kill 89374583439127 servername`
         """
@@ -85,7 +85,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}kick <player_id> <server_name>`
-
+        **Description**: Kicks a player from the specified server.
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kick 89374583439127 servername`
         """
@@ -111,7 +111,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}unban <player_id> <server_name>`
-
+        **Description**: Removes a player from blacklist.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}unban 89374583439127 servername`
         """
@@ -137,7 +137,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}addmod <player_id> <server_name>`
-
+        **Description**: Adds a player to mods.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}addmod 89374583439127 servername`
         """
@@ -163,7 +163,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
         """`{prefix}removemod <player_id> <server_name>`
-
+        **Description**: Removes a player from mods.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}removemod 89374583439127 servername`
         """
@@ -189,7 +189,7 @@ class PavlovMod(commands.Cog):
         self, ctx, player_arg: str, dmg: str, server_name: str = config.default_server
     ):
         """`{prefix}slap <player_id/all/team> <damage_amount> <server_name>`
-
+        **Description**: Slaps a player for a specified damage amount.
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}slap 89374583439127 10 servername`
         """
@@ -230,7 +230,7 @@ class PavlovMod(commands.Cog):
         self, ctx, pin: str, server_name: str = config.default_server
     ):
         """`{prefix}setpin <pin> <server_name>`
-
+        **Description**: Sets a password for your server. Must be 4-digits.
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}setpin 0000 servername`
         """

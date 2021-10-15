@@ -26,7 +26,7 @@ class PavlovAdmin(commands.Cog):
         server_name: str = config.default_server,
     ):
         """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
-
+        **Description**: Spawns a item for a player.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}giveitem 89374583439127 tazer servername`
         """
@@ -73,7 +73,7 @@ class PavlovAdmin(commands.Cog):
         server_name: str = config.default_server,
     ):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
-
+        **Description**: Spawns a vehicle near a player.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}givevehicle 89374583439127 atv servername`
         """
@@ -105,7 +105,7 @@ class PavlovAdmin(commands.Cog):
         server_name: str = config.default_server,
     ):
         """`{prefix}givecash <player_id/all> <cash_amount> <server_name>`
-
+        **Description**: Gives a specified cash amount to a player.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}givecash 89374583439127 5000 servername`
         """
@@ -144,7 +144,7 @@ class PavlovAdmin(commands.Cog):
         server_name: str = config.default_server,
     ):
         """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
-
+        **Description**: Gives a specified amount cash to a specified team.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}giveteamcash 0 5000 servername`
         """
@@ -173,7 +173,7 @@ class PavlovAdmin(commands.Cog):
         server_name: str = config.default_server,
     ):
         """`{prefix}setplayerskin <player_id/all/team> <skin_id> <server_name>`
-
+        **Description**: Sets a player's skin to a specified skin.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}setplayerskin 89374583439127 clown servername`
         """
@@ -216,7 +216,8 @@ class PavlovAdmin(commands.Cog):
         self, ctx, rcon_command: str, server_name: str = config.default_server
     ):
         """`{prefix}custom "<rcon_command with args>" server_name`
-
+        **Description**: Runs a custom RCON command.
+        **Requires**: Admin permissions for the server
         **Example**: `{prefix}custom ServerInfo servername`
         """
         if not await check_perm_admin(ctx, server_name):
@@ -235,7 +236,8 @@ class PavlovAdmin(commands.Cog):
         self, ctx, cmdr: str, aot: str
     ):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
-
+        **Description**: Repeats a complete pavlov-bot command multiple times.
+        **Requires**: Admin permissions for the server
         **Example**: `{prefix}repeat "GiveItem 89374583439127 rl_rpg servername" 10`
         """
         _args = cmdr.split(" ")
