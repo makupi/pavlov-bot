@@ -25,7 +25,7 @@ class PavlovAdmin(commands.Cog):
         item_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}giveitem <player_id> <item_id> <server_name>`
+        """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
 
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}giveitem 89374583439127 tazer servername`
@@ -104,7 +104,7 @@ class PavlovAdmin(commands.Cog):
         cash_amount: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}givecash <player_id> <cash_amount> <server_name>`
+        """`{prefix}givecash <player_id/all> <cash_amount> <server_name>`
 
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}givecash 89374583439127 5000 servername`
@@ -172,7 +172,7 @@ class PavlovAdmin(commands.Cog):
         skin_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}setplayerskin <player_id> <skin_id> <server_name>`
+        """`{prefix}setplayerskin <player_id/all/team> <skin_id> <server_name>`
 
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}setplayerskin 89374583439127 clown servername`

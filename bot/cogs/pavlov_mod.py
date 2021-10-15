@@ -43,7 +43,7 @@ class PavlovMod(commands.Cog):
     async def kill(
         self, ctx, player_arg: str, server_name: str = config.default_server
     ):
-        """`{prefix}kill <player_id> <server_name>`
+        """`{prefix}kill <player_id/all/team> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kill 89374583439127 servername`
@@ -188,7 +188,7 @@ class PavlovMod(commands.Cog):
     async def slap(
         self, ctx, player_arg: str, dmg: str, server_name: str = config.default_server
     ):
-        """`{prefix}slap <player_id> <damage_amount> <server_name>`
+        """`{prefix}slap <player_id/all/team> <damage_amount> <server_name>`
 
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}slap 89374583439127 10 servername`
