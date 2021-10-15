@@ -6,6 +6,7 @@ from discord.ext import commands
 
 from bot.utils import SteamPlayer, config
 from bot.utils.pavlov import check_perm_admin, exec_server_command
+from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team
 
 
 class PavlovAdmin(commands.Cog):
@@ -31,21 +32,36 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
-            ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
-        )
-        give_team = data.get("GiveItem")
-        if ctx.batch_exec:
-            return give_team
-        if not give_team:
-            embed = discord.Embed(
-                description=f"**Failed** to give {item_id} to <{player.unique_id}>"
-            )
+        if player_arg == 'all':
+            data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            else:
+                embed = discord.Embed(description=f"{data}")
+        elif player_arg.startswith('team'):
+            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"GiveItem team {item_id}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            elif data == "NotValidTeam":
+                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+            else:
+                embed = discord.Embed(description=f"{data}")
         else:
-            embed = discord.Embed(
-                description=f"{item_id} given to <{player.unique_id}>"
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(
+                ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
             )
+            give_team = data.get("GiveItem")
+            if ctx.batch_exec:
+                return give_team
+            if not give_team:
+                embed = discord.Embed(
+                    description=f"**Failed** to give {item_id} to <{player.unique_id}>"
+                )
+            else:
+                embed = discord.Embed(
+                    description=f"{item_id} given to <{player.unique_id}>"
+                )
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -81,156 +97,6 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def giveall(
-        self,
-        ctx,
-        item_id: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}giveall <item_id> <server_name>`
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveall rl_rpg servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        if len(player_list) == 0:
-            embed = discord.Embed(description=f"No players to be given {item_id} on {server_name}")
-        else:
-            embed = discord.Embed(description=f"**All players on {server_name} were given {item_id}**\n")
-            for player in player_list:
-                await asyncio.sleep(0.2)
-                data = await exec_server_command(
-                    ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
-                )
-                work = data.get("GiveItem")
-                if not work:
-                    embed.description += f"\n **Failed** to give {item_id} to <{player.get('UniqueId')}>"
-                else:
-                    embed.description += f"\n {item_id} given to <{player.get('UniqueId')}>"
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def giveteam(
-        self,
-        ctx,
-        team_id: str,
-        item_id: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}giveteam <team_id> <item_id> <server_name>`
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}giveteam 0 rl_rpg servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        if len(player_list) == 0:
-            embed = discord.Embed(description=f"No players to be given {item_id} on {server_name}")
-        else:
-            if team_id.casefold() == "blue":
-                team_id = "0"
-            elif team_id.casefold() == "red":
-                team_id = "1"
-            if (team_id.isnumeric()) == False:
-                embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
-            else:
-                embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} were given {item_id}**\n")
-            for player in player_list:
-                await asyncio.sleep(0.2)
-                data = await exec_server_command(
-                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-                )
-                playerteam = data.get("PlayerInfo").get("TeamId")
-                if team_id == playerteam:
-                    data2 = await exec_server_command(
-                    ctx, server_name, f"GiveItem {player.get('UniqueId')} {item_id}"
-                    )
-                    work = data2.get("GiveItem")
-                    if not work:
-                        embed.description += f"\n **Failed** to give {item_id} to <{player.get('UniqueId')}>"
-                    else:
-                        embed.description += f"\n {item_id} given to <{player.get('UniqueId')}>"
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def spsall(
-        self,
-        ctx,
-        skin_id: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}spsall <skin_id> <server_name>`
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}spsall clown servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        if len(player_list) == 0:
-            embed = discord.Embed(description=f"No players on {server_name}\n")
-        else:
-            embed = discord.Embed(description=f"**All players skin set to {skin_id}**\n")
-            for player in player_list:
-                await asyncio.sleep(0.2)
-                data = await exec_server_command(
-                    ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
-                )
-                work = data.get("SetPlayerSkin")
-                if not work:
-                    embed.description += f"\n **Failed** to set <{player.get('UniqueId')}>'s skin to {skin_id}"
-                else:
-                    embed.description += f"\n <{player.get('UniqueId')}>'s skin set to {skin_id}"
-        await ctx.send(embed=embed)
-    
-    @commands.command()
-    async def spsteam(
-        self,
-        ctx,
-        team_id: str,
-        skin_id: str,
-        server_name: str = config.default_server,
-    ):
-        """`{prefix}spsteam <team_id> <skin_id> <server_name>`
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}spsteam 0 clown servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        players = await exec_server_command(ctx, server_name, "RefreshList")
-        player_list = players.get("PlayerList")
-        if len(player_list) == 0:
-            embed = discord.Embed(description=f"No players on {server_name}\n")
-        else:
-            if team_id.casefold() == "blue":
-                team_id = "0"
-            elif team_id.casefold() == "red":
-                team_id = "1"
-            if (team_id.isnumeric()) == False:
-                embed = discord.Embed(description=f"**Invalid team. Must be number 0/1 or red/blue**\n")
-            else:
-                embed = discord.Embed(description=f"**All players on {server_name} and on team {team_id} skin set to {skin_id}**\n")
-            for player in player_list:
-                await asyncio.sleep(0.2)
-                data = await exec_server_command(
-                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-                )
-                playerteam = data.get("PlayerInfo").get("TeamId")
-                if team_id == playerteam:
-                    data2 = await exec_server_command(
-                    ctx, server_name, f"SetPlayerSkin {player.get('UniqueId')} {skin_id}"
-                    )
-                    work = data2.get("SetPlayerSkin")
-                    if not work:
-                        embed.description += f"\n **Failed** to set <{player.get('UniqueId')}>'s skin to {skin_id}"
-                    else:
-                        embed.description += f"\n <{player.get('UniqueId')}>'s skin set to {skin_id}"
-        await ctx.send(embed=embed)
-
-    @commands.command()
     async def givecash(
         self,
         ctx,
@@ -245,21 +111,28 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
-            ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
-        )
-        give_cash = data.get("GiveCash")
-        if ctx.batch_exec:
-            return give_cash
-        if not give_cash:
-            embed = discord.Embed(
-                description=f"**Failed** to give {cash_amount} to <{player.unique_id}>"
-            )
+        if player_arg == 'all':
+            data = await exec_command_all_players(ctx, server_name, f"GiveCash all {skin_id}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            else:
+                embed = discord.Embed(description=f"{data}")
         else:
-            embed = discord.Embed(
-                description=f"{cash_amount} given to <{player.unique_id}>"
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(
+                ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
             )
+            give_cash = data.get("GiveCash")
+            if ctx.batch_exec:
+                return give_cash
+            if not give_cash:
+                embed = discord.Embed(
+                    description=f"**Failed** to give {cash_amount} to <{player.unique_id}>"
+                )
+            else:
+                embed = discord.Embed(
+                    description=f"{cash_amount} given to <{player.unique_id}>"
+                )
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -306,21 +179,36 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
-            ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
-        )
-        set_player_skin = data.get("SetPlayerSkin")
-        if ctx.batch_exec:
-            return set_player_skin
-        if not set_player_skin:
-            embed = discord.Embed(
-                description=f"**Failed** to set <{player.unique_id}>'s skin to {skin_id}"
-            )
+        if player_arg == 'all':
+            data = await exec_command_all_players(ctx, server_name, f"SetPlayerSkin all {skin_id}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            else:
+                embed = discord.Embed(description=f"{data}")
+        elif player_arg.startswith('team'):
+            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"SetPlayerSkin team {skin_id}")
+            if data == "NoPlayers":
+                embed = discord.Embed(description=f"No players on {server_name}")
+            elif data == "NotValidTeam":
+                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+            else:
+                embed = discord.Embed(description=f"{data}")
         else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}>'s skin set to {skin_id}"
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(
+                ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
             )
+            set_player_skin = data.get("SetPlayerSkin")
+            if ctx.batch_exec:
+                return set_player_skin
+            if not set_player_skin:
+                embed = discord.Embed(
+                    description=f"**Failed** to set <{player.unique_id}>'s skin to {skin_id}"
+                )
+            else:
+                embed = discord.Embed(
+                    description=f"<{player.unique_id}>'s skin set to {skin_id}"
+                )
         await ctx.send(embed=embed)
 
     @commands.command()
