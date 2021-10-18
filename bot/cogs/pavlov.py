@@ -3,6 +3,7 @@ import random
 import re
 import sys
 import traceback
+import asyncio
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
@@ -216,17 +217,24 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
-        embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
+        embed = discord.Embed(description=f"{len(player_list)} active players on `{server_name}`:\n")
         if len(player_list) == 0:
             embed.description = f"Currently no active players on `{server_name}`"
-        for player in player_list:
-            data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
-            team_id = data2.get("PlayerInfo").get("TeamId")
-            if team_id == "0":
-                team_name = ":blue_square:"
-            elif team_id == "1":
-                team_name = ":red_square:"
-            embed.description += f"\n - {player.get('Username', '')} <{player.get('UniqueId')}> Team: {team_name}"
+        else:
+            for player in player_list:
+                await asyncio.sleep(0.1)
+                data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
+                team_id = data2.get("PlayerInfo").get("TeamId")
+                dead = data2.get("PlayerInfo").get("Dead")
+                if team_id == "0":
+                    team_name = ":blue_square:"
+                elif team_id == "1":
+                    team_name = ":red_square:"
+                if dead == True:
+                    dead = ':skull:'
+                elif dead == False:
+                    dead = ':slight_smile:'
+                embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)

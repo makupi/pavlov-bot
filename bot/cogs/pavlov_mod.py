@@ -28,15 +28,8 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
-        ban = data.get("Ban")
-        if ctx.batch_exec:
-            return ban
-        if not ban:
-            embed = discord.Embed(description=f"**Failed** to ban <{player.unique_id}>")
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully banned"
-            )
+        embed = discord.Embed(description=f"**Ban {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -50,34 +43,22 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg == 'all':
-            data = await exec_command_all_players(ctx, server_name, f"Kill all ")
-            if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
-            else:
-                embed = discord.Embed(description=f"{data}")
-        elif player_arg.startswith('team'):
-            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
+        if player_arg == 'all' or player_arg.startswith('team'):
+            if player_arg == 'all':
+                data = await exec_command_all_players(ctx, server_name, f"Kill all ")
+            elif player_arg.startswith('team'):
+                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
             if data == "NoPlayers":
                 embed = discord.Embed(description=f"No players on {server_name}")
             elif data == "NotValidTeam":
                 embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
-            else:
-                embed = discord.Embed(description=f"{data}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id}")
-            kill = data.get("Kill")
-            if ctx.batch_exec:
-                return kill
-            if not kill:
-                embed = discord.Embed(
-                    description=f"**Failed** to kill <{player.unique_id}>"
-                )
-            else:
-                embed = discord.Embed(
-                    description=f"<{player.unique_id}> successfully killed"
-                )
+            data = await exec_server_command(
+                ctx, server_name, f"Kill {player.unique_id} "
+            )
+        embed = discord.Embed(description=f"**Kill {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -93,17 +74,8 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
-        kick = data.get("Kick")
-        if ctx.batch_exec:
-            return kick
-        if not kick:
-            embed = discord.Embed(
-                description=f"**Failed** to kick <{player.unique_id}>"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully kicked"
-            )
+        embed = discord.Embed(description=f"**Kick {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -119,17 +91,8 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
-        unban = data.get("Unban")
-        if ctx.batch_exec:
-            return unban
-        if not unban:
-            embed = discord.Embed(
-                description=f"**Failed** to unban <{player.unique_id}>"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully unbanned"
-            )
+        embed = discord.Embed(description=f"**Unban {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -145,17 +108,8 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"AddMod {player.unique_id}")
-        amod = data.get("AddMod")
-        if ctx.batch_exec:
-            return amod
-        if not amod:
-            embed = discord.Embed(
-                description=f"**Failed** to add <{player.unique_id}> to mods.txt"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully added to mods.txt"
-            )
+        embed = discord.Embed(description=f"**AddMod {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -171,17 +125,8 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"RemoveMod {player.unique_id}")
-        rmod = data.get("RemoveMod")
-        if ctx.batch_exec:
-            return rmod
-        if not rmod:
-            embed = discord.Embed(
-                description=f"**Failed** to remove <{player.unique_id}> from mods.txt"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> successfully removed from mods.txt"
-            )
+        embed = discord.Embed(description=f"**RemoveMod {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -195,34 +140,22 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg == 'all':
-            data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
-            if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
-            else:
-                embed = discord.Embed(description=f"{data}")
-        elif player_arg.startswith('team'):
-            data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
+        if player_arg == 'all' or player_arg.startswith('team'):
+            if player_arg == 'all':
+                data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
+            elif player_arg.startswith('team'):
+                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
             if data == "NoPlayers":
                 embed = discord.Embed(description=f"No players on {server_name}")
             elif data == "NotValidTeam":
                 embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
-            else:
-                embed = discord.Embed(description=f"{data}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(ctx, server_name, f"Slap {player.unique_id} {dmg}")
-            slapd = data.get("Successful")
-            if ctx.batch_exec:
-                return slapd
-            if not slapd:
-                embed = discord.Embed(
-                    description=f"**Failed** to slap <{player.unique_id}> for {dmg} hp"
-                )
-            else:
-                embed = discord.Embed(
-                    description=f"<{player.unique_id}> successfully slapped for {dmg} hp"
-                )
+            data = await exec_server_command(
+                ctx, server_name, f"Slap {player.unique_id} {dmg}"
+            )
+        embed = discord.Embed(description=f"**Slap {player_arg} {dmg}** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command()

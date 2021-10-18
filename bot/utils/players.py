@@ -9,7 +9,7 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
         return "NoPlayers"
     else:
         for player in player_list:
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
             data = await exec_server_command(
                         ctx, server_name, command.replace(" all ", " " + player.get('UniqueId') + " ")
                     )
@@ -34,10 +34,27 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
                         ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
                     )
             player_team = data.get("PlayerInfo").get("TeamId")
-            await asyncio.sleep(0.2)
+            await asyncio.sleep(0.1)
             if player_team == team_id:
                 data2 = await exec_server_command(
                         ctx, server_name, command.replace(" team ", " " + player.get('UniqueId') + " ")
                     )
                 dataresults.append(data2)
     return dataresults
+async def parse_player_command_results(ctx, data, embed):
+    if type(data) == dict:
+        result = data.get('Successful')
+        if result == True:
+            result = '✅'
+        elif result == False:
+            result = '❎'
+        embed.description += f"\n {result} {data.get('UniqueID')}"
+    else:
+        for i in data:
+            result = i.get('Successful')
+            if result == True:
+                result = '✅'
+            elif result == False:
+                result = '❎'
+            embed.description += f"\n {result} {i.get('UniqueID')}"
+    return embed
