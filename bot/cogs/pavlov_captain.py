@@ -96,7 +96,7 @@ class PavlovCaptain(commands.Cog):
             ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
         embed = discord.Embed(title=f"**SwitchTeam {player_arg} {team_id}** \n")
-        embed = await parse_player_command_results(ctx, data, embed)
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["next"])

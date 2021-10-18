@@ -1,5 +1,6 @@
 from bot.utils.pavlov import exec_server_command
-import asyncio 
+import asyncio
+import discord
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
@@ -41,12 +42,16 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
                     )
                 dataresults.append(data2)
     return dataresults
-async def parse_player_command_results(ctx, data, embed):
+async def parse_player_command_results(ctx, data, embed, server_name):
     success = 0
     failure = 0
     if data == 'NoPlayers':
-        return
-    if type(data) == dict:
+        embed = discord.Embed(title=f"No players on {server_name}")
+        return embed
+    elif data == 'NotValidTeam':
+        embed = discord.Embed(title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+        return embed
+    elif type(data) == dict:
         result = data.get('Successful')
         if result == True:
             result = '✅'
