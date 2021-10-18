@@ -8,6 +8,8 @@ from discord.ext import commands
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain, exec_server_command
+from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
+
 
 
 MATCH_DELAY_RESETSND = 10
@@ -93,17 +95,8 @@ class PavlovCaptain(commands.Cog):
         data = await exec_server_command(
             ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
-        switch_team = data.get("SwitchTeam")
-        if ctx.batch_exec:
-            return switch_team
-        if not switch_team:
-            embed = discord.Embed(
-                description=f"**Failed** to switch <{player.unique_id}> to team {team_id}"
-            )
-        else:
-            embed = discord.Embed(
-                description=f"<{player.unique_id}> switched to team {team_id}"
-            )
+        embed = discord.Embed(description=f"**SwitchTeam {player_arg} {team_id}** \n")
+        embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["next"])
