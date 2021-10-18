@@ -30,7 +30,7 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
-        embed = discord.Embed(description=f"**Ban {player_arg} ** \n")
+        embed = discord.Embed(title=f"**Ban {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -51,15 +51,15 @@ class PavlovMod(commands.Cog):
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
             if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
+                embed = discord.Embed(title=f"No players on {server_name}")
             elif data == "NotValidTeam":
-                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+                embed = discord.Embed(title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
                 ctx, server_name, f"Kill {player.unique_id} "
             )
-        embed = discord.Embed(description=f"**Kill {player_arg} ** \n")
+        embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -76,7 +76,7 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
-        embed = discord.Embed(description=f"**Kick {player_arg} ** \n")
+        embed = discord.Embed(title=f"**Kick {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -93,7 +93,7 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
-        embed = discord.Embed(description=f"**Unban {player_arg} ** \n")
+        embed = discord.Embed(title=f"**Unban {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -110,7 +110,7 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"AddMod {player.unique_id}")
-        embed = discord.Embed(description=f"**AddMod {player_arg} ** \n")
+        embed = discord.Embed(title=f"**AddMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -127,7 +127,7 @@ class PavlovMod(commands.Cog):
             return
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"RemoveMod {player.unique_id}")
-        embed = discord.Embed(description=f"**RemoveMod {player_arg} ** \n")
+        embed = discord.Embed(title=f"**RemoveMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -148,15 +148,15 @@ class PavlovMod(commands.Cog):
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
             if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
+                embed = discord.Embed(title=f"No players on {server_name}")
             elif data == "NotValidTeam":
-                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+                embed = discord.Embed(title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
                 ctx, server_name, f"Slap {player.unique_id} {dmg}"
             )
-        embed = discord.Embed(description=f"**Slap {player_arg} {dmg}** \n")
+        embed = discord.Embed(title=f"**Slap {player_arg} {dmg}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -177,7 +177,7 @@ class PavlovMod(commands.Cog):
             data = await exec_server_command(ctx, server_name, f"SetPin")
         else:
             embed = discord.Embed(
-                description=f"Pin must be either a 4-digit number or remove"
+                title=f"Pin must be either a 4-digit number or remove"
             )
             await ctx.send(embed=embed)
             return
@@ -186,16 +186,16 @@ class PavlovMod(commands.Cog):
             return spin
         if not spin:
             embed = discord.Embed(
-                description=f"**Failed** to set pin {pin}"
+                title=f"**Failed** to set pin {pin}"
             )
         else:
             if pin.lower() == 'remove':
                 embed = discord.Embed(
-                description=f"Pin removed"
+                title=f"Pin removed"
                 )
             else:
                 embed = discord.Embed(
-                description=f"Pin {pin} successfully set"
+                title=f"Pin {pin} successfully set"
                 )
         await ctx.send(embed=embed)
 

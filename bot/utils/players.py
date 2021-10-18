@@ -42,19 +42,29 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
                 dataresults.append(data2)
     return dataresults
 async def parse_player_command_results(ctx, data, embed):
+    success = 0
+    failure = 0
+    if data == 'NoPlayers':
+        return
     if type(data) == dict:
         result = data.get('Successful')
         if result == True:
             result = '✅'
+            success +=1
         elif result == False:
             result = '❎'
-        embed.description += f"\n {result} {data.get('UniqueID')}"
+            failure +=1
+        embed.add_field(name=data.get('UniqueID'), value=result, inline=False)
+        embed.description = f'{success} out of {success + failure} players affected'
     else:
         for i in data:
             result = i.get('Successful')
             if result == True:
                 result = '✅'
+                success +=1
             elif result == False:
                 result = '❎'
-            embed.description += f"\n {result} {i.get('UniqueID')}"
+                failure +=1
+            embed.add_field(name=i.get('UniqueID'), value=result, inline=False)
+        embed.description = f'{success} out of {success + failure} players affected'
     return embed

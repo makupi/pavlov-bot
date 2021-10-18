@@ -38,15 +38,15 @@ class PavlovAdmin(commands.Cog):
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"GiveItem team {item_id}")
             if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
+                embed = discord.Embed(title=f"No players on {server_name}")
             elif data == "NotValidTeam":
-                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+                embed = discord.Embed(title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
                 ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
             )
-        embed = discord.Embed(description=f"**GiveItem {player_arg} {item_id}** \n")
+        embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -69,7 +69,7 @@ class PavlovAdmin(commands.Cog):
         data = await exec_server_command(
             ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
         )
-        embed = discord.Embed(description=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
+        embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -91,13 +91,13 @@ class PavlovAdmin(commands.Cog):
         if player_arg == 'all':
             data = await exec_command_all_players(ctx, server_name, f"GiveCash all {cash_amount}")
             if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
+                embed = discord.Embed(title=f"No players on {server_name}")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
                 ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
             )
-        embed = discord.Embed(description=f"**GiveCash {player_arg} {cash_amount}** \n")
+        embed = discord.Embed(title=f"**GiveCash {player_arg} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -124,7 +124,7 @@ class PavlovAdmin(commands.Cog):
         data = await exec_server_command(
             ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
-        embed = discord.Embed(description=f"**GiveTeamCash {team_id} {cash_amount}** \n")
+        embed = discord.Embed(title=f"**GiveTeamCash {team_id} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -149,15 +149,15 @@ class PavlovAdmin(commands.Cog):
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"SetPlayerSkin team {skin_id}")
             if data == "NoPlayers":
-                embed = discord.Embed(description=f"No players on {server_name}")
+                embed = discord.Embed(title=f"No players on {server_name}")
             elif data == "NotValidTeam":
-                embed = discord.Embed(description=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
+                embed = discord.Embed(title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
                 ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
             )
-        embed = discord.Embed(description=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
+        embed = discord.Embed(title=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed)
         await ctx.send(embed=embed)
 
@@ -208,7 +208,7 @@ class PavlovAdmin(commands.Cog):
             if data is None:
                 data = "No response"
         embed = discord.Embed(
-            description=f"Executed '{cmdr}' {aot} times"
+            title=f"Executed '{cmdr}' {aot} times"
         )
         await ctx.send(embed=embed)
 
