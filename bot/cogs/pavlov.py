@@ -73,7 +73,7 @@ class Pavlov(commands.Cog):
     async def servers(self, ctx):
         """`{prefix}servers` - *Lists available servers*"""
         server_names = servers.get_names()
-        embed = discord.Embed(title="Servers", title="\n- ".join([""] + server_names))
+        embed = discord.Embed(title="Servers", description="\n- ".join([""] + server_names))
         await ctx.send(embed=embed)
 
     @commands.group(invoke_without_command=True, pass_context=True, aliases=["alias"])
@@ -222,7 +222,7 @@ class Pavlov(commands.Cog):
         else:
             embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`:\n")
         if len(player_list) == 0:
-            embed.description = f"{len(player_list)} active players on `{server_name}`:\n"
+            embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`\n")
         else:
             for player in player_list:
                 await asyncio.sleep(0.1)
