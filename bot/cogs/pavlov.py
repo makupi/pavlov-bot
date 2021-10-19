@@ -163,7 +163,7 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}banlist rush`
         """
         data = await exec_server_command(ctx, server_name, "Banlist")
-        black_list = data.get("BlackList")
+        black_list = data.get("BanList")
         embed = discord.Embed(title=f"Banned players on `{server_name}`:")
         paginator = Paginator(max_lines=50)
         if black_list:
