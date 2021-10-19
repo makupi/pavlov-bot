@@ -3,6 +3,7 @@ import random
 import re
 import sys
 import traceback
+import asyncio
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
@@ -141,7 +142,7 @@ class Pavlov(commands.Cog):
                 f"{map_alias_str}"
                 f"Map Label:   {map_label}```"
             )
-        embed = discord.Embed(description=f"**ServerInfo** for `{server_name}`")
+        embed = discord.Embed(title=f"**ServerInfo** for `{server_name}`")
         if map_image:
             embed.set_thumbnail(url=map_image)
         embed.add_field(name="Server Name", value=server_info.get("ServerName"), inline=False)
@@ -182,7 +183,7 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "ItemList")
         item_list = data.get("ItemList")
-        embed = discord.Embed(description=f"Items available:\n")
+        embed = discord.Embed(title=f"Items available:\n")
         if len(item_list) == 0:
             embed.description = f"Currently no Items available"
         for item in item_list:
@@ -199,7 +200,7 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
-        embed = discord.Embed(description=f"**Active maps** on `{server_name}`:\n")
+        embed = discord.Embed(title=f"**Active maps** on `{server_name}`:\n")
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
@@ -216,17 +217,27 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
-        embed = discord.Embed(description=f"**Active players** on `{server_name}`:\n")
+        if len(player_list) == 1:
+            embed = discord.Embed(title=f"{len(player_list)} active player on `{server_name}`:\n")
+        else:
+            embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`:\n")
         if len(player_list) == 0:
-            embed.description = f"Currently no active players on `{server_name}`"
-        for player in player_list:
-            data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
-            team_id = data2.get("PlayerInfo").get("TeamId")
-            if team_id == "0":
-                team_name = ":blue_square:"
-            elif team_id == "1":
-                team_name = ":red_square:"
-            embed.description += f"\n - {player.get('Username', '')} <{player.get('UniqueId')}> Team: {team_name}"
+            embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`\n")
+        else:
+            for player in player_list:
+                await asyncio.sleep(0.1)
+                data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
+                team_id = data2.get("PlayerInfo").get("TeamId")
+                dead = data2.get("PlayerInfo").get("Dead")
+                if team_id == "0":
+                    team_name = ":blue_square:"
+                elif team_id == "1":
+                    team_name = ":red_square:"
+                if dead == True:
+                    dead = ':skull:'
+                elif dead == False:
+                    dead = ':slight_smile:'
+                embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
@@ -244,10 +255,10 @@ class Pavlov(commands.Cog):
             return player_info
         if not player_info:
             embed = discord.Embed(
-                description=f"Player <{player.unique_id}> not found on `{server_name}`."
+                title=f"Player <{player.unique_id}> not found on `{server_name}`."
             )
         else:
-            embed = discord.Embed(description=f"**Player info** for `{player.name}`")
+            embed = discord.Embed(title=f"**Player info** for `{player.name}`")
             embed.add_field(name="Name", value=player_info.get("PlayerName"))
             embed.add_field(name="UniqueId", value=player_info.get("UniqueId"))
             embed.add_field(name="KDA", value=player_info.get("KDA"))
