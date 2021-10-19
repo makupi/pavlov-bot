@@ -183,7 +183,8 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "ItemList")
         item_list = data.get("ItemList")
-        embed = discord.Embed(title=f"Items available:\n")
+        embed = discord.Embed(title=f"Items available:")
+        embed.description = '\n'
         if len(item_list) == 0:
             embed.description = f"Currently no Items available"
         for item in item_list:
@@ -200,7 +201,8 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
-        embed = discord.Embed(title=f"**Active maps** on `{server_name}`:\n")
+        embed = discord.Embed(title=f"**Active maps** on `{server_name}`:")
+        embed.description = '\n'
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
@@ -217,13 +219,14 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
-        if len(player_list) == 1:
-            embed = discord.Embed(title=f"{len(player_list)} active player on `{server_name}`:\n")
-        else:
-            embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`:\n")
         if len(player_list) == 0:
-            embed = discord.Embed(title=f"{len(player_list)} active players on `{server_name}`\n")
+            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
         else:
+            if len(player_list) == 1:
+                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+            else:
+                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
+            embed.description = '\n'
             for player in player_list:
                 await asyncio.sleep(0.1)
                 data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
