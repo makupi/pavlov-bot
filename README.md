@@ -154,7 +154,7 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * ``;repeat <full pavlov-bot command> <number>`` will issue the requested pavlov-bot command requested number of times up to 100. Useful for making a pile of nades or something. 
 * Command shorthands: ;switchmap can be shortened to ;map and ;rotatemap can be shortened to ;next
 * ;switchmap command can accept either map aliases, UGC### or full URLs from workshop like "https://steamcommunity.com/sharedfiles/filedetails/?id=1664873782"
-* A set of commands applying to all players: ;giveall (give item to all players), ;slapall (damage all players a defined bit), ;killall (pretty obvious tool for mass murder) ;spsall (Switch player skins for all players for when clowning around is absolutely required)
+* A set of commands which can apply to an individual player, a team or all players: ``;giveitem``, ``;slap``, ``;kill``, ``;switchplayerskins`` and ``;givecash``. These can take either an alias/steamID/q-questname, the keyword "all" or the keywords "teamblue/teamred/team0/team1" to apply command to an individual player, all players, or players on a team. 
 
 ## Quest IDs 
 
