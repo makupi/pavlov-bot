@@ -115,10 +115,7 @@ async def exec_server_command(ctx, server_name: str, command: str):
             server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT,
         )
         if not hasattr(ctx, "pavlov"):
-            try:
-                ctx.pavlov = {server_name: pavlov}
-            except:
-                pass
+            ctx.pavlov = {server_name: pavlov}
         else:
             ctx.pavlov[server_name] = pavlov
     data = await pavlov.send(command)
