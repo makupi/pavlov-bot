@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.1 - 2020-10-21
+- Fixed Blacklist command changing to Banlist
+- Removed "all" commands and made following commands accept either a UserID or keywords ``all``, ``teamred/teamblue`` or "team0/team1" with enhanced feedback on which players the command applied to:
+	- ;slap
+	- ;kill
+	- ;giveitem
+	- ;setplayerskin
+	- ;givecash
+- Graphics updates to ;players command
+- Added in new player info parsing backend
+- 
 ## v0.5 - 2020-10
 - Added support for following new RCON commands
 	- SetPin
