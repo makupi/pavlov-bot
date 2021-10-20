@@ -9,7 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
@@ -68,6 +68,34 @@ class Pavlov(commands.Cog):
         except Exception as ex:
             logging.error(f"Getting map label {map_label} failed with {ex}")
         return None, None
+
+    @tasks.loop(minutes=10.0)
+    async def player_polling(self, ctx, server_name):
+        data = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = data.get("PlayerList")
+        if len(player_list) == 0:
+            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
+        else:
+            if len(player_list) == 1:
+                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+            else:
+                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
+            embed.description = '\n'
+            for player in player_list:
+                await asyncio.sleep(0.1)
+                data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
+                team_id = data2.get("PlayerInfo").get("TeamId")
+                dead = data2.get("PlayerInfo").get("Dead")
+                if team_id == "0":
+                    team_name = ":blue_square:"
+                elif team_id == "1":
+                    team_name = ":red_square:"
+                if dead == True:
+                    dead = ':skull:'
+                elif dead == False:
+                    dead = ':slight_smile:'
+                embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
+            await ctx.author.send(embed=embed)
 
     @commands.command()
     async def servers(self, ctx):
@@ -354,6 +382,28 @@ class Pavlov(commands.Cog):
                 desc += "\n"
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
+
+    @commands.command()
+    async def playerpoll(self, ctx, command: str, server_name: str = config.default_server):
+        """`{prefix}playerpoll <start/stop> <server_name>`
+
+        **Example**: `{prefix}playerpoll start rush`
+        """
+        if command.casefold() == 'start':
+            if self.player_polling.is_running():
+                embed = discord.Embed(title=f"**Player polling already started for {ctx.message.author.name}**")
+            else:
+                self.player_polling.start(ctx, server_name)
+                embed = discord.Embed(title=f"**Starting player polling for {ctx.message.author.name}**")
+        elif command.casefold() == 'stop':
+            if not self.player_polling.is_running():
+                embed = discord.Embed(title=f"**Player polling already stopped for {ctx.message.author.name}**")
+            else:
+                self.player_polling.cancel()
+                embed = discord.Embed(title=f"**Stopping player polling for {ctx.message.author.name}**")
+        else:
+            embed = discord.Embed(title=f"**Invalid command. Must be start or stop**")
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))
