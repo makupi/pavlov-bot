@@ -1,32 +1,9 @@
 {
   "maps": {
     "cache": "UGC1695916905",
-    "cache_comp": "UGC1730305772",
-    "jungle": "UGC1921083944",
     "dust": "UGC1664873782",
-    "dust_comp": "UGC1732443536",
-    "industry": "UGC1679531002",
-    "industry_comp": "UGC1734461750",
-    "jordan": "UGC1485385932",
-    "legend": "UGC1937414766",
-    "legend_comp": "UGC1731023882",
-    "manor": "UGC1944987722",
-    "manor_comp": "UGC1763777855",
-    "mirage": "UGC1661803933",
-    "mirage_comp": "UGC1433506387",
-    "nuke": "UGC1717551845",
-    "office": "UGC1080743206",
-    "office_comp": "UGC1733948120",
-    "overpass": "UGC1676961583",
-    "overpass_comp": "UGC1730981120",
-    "oilrig": "UGC1701860633",
-    "oilrig_comp": "UGC1862422738",
-    "train": "UGC1677995860",
-    "train_comp": "UGC1731023882",
-    "snow_rush": "UGC1994132144",
-    "ww2_rush": "UGC2075483313",
-    "desert_rush": "UGC2116639602"
-  },
+    "Quest_items": "SVR_Cheeto_Items"
+      },
   "players": {
     "PCplayer1": 765611465797498572,
     "Questplayer2": "Questplayer2"
