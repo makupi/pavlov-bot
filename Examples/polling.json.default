@@ -1,0 +1,10 @@
+{
+    "playerpoll": {
+        "type": "player",
+        "servers": "default",
+        "player_polling_interval": "1",
+        "player_polling_channel": "900210429043830814",
+        "player_polling_message": "`{servername}` is busy! {aplayers} players are on!",
+        "amount_of_players_trigger": "5"
+    } 
+}
