@@ -26,3 +26,6 @@ class Polling:
             else:
                 raise PollingSettingsNotFoundError(name)
         return pollingsettings
+
+    def get_names(self, poll_group: str = None):
+        return list(self._pollingsettings.keys())
