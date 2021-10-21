@@ -4,35 +4,23 @@
         "ip": "13.75.174.32",
         "port": 9104,
         "password": "testing123"
-        "player_polling": "True",
-        "PPInterval": "1.0",
-        "player_polling_channel": "900210429043830814"
     },
     "snd1": {
         "admins": [445232625892065282, 456868612788092938],
         "ip": "127.0.0.1",
         "port": 9101,
         "password": "somepassword"
-        "player_polling": "True",
-        "PPInterval": "1.0",
-        "player_polling_channel": "900210429043830814"
     },
     "snd2": {
         "admins": [445232625892065282, 456868612788092938],
         "ip": "127.0.0.1",
         "port": 9102,
         "password": "someotherpassword"
-        "player_polling": "True",
-        "PPInterval": "1.0",
-        "player_polling_channel": "900210429043830814"
     },
     "FL_Rush": {
         "admins": [445232625892065282, 456868612788092938],
         "ip": "127.0.0.1",
         "port": 9103,
         "password": "notmypassword"
-        "player_polling": "True",
-        "PPInterval": "1.0",
-        "player_polling_channel": "900210429043830814"
     }
 }

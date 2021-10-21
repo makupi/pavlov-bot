@@ -45,7 +45,11 @@ async def check_perm_admin(
 
 
 def check_has_any_role(
-    ctx, super_roles: list, role_format: str, server_name: str = None, global_check: bool = True,
+    ctx,
+    super_roles: list,
+    role_format: str,
+    server_name: str = None,
+    global_check: bool = True,
 ):
     for super_role in super_roles:
         super_role = discord.utils.get(ctx.author.roles, name=super_role)
@@ -112,13 +116,13 @@ async def exec_server_command(ctx, server_name: str, command: str):
     if not hasattr(ctx, "pavlov") or pavlov is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
-            server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT,
+            server.get("ip"),
+            server.get("port"),
+            server.get("password"),
+            timeout=RCON_TIMEOUT,
         )
         if not hasattr(ctx, "pavlov"):
-            try:
-                ctx.pavlov = {server_name: pavlov}
-            except:
-                pass
+            ctx.pavlov = {server_name: pavlov}
         else:
             ctx.pavlov[server_name] = pavlov
     data = await pavlov.send(command)

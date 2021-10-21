@@ -2,11 +2,7 @@ import asyncio
 import json
 import os
 
-from bot.utils.pavlov import (
-    check_perm_admin,
-    check_perm_captain,
-    check_perm_moderator
-)
+from bot.utils.pavlov import check_perm_admin, check_perm_captain, check_perm_moderator
 
 PERMISSIONS = {
     "any": None,

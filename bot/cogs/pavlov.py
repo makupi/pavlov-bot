@@ -9,7 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import discord
-from discord.ext import tasks, commands
+from discord.ext import commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
