@@ -1,9 +1,11 @@
 import json
 import os
 
+
 class PollingSettingsNotFoundError(Exception):
     def __init__(self, PollingSettings: str):
-        self.pollingsettings = pollingsettings
+        self.pollingsettings = ""
+
 
 class Polling:
     def __init__(self, filename="polling.json"):
