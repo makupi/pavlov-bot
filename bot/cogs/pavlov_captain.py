@@ -8,8 +8,11 @@ from discord.ext import commands
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain, exec_server_command
-from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
-
+from bot.utils.players import (
+    exec_command_all_players,
+    exec_command_all_players_on_team,
+    parse_player_command_results,
+)
 
 
 MATCH_DELAY_RESETSND = 10
@@ -138,9 +141,7 @@ class PavlovCaptain(commands.Cog):
         teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
         embed = discord.Embed()
         for team in teams:
-            embed.add_field(
-                name=f"{team.name} members", value=team.member_repr(), inline=False
-            )
+            embed.add_field(name=f"{team.name} members", value=team.member_repr(), inline=False)
         await ctx.send(embed=embed)
 
         for index, team in enumerate(teams):
@@ -161,37 +162,34 @@ class PavlovCaptain(commands.Cog):
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
-    @commands.command() 
-    async def flush(self, ctx: commands.Context, server_name: str = config.default_server): 
-        """`{prefix}flush <servername>` 
+    @commands.command()
+    async def flush(self, ctx: commands.Context, server_name: str = config.default_server):
+        """`{prefix}flush <servername>`
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}flush snd1`
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, "RefreshList") 
-        player_list = data.get("PlayerList") 
-        non_alias_player_ids = list() 
-        for player in player_list: 
-            check = aliases.find_player_alias(player.get("UniqueId")) 
-            if check is None: 
-                non_alias_player_ids.append(player.get("UniqueId")) 
-        if len(non_alias_player_ids) == 0: 
-            await ctx.send( 
-                embed=discord.Embed(title=f"No players to flush on `{server_name}`") 
-            ) 
-            return 
-        to_kick_id = random.choice(non_alias_player_ids) 
-        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}") 
-        kick = data.get("Kick") 
-        if not kick: 
-            await ctx.send( 
-                embed=discord.Embed( 
-                    title=f"Encountered error while flushing on `{server_name}`" 
-                ) 
-            ) 
-        else: 
-            await ctx.send(embed=discord.Embed(title=f"Successfully flushed `{server_name}`")) 
+        data = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = data.get("PlayerList")
+        non_alias_player_ids = list()
+        for player in player_list:
+            check = aliases.find_player_alias(player.get("UniqueId"))
+            if check is None:
+                non_alias_player_ids.append(player.get("UniqueId"))
+        if len(non_alias_player_ids) == 0:
+            await ctx.send(embed=discord.Embed(title=f"No players to flush on `{server_name}`"))
+            return
+        to_kick_id = random.choice(non_alias_player_ids)
+        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
+        kick = data.get("Kick")
+        if not kick:
+            await ctx.send(
+                embed=discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
+            )
+        else:
+            await ctx.send(embed=discord.Embed(title=f"Successfully flushed `{server_name}`"))
+
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))

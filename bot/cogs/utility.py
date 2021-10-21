@@ -6,9 +6,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-PY_VERSION = (
-    f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-)
+PY_VERSION = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 
 class Utility(commands.Cog):

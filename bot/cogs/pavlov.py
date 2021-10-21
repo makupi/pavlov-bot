@@ -170,10 +170,9 @@ class Pavlov(commands.Cog):
             for player in black_list:
                 paginator.add_line(f"<{str(player)}>")
             await paginator.create(ctx, embed=embed)
-        else: 
+        else:
             embed.description = "No banned players found."
             await ctx.send(embed=embed)
-           
 
     @commands.command()
     async def itemlist(self, ctx, server_name: str = config.default_server):
@@ -184,7 +183,7 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(ctx, server_name, "ItemList")
         item_list = data.get("ItemList")
         embed = discord.Embed(title=f"Items available:")
-        embed.description = '\n'
+        embed.description = "\n"
         if len(item_list) == 0:
             embed.description = f"Currently no Items available"
         for item in item_list:
@@ -202,7 +201,7 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
         embed = discord.Embed(title=f"**Active maps** on `{server_name}`:")
-        embed.description = '\n'
+        embed.description = "\n"
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
@@ -226,10 +225,12 @@ class Pavlov(commands.Cog):
                 embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-            embed.description = '\n'
+            embed.description = "\n"
             for player in player_list:
                 await asyncio.sleep(0.1)
-                data2 = await exec_server_command(ctx, server_name, f"InspectPlayer {player.get('UniqueId')}")
+                data2 = await exec_server_command(
+                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
+                )
                 team_id = data2.get("PlayerInfo").get("TeamId")
                 dead = data2.get("PlayerInfo").get("Dead")
                 if team_id == "0":
@@ -237,9 +238,9 @@ class Pavlov(commands.Cog):
                 elif team_id == "1":
                     team_name = ":red_square:"
                 if dead == True:
-                    dead = ':skull:'
+                    dead = ":skull:"
                 elif dead == False:
-                    dead = ':slight_smile:'
+                    dead = ":slight_smile:"
                 embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
         if ctx.batch_exec:
             return embed.description
@@ -354,6 +355,7 @@ class Pavlov(commands.Cog):
                 desc += "\n"
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
+
 
 def setup(bot):
     bot.add_cog(Pavlov(bot))

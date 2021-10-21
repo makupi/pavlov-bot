@@ -28,7 +28,7 @@ class Teams(commands.Cog):
             return
         team = aliases.get_team(team_name)
         team.ringers_reset()
-        players = players_arg.split(',')
+        players = players_arg.split(",")
         for player in players:
             player = SteamPlayer.convert(player)
             team.ringer_add(player)
