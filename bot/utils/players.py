@@ -89,6 +89,7 @@ async def get_teams(server):
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     for player in player_list:
+        await asyncio.sleep(0.1)
         data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
         team_id = data2.get("PlayerInfo").get("TeamId")
         if team_id == "0":
@@ -104,7 +105,19 @@ async def get_kda(server):
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     for player in player_list:
+        await asyncio.sleep(0.1)
         data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
         kda = data2.get("PlayerInfo").get("KDA")
         kdalist.update({player.get("UniqueId"): kda})
     return kdalist
+async def get_alive(server):
+    ctx = ""
+    alivelist = {}
+    data = await exec_server_command(ctx, server, "RefreshList")
+    player_list = data.get("PlayerList")
+    for player in player_list:
+        await asyncio.sleep(0.1)
+        data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
+        dead = data2.get("PlayerInfo").get("Dead")
+        alivelist.update({player.get("UniqueId"): dead})
+    return alivelist

@@ -13,6 +13,7 @@ from discord.ext import tasks, commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
+from bot.utils.players import get_teams, get_kda, get_alive
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -47,7 +48,7 @@ class Pavlov(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    async def get_map_alias(self, map_label: str) -> [str, str]:
+    async def get_map_alias(self, map_label: str):
         if map_label in self._map_aliases:
             _map = self._map_aliases.get(map_label)
             return _map.get("name"), _map.get("image")
@@ -226,22 +227,33 @@ class Pavlov(commands.Cog):
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
             embed.description = "\n"
-            for player in player_list:
-                await asyncio.sleep(0.1)
-                data2 = await exec_server_command(
-                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-                )
-                team_id = data2.get("PlayerInfo").get("TeamId")
-                dead = data2.get("PlayerInfo").get("Dead")
-                if team_id == "0":
+            teamblue, teamred = get_teams(server_name)
+            kdalist = get_kda(server_name)
+            alivelist = get_alive(server_name)
+            if len(teamred) == 0:
+                for i in player_list:
+                    if alivelist.get(i):
+                        dead = ":skull:"
+                    elif not alivelist.get(i):
+                        dead = ":slight_smile:"
+                    embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> {kdalist.get(i)}" 
+            else:
+                embed.description += f"\n **Team Blue**"
+                for i in teamblue:
                     team_name = ":blue_square:"
-                elif team_id == "1":
-                    team_name = ":red_square:"
-                if dead == True:
-                    dead = ":skull:"
-                elif dead == False:
-                    dead = ":slight_smile:"
-                embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
+                    if alivelist.get(i):
+                        dead = ":skull:"
+                    elif not alivelist.get(i):
+                        dead = ":slight_smile:"
+                    embed.description += f"\n - {dead} {team_name} {i} {kdalist.get(i)}"
+                embed.description += f"\n **Team Red**"
+                for i in teamred:
+                    team_name = ":blue_square:"
+                    if alivelist.get(i):
+                        dead = ":skull:"
+                    elif not alivelist.get(i):
+                        dead = ":slight_smile:"
+                    embed.description += f"\n - {dead} {team_name} {i} {kdalist.get(i)}"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
@@ -330,7 +342,10 @@ class Pavlov(commands.Cog):
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")
                 map_label = server_info.get("MapLabel")
-                map_name, _ = await self.get_map_alias(map_label)
+                if map_label.startswith('SVR'):
+                    map_name = map_label
+                else:
+                    map_name, _ = await self.get_map_alias(map_label)
                 map_alias = aliases.find_map_alias(map_label)
                 if not map_name:
                     map_name = ""

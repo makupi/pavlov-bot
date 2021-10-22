@@ -14,7 +14,8 @@
         "polling_interval": "0.25",
         "polling_channel": "900210429043830814",
         "tk_threshold": "-10",
-        "tk_action": "kick"
+        "tk_action": "kick",
+        "autobalance_min_players": "6"
     }
 
 }

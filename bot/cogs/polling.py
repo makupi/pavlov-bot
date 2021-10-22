@@ -35,26 +35,49 @@ class Polling(commands.Cog):
                 interval = float(pollings.get("polling_interval")) * 60
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {poll} on server {server}")
-                await self.player_polling(pollings, server, poll)
+                try:
+                    state = await self.player_polling(pollings, server, poll, state)
+                except:
+                    state = await self.player_polling(pollings, server, poll, 0)
             if pollings.get("type") == "autobalance":
                 interval = float(pollings.get("polling_interval")) * 60
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {poll} on server {server}")
                 await self.autobalance_polling(pollings, server, poll)
 
-    async def player_polling(self, pollings, server, poll: str):
+    async def player_polling(self, pollings, server, poll: str, old_state: int):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = ""
         data = await exec_server_command(ctx, server, "RefreshList")
-        player_list = data.get("PlayerList")
-        t_values = {
-            "servername": server,
-            "aplayers": len(player_list),
-        }
-        if len(player_list) >= int(pollings.get("amount_of_players_trigger")):
-            embed = discord.Embed(title=pollings.get("polling_message").format(**t_values))
-            # embed.add_field(name="Mention", value="<@&" + pollings.get('polling_role') + ">")
-            await channel.send(embed=embed)
+        new_state = len(data.get("PlayerList"))
+        if old_state == new_state:
+            # embed = discord.Embed(title=f"`{server}` has not gained/lost players. {new_state} players are on!")
+            # await channel.send(embed=embed)
+            return new_state
+        else:
+            if old_state > new_state:
+                if old_state - new_state == 1:
+                    embed = discord.Embed(
+                        title=f"`{server}` lost {old_state - new_state} player! {new_state} players are on!"
+                    )
+                else:
+                    embed = discord.Embed(
+                        title=f"`{server}` lost {old_state - new_state} players! {new_state} players are on!"
+                    )
+                await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
+                return new_state
+            elif old_state < new_state:
+                if new_state - old_state == 1:
+                    embed = discord.Embed(
+                        title=f"`{server}` gained {new_state - old_state} new player! {new_state} players are on!"
+                    )
+                else:
+                    embed = discord.Embed(
+                        title=f"`{server}` gained {new_state - old_state} new players! {new_state} players are on!"
+                    )
+                # embed.add_field(name="Mention", value="<@&" + pollings.get('polling_role') + ">")
+                await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
+                return new_state
 
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
@@ -64,13 +87,19 @@ class Polling(commands.Cog):
         for k, v in kdalist.items():
             kda = v.split("/")
             if int(kda[2]) > int(pollings.get("tk_threshold")):
+                logging.info(f"Task {poll}: TK threshold triggered for {k}")
+                logging.info(f"Task {poll}: Peforming tk action {pollings.get('tk_action')}")
                 if pollings.get("tk_action").casefold() == "kick":
                     await exec_server_command(ctx, server, f"Kick {k}")
                 elif pollings.get("tk_action").casefold() == "ban":
                     await exec_server_command(ctx, server, f"Ban {k}")
+                elif pollings.get("tk_action").casefold() == "test":
+                    pass
         if len(teamblue) == len(teamred):
             pass
         elif len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
+            pass
+        elif int(pollings.get("autobalance_min_players")) > len(teamblue) + len(teamred):
             pass
         else:
             try:
