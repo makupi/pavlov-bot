@@ -227,9 +227,9 @@ class Pavlov(commands.Cog):
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
             embed.description = "\n"
-            teamblue, teamred = get_teams(server_name)
-            kdalist = get_kda(server_name)
-            alivelist = get_alive(server_name)
+            teamblue, teamred = await get_teams(server_name)
+            kdalist = await get_kda(server_name)
+            alivelist = await get_alive(server_name)
             if len(teamred) == 0:
                 for i in player_list:
                     if alivelist.get(i):
@@ -251,7 +251,7 @@ class Pavlov(commands.Cog):
                     embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
                 embed.description += f"\n **Team Red**"
                 for i in teamred:
-                    team_name = ":blue_square:"
+                    team_name = ":red_square:"
                     if alivelist.get(i):
                         dead = ":skull:"
                     elif not alivelist.get(i):

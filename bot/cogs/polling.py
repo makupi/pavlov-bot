@@ -61,7 +61,7 @@ class Polling(commands.Cog):
             else:
                 are_is = "are"
                 player_players = "players"
-            if old_state - new_state == 1:
+            if old_state - new_state == 1 or new_state - old_state == 1:
                 player_players2 = "player"
             else:
                 player_players2 = "players"
