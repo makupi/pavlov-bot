@@ -236,7 +236,7 @@ class Pavlov(commands.Cog):
                         dead = ":skull:"
                     elif not alivelist.get(i):
                         dead = ":slight_smile:"
-                    embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> {kdalist.get(i)}" 
+                    embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}" 
             else:
                 embed.description += f"\n **Team Blue**"
                 for i in teamblue:
@@ -245,7 +245,10 @@ class Pavlov(commands.Cog):
                         dead = ":skull:"
                     elif not alivelist.get(i):
                         dead = ":slight_smile:"
-                    embed.description += f"\n - {dead} {team_name} {i} {kdalist.get(i)}"
+                    for ir in player_list:
+                        if i == ir.get('UniqueId'):
+                            user_name = ir.get('Username')
+                    embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
                 embed.description += f"\n **Team Red**"
                 for i in teamred:
                     team_name = ":blue_square:"
@@ -253,7 +256,10 @@ class Pavlov(commands.Cog):
                         dead = ":skull:"
                     elif not alivelist.get(i):
                         dead = ":slight_smile:"
-                    embed.description += f"\n - {dead} {team_name} {i} {kdalist.get(i)}"
+                    for ir in player_list:
+                        if i == ir.get('UniqueId'):
+                            user_name = ir.get('Username')
+                    embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)

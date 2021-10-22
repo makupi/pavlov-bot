@@ -55,27 +55,26 @@ class Polling(commands.Cog):
             # await channel.send(embed=embed)
             return new_state
         else:
+            if new_state == 1:
+                are_is = "is"
+                player_players = "player"
+            else:
+                are_is = "are"
+                player_players = "players"
+            if old_state - new_state == 1:
+                player_players2 = "player"
+            else:
+                player_players2 = "players"
             if old_state > new_state:
-                if old_state - new_state == 1:
-                    embed = discord.Embed(
-                        title=f"`{server}` lost {old_state - new_state} player! {new_state} players are on!"
-                    )
-                else:
-                    embed = discord.Embed(
-                        title=f"`{server}` lost {old_state - new_state} players! {new_state} players are on!"
-                    )
+                embed = discord.Embed(
+                    title=f"`{server}` lost {old_state - new_state} {player_players2}! {new_state} {player_players} {are_is} on!"
+                )
                 await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
                 return new_state
             elif old_state < new_state:
-                if new_state - old_state == 1:
-                    embed = discord.Embed(
-                        title=f"`{server}` gained {new_state - old_state} new player! {new_state} players are on!"
-                    )
-                else:
-                    embed = discord.Embed(
-                        title=f"`{server}` gained {new_state - old_state} new players! {new_state} players are on!"
-                    )
-                # embed.add_field(name="Mention", value="<@&" + pollings.get('polling_role') + ">")
+                embed = discord.Embed(
+                    title=f"`{server}` gained {new_state - old_state} new {player_players2}! {new_state} {player_players} {are_is} on!"
+                )
                 await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
                 return new_state
 
