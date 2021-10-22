@@ -4,14 +4,12 @@
         "servers": "ttt tdm",
         "polling_interval": "1",
         "polling_channel": "900210429043830814",
-        "polling_message": "`{servername}` is busy! {aplayers} players are on!",
         "polling_role": "900500899166842911",
-        "amount_of_players_trigger": "5"
     },
     "autobalance": {
         "type": "autobalance",
         "servers": "tdm",
-        "polling_interval": "0.25",
+        "polling_interval": "1",
         "polling_channel": "900210429043830814",
         "tk_threshold": "-10",
         "tk_action": "kick",
