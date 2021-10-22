@@ -80,3 +80,31 @@ async def parse_player_command_results(ctx, data, embed, server_name):
             embed.add_field(name=i.get("UniqueID"), value=result, inline=False)
         embed.description = f"{success} out of {success + failure} players affected"
     return embed
+
+
+async def get_teams(server):
+    teamblue = []
+    teamred = []
+    ctx = ""
+    data = await exec_server_command(ctx, server, "RefreshList")
+    player_list = data.get("PlayerList")
+    for player in player_list:
+        data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
+        team_id = data2.get("PlayerInfo").get("TeamId")
+        if team_id == "0":
+            teamblue.append(player.get("UniqueId"))
+        elif team_id == "1":
+            teamred.append(player.get("UniqueId"))
+    return teamblue, teamred
+
+
+async def get_kda(server):
+    ctx = ""
+    kdalist = {}
+    data = await exec_server_command(ctx, server, "RefreshList")
+    player_list = data.get("PlayerList")
+    for player in player_list:
+        data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
+        kda = data2.get("PlayerInfo").get("KDA")
+        kdalist.update({player.get("UniqueId"): kda})
+    return kdalist
