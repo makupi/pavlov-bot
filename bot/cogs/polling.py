@@ -85,15 +85,20 @@ class Polling(commands.Cog):
         kdalist = await get_kda(server)
         for k, v in kdalist.items():
             kda = v.split("/")
-            if int(kda[2]) > int(pollings.get("tk_threshold")):
+            score = int(kda[2])  
+            if score < int(pollings.get("tk_threshold")):
                 logging.info(f"Task {poll}: TK threshold triggered for {k}")
                 logging.info(f"Task {poll}: Peforming tk action {pollings.get('tk_action')}")
                 if pollings.get("tk_action").casefold() == "kick":
                     await exec_server_command(ctx, server, f"Kick {k}")
+                    logging.info(f"Player {k} kicked for TK from server {server} at score {score}")
                 elif pollings.get("tk_action").casefold() == "ban":
                     await exec_server_command(ctx, server, f"Ban {k}")
+                    logging.info(f"Player {k} banned for TK from server {server} at score {score}")
                 elif pollings.get("tk_action").casefold() == "test":
+                    logging.info(f"Player {k} would have been actioned for TK from server {server} at score {score}")
                     pass
+        logging.info(f"Starting autobalance at {len(teamblue)}/{len(teamred)}")
         if len(teamblue) == len(teamred):
             pass
         elif len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
@@ -108,15 +113,27 @@ class Polling(commands.Cog):
                     if len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
                         raise Exception
                     elif len(teamblue) > len(teamred):
-                        data = await exec_server_command(
-                            ctx, server, f"SwitchTeam {random.choice(teamblue)} 1"
-                        )
-                        print(data)
+                        switcher = random.choice(teamblue)
+                        logging.info(f"Player {switcher} moved from blue to red on {server} at playercount {len(teamblue) + len(teamred)} ratio {len(teamblue)}/{len(teamred)} ")
+                        if pollings.get("autobalance_testing"):
+                            logging.info(f"Just testing")
+                            pass
+                        else:
+                            data = await exec_server_command(
+                                ctx, server, f"SwitchTeam {switcher} 1"
+                            )
+                            print(data)
                     elif len(teamred) > len(teamblue):
-                        data = await exec_server_command(
-                            ctx, server, f"SwitchTeam {random.choice(teamred)} 0"
-                        )
-                        print(data)
+                        switcher = random.choice(teamred)
+                        logging.info(f"Player {switcher} moved from red to blue on {server} at playercount {len(teamblue) + len(teamred)} ratio {len(teamblue)}/{len(teamred)} ")
+                        if pollings.get("autobalance_testing"):
+                            logging.info(f"Just testing")
+                            pass
+                        else:
+                            data = await exec_server_command(
+                                ctx, server, f"SwitchTeam {switcher} 0"
+                            )
+                            print(data)
             except:
                 pass
             embed = discord.Embed(title=f"Autobalanced `{server}`")
