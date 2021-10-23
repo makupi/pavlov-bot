@@ -105,7 +105,7 @@ class Polling(commands.Cog):
             pass
         elif int(pollings.get("autobalance_min_players")) > len(teamblue) + len(teamred):
             pass
-        else:
+        elif int(pollings.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
             try:
                 while True:
                     teamblue, teamred = await get_teams(server)
