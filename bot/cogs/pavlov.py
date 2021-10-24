@@ -219,14 +219,22 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
-        if len(player_list) == 0:
-            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
-        else:
-            if len(player_list) == 1:
-                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+        blue_score = data.get("Team0Score")
+        red_score = data.get("Team1Score")
+        gameround = data.get("Round")
+        gamemode = data.get("GameMode")
+        map_label = data.get("MapLabel")
+        map_alias = aliases.find_map_alias(map_label)
+        if ctx.batch_exec:
+            if len(player_list) == 0:
+                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
             else:
-                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-            embed.description = "\n"
+                if len(player_list) == 1:
+                    embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+                else:
+                    embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
+                    embed.description = "\n"
+                    embed.description = f"Round {gameround} on map {map_alias} with Blue: {blue_score} vs Red: {red_score}:\n"
             teamblue, teamred = await get_teams(server_name)
             kdalist = await get_kda(server_name)
             alivelist = await get_alive(server_name)
@@ -260,9 +268,9 @@ class Pavlov(commands.Cog):
                         if i == ir.get('UniqueId'):
                             user_name = ir.get('Username')
                     embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-        if ctx.batch_exec:
-            return embed.description
-        await ctx.send(embed=embed)
+            if ctx.batch_exec:
+                return embed.description
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
