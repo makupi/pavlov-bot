@@ -2,6 +2,7 @@ import logging
 from bot.utils import servers, polling
 from bot.utils.pavlov import exec_server_command
 from bot.utils.players import get_stats
+from collections import namedtuple
 import discord
 import asyncio
 import random
@@ -36,51 +37,50 @@ class Polling(commands.Cog):
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {poll} on server {server}")
                 try:
-                    state = await self.player_polling(pollings, server, poll, state)
+                    state = await self.player_polling(pollings, server, state)
                 except:
-                    state = await self.player_polling(pollings, server, poll, 0)
+                    state = await self.player_polling(pollings, server, '')
             if pollings.get("type") == "autobalance":
                 interval = float(pollings.get("polling_interval")) * 60
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {poll} on server {server}")
                 await self.autobalance_polling(pollings, server, poll)
 
-    async def player_polling(self, pollings, server, poll: str, old_state: int):
+    async def player_polling(self, pollings, server, old_state: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
-        ctx = ""
+        ctx = 'noctx'
         data = await exec_server_command(ctx, server, "RefreshList")
-        new_state = len(data.get("PlayerList"))
-        if old_state == new_state:
-            # embed = discord.Embed(title=f"`{server}` has not gained/lost players. {new_state} players are on!")
-            # await channel.send(embed=embed)
-            return new_state
-        else:
-            if new_state == 1:
-                are_is = "is"
-                player_players = "player"
-            else:
-                are_is = "are"
-                player_players = "players"
-            if old_state - new_state == 1 or new_state - old_state == 1:
-                player_players2 = "player"
-            else:
-                player_players2 = "players"
-            if old_state > new_state:
-                embed = discord.Embed(
-                    title=f"`{server}` lost {old_state - new_state} {player_players2}! {new_state} {player_players} {are_is} on!"
-                )
-                await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
+        amt = len(data.get("PlayerList"))
+        lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
+        if int(highs) <= amt:
+            new_state = 'high'
+            embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
+            if old_state == new_state:
                 return new_state
-            elif old_state < new_state:
-                embed = discord.Embed(
-                    title=f"`{server}` gained {new_state - old_state} new {player_players2}! {new_state} {player_players} {are_is} on!"
-                )
-                await channel.send("<@&" + pollings.get("polling_role") + ">", embed=embed)
+            else:
+                await channel.send(pollings.get('polling_role'),embed=embed)
                 return new_state
+        elif int(meds) <= amt:
+            new_state = 'medium'
+            embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
+            if old_state == new_state:
+                return new_state
+            else:
+                await channel.send(pollings.get('polling_role'),embed=embed)
+                return new_state
+        elif int(lows) <= amt:
+            new_state = 'low'
+            embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
+            if old_state == new_state:
+                return new_state
+            else:
+                await channel.send(pollings.get('polling_role'),embed=embed)
+                return new_state
+                
 
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
-        ctx = ""
+        ctx = 'noctx'
         teamblue, teamred, kdalist, _ = await get_stats(server)
         for k, v in kdalist.items():
             kda = v.split("/")

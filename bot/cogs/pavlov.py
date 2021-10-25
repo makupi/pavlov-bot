@@ -234,7 +234,7 @@ class Pavlov(commands.Cog):
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
             embed.description = f"Round {gameround} on map {map_alias}:\n"
-        teamblue, teamred, kdalist, alivelist = await get_stats(server_name)
+        teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
                 if alivelist.get(i):

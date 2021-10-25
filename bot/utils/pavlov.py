@@ -5,7 +5,7 @@ import discord
 from bot.utils import servers, user_action_log
 from pavlov import PavlovRCON
 
-RCON_TIMEOUT = 5
+RCON_TIMEOUT = 60
 
 
 MODERATOR_ROLE = "Mod-{}"
@@ -107,19 +107,22 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
 
 async def exec_server_command(ctx, server_name: str, command: str):
     pavlov = None
-    if hasattr(ctx, "pavlov"):
-        pavlov = ctx.pavlov.get(server_name)
+    if ctx == 'noctx':
+            pavlov = ctx
+    else:
+        if hasattr(ctx, "pavlov"):
+            pavlov = ctx.pavlov.get(server_name)
     if not hasattr(ctx, "pavlov") or pavlov is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
             server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT,
         )
-        if not hasattr(ctx, "pavlov"):
-            try:
-                ctx.pavlov = {server_name: pavlov}
-            except:
-                pass
+        if ctx == 'noctx':
+            ctx = pavlov
         else:
-            ctx.pavlov[server_name] = pavlov
+            if not hasattr(ctx, "pavlov"):
+                ctx.pavlov = {server_name: pavlov}
+            else:
+                ctx.pavlov[server_name] = pavlov
     data = await pavlov.send(command)
     return data
