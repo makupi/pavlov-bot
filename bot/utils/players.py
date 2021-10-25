@@ -82,37 +82,12 @@ async def parse_player_command_results(ctx, data, embed, server_name):
     return embed
 
 
-async def get_teams(server):
+async def get_stats(server):
     teamblue = []
     teamred = []
-    ctx = ""
-    data = await exec_server_command(ctx, server, "RefreshList")
-    player_list = data.get("PlayerList")
-    for player in player_list:
-        await asyncio.sleep(0.1)
-        data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
-        team_id = data2.get("PlayerInfo").get("TeamId")
-        if team_id == "0":
-            teamblue.append(player.get("UniqueId"))
-        elif team_id == "1":
-            teamred.append(player.get("UniqueId"))
-    return teamblue, teamred
-
-
-async def get_kda(server):
-    ctx = ""
-    kdalist = {}
-    data = await exec_server_command(ctx, server, "RefreshList")
-    player_list = data.get("PlayerList")
-    for player in player_list:
-        await asyncio.sleep(0.1)
-        data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
-        kda = data2.get("PlayerInfo").get("KDA")
-        kdalist.update({player.get("UniqueId"): kda})
-    return kdalist
-async def get_alive(server):
-    ctx = ""
     alivelist = {}
+    kdalist = {}
+    ctx = ""
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     for player in player_list:
@@ -120,4 +95,11 @@ async def get_alive(server):
         data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
         dead = data2.get("PlayerInfo").get("Dead")
         alivelist.update({player.get("UniqueId"): dead})
-    return alivelist
+        kda = data2.get("PlayerInfo").get("KDA")
+        kdalist.update({player.get("UniqueId"): kda})
+        team_id = data2.get("PlayerInfo").get("TeamId")
+        if team_id == "0":
+            teamblue.append(player.get("UniqueId"))
+        elif team_id == "1":
+            teamred.append(player.get("UniqueId"))
+    return teamblue, teamred, kdalist, alivelist

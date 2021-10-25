@@ -1,7 +1,7 @@
 import logging
 from bot.utils import servers, polling
 from bot.utils.pavlov import exec_server_command
-from bot.utils.players import get_teams, get_kda
+from bot.utils.players import get_stats
 import discord
 import asyncio
 import random
@@ -81,8 +81,7 @@ class Polling(commands.Cog):
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = ""
-        teamblue, teamred = await get_teams(server)
-        kdalist = await get_kda(server)
+        teamblue, teamred, kdalist, _ = await get_stats(server)
         for k, v in kdalist.items():
             kda = v.split("/")
             score = int(kda[2])  
@@ -108,7 +107,7 @@ class Polling(commands.Cog):
         elif int(pollings.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
             try:
                 while True:
-                    teamblue, teamred = await get_teams(server)
+                    teamblue, teamred, _, _ = await get_stats(server)
                     print(len(teamblue) + " " + len(teamred))
                     if len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
                         raise Exception

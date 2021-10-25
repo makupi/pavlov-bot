@@ -45,8 +45,8 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg == 'all' or player_arg.startswith('team'):
-            if player_arg == 'all':
+        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
+            if player_arg.casefold() == 'all':
                 data = await exec_command_all_players(ctx, server_name, f"Kill all ")
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
@@ -57,6 +57,8 @@ class PavlovMod(commands.Cog):
             )
         embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -138,8 +140,8 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg == 'all' or player_arg.startswith('team'):
-            if player_arg == 'all':
+        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
+            if player_arg.casefold() == 'all':
                 data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
             elif player_arg.startswith('team'):
                 data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
@@ -150,6 +152,8 @@ class PavlovMod(commands.Cog):
             )
         embed = discord.Embed(title=f"**Slap {player_arg} {dmg}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()

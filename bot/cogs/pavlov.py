@@ -13,7 +13,7 @@ from discord.ext import tasks, commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
-from bot.utils.players import get_teams, get_kda, get_alive
+from bot.utils.players import get_stats
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -218,59 +218,56 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}players rush`
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
+        data2 = await exec_server_command(ctx, server_name, "ServerInfo")
         player_list = data.get("PlayerList")
-        blue_score = data.get("Team0Score")
-        red_score = data.get("Team1Score")
-        gameround = data.get("Round")
-        gamemode = data.get("GameMode")
-        map_label = data.get("MapLabel")
+        blue_score = data2.get('ServerInfo').get("Team0Score")
+        red_score = data2.get('ServerInfo').get("Team1Score")
+        gameround = data2.get('ServerInfo').get("Round")
+        gamemode = data2.get('ServerInfo').get("GameMode")
+        map_label = data2.get('ServerInfo').get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
+        if len(player_list) == 0:
+            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
+        else:
+            if len(player_list) == 1:
+                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+            else:
+                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
+            embed.description = f"Round {gameround} on map {map_alias}:\n"
+        teamblue, teamred, kdalist, alivelist = await get_stats(server_name)
+        if len(teamred) == 0:
+            for i in player_list:
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}" 
+        else:
+            embed.description += f"\n **Team Blue Score: {blue_score}**"
+            for i in teamblue:
+                team_name = ":blue_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get('UniqueId'):
+                        user_name = ir.get('Username')
+                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+            embed.description += f"\n **Team Red Score: {red_score}**"
+            for i in teamred:
+                team_name = ":red_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get('UniqueId'):
+                        user_name = ir.get('Username')
+                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
         if ctx.batch_exec:
-            if len(player_list) == 0:
-                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
-            else:
-                if len(player_list) == 1:
-                    embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
-                else:
-                    embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-                    embed.description = "\n"
-                    embed.description = f"Round {gameround} on map {map_alias} with Blue: {blue_score} vs Red: {red_score}:\n"
-            teamblue, teamred = await get_teams(server_name)
-            kdalist = await get_kda(server_name)
-            alivelist = await get_alive(server_name)
-            if len(teamred) == 0:
-                for i in player_list:
-                    if alivelist.get(i):
-                        dead = ":skull:"
-                    elif not alivelist.get(i):
-                        dead = ":slight_smile:"
-                    embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}" 
-            else:
-                embed.description += f"\n **Team Blue**"
-                for i in teamblue:
-                    team_name = ":blue_square:"
-                    if alivelist.get(i):
-                        dead = ":skull:"
-                    elif not alivelist.get(i):
-                        dead = ":slight_smile:"
-                    for ir in player_list:
-                        if i == ir.get('UniqueId'):
-                            user_name = ir.get('Username')
-                    embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-                embed.description += f"\n **Team Red**"
-                for i in teamred:
-                    team_name = ":red_square:"
-                    if alivelist.get(i):
-                        dead = ":skull:"
-                    elif not alivelist.get(i):
-                        dead = ":slight_smile:"
-                    for ir in player_list:
-                        if i == ir.get('UniqueId'):
-                            user_name = ir.get('Username')
-                    embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-            if ctx.batch_exec:
-                return embed.description
-            await ctx.send(embed=embed)
+            return embed.description
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
