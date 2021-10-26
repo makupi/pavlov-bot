@@ -31,6 +31,7 @@ class Polling(commands.Cog):
                 )
 
     async def new_poll(self, pollings, server: str, poll: str):
+       # state = 'low'
         while True:
             if pollings.get("type") == "player":
                 interval = float(pollings.get("polling_interval")) * 60
@@ -49,11 +50,14 @@ class Polling(commands.Cog):
     async def player_polling(self, pollings, server, old_state: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = 'noctx'
+        logging.info(f"Starting poll with state: {old_state}")
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
+        logging.info(f"Server has {amt} players")
         lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
         if int(highs) <= amt:
             new_state = 'high'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
@@ -62,6 +66,7 @@ class Polling(commands.Cog):
                 return new_state
         elif int(meds) <= amt:
             new_state = 'medium'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
@@ -70,6 +75,7 @@ class Polling(commands.Cog):
                 return new_state
         elif int(lows) <= amt:
             new_state = 'low'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
@@ -81,7 +87,7 @@ class Polling(commands.Cog):
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = 'noctx'
-        teamblue, teamred, kdalist, _ = await get_stats(server)
+        teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server)
         for k, v in kdalist.items():
             kda = v.split("/")
             score = int(kda[2])  
@@ -99,15 +105,18 @@ class Polling(commands.Cog):
                     pass
         logging.info(f"Starting autobalance at {len(teamblue)}/{len(teamred)}")
         if len(teamblue) == len(teamred):
+            logging.info(f"Exiting autobalance on equal teams")
             pass
         elif len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
+            logging.info(f"Exiting autobalance on odd number equal teams")
             pass
         elif int(pollings.get("autobalance_min_players")) > len(teamblue) + len(teamred):
+            logging.info(f"Exiting autobalance on min players")
             pass
         elif int(pollings.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
             try:
                 while True:
-                    teamblue, teamred, _, _ = await get_stats(server)
+                    teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server)
                     print(len(teamblue) + " " + len(teamred))
                     if len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
                         raise Exception

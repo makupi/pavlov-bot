@@ -226,6 +226,11 @@ class Pavlov(commands.Cog):
         gamemode = data2.get('ServerInfo').get("GameMode")
         map_label = data2.get('ServerInfo').get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
+        if map_alias == None:
+            map_name = map_label
+        else:
+            map_name = map_alias
+
         if len(player_list) == 0:
             embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
         else:
@@ -233,7 +238,10 @@ class Pavlov(commands.Cog):
                 embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-            embed.description = f"Round {gameround} on map {map_alias}:\n"
+        if gamemode == "SND":
+            embed.description = f"Round {gameround} on map {map_name}:\n"
+        else:
+            embed.description = f"Playing map {map_name}:\n" 
         teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
