@@ -31,7 +31,6 @@ class Polling(commands.Cog):
                 )
 
     async def new_poll(self, pollings, server: str, poll: str):
-       # state = 'low'
         while True:
             if pollings.get("type") == "player":
                 interval = float(pollings.get("polling_interval")) * 60
@@ -89,6 +88,8 @@ class Polling(commands.Cog):
         ctx = 'noctx'
         teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server)
         for k, v in kdalist.items():
+            if v == "None":
+                v = "0/0/0"
             kda = v.split("/")
             score = int(kda[2])  
             if score < int(pollings.get("tk_threshold")):
@@ -107,7 +108,7 @@ class Polling(commands.Cog):
         if len(teamblue) == len(teamred):
             logging.info(f"Exiting autobalance on equal teams")
             pass
-        elif len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
+        elif len(teamred) - 1 == len(teamblue) or len(teamred) + 1 == len(teamblue):
             logging.info(f"Exiting autobalance on odd number equal teams")
             pass
         elif int(pollings.get("autobalance_min_players")) > len(teamblue) + len(teamred):
@@ -146,7 +147,8 @@ class Polling(commands.Cog):
                 pass
             embed = discord.Embed(title=f"Autobalanced `{server}`")
             await channel.send(embed=embed)
-
+        else:
+            logging.info(f"Exiting autobalance on tolerence players")
 
 def setup(bot):
     bot.add_cog(Polling(bot))
