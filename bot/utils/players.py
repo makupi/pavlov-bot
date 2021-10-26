@@ -90,6 +90,7 @@ async def get_stats(ctx: str = "noctx", server: str = ""):
         teamred = []
         alivelist = {}
         kdalist = {}
+        scorelist = {}
         data = await exec_server_command(ctx, server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
@@ -99,9 +100,11 @@ async def get_stats(ctx: str = "noctx", server: str = ""):
             alivelist.update({player.get("UniqueId"): dead})
             kda = data2.get("PlayerInfo").get("KDA")
             kdalist.update({player.get("UniqueId"): kda})
+            score = data2.get("PlayerInfo").get("Score")
+            scorelist.update({player.get("UniqueId"): score})
             team_id = data2.get("PlayerInfo").get("TeamId")
             if team_id == "0":
                 teamblue.append(player.get("UniqueId"))
             elif team_id == "1":
                 teamred.append(player.get("UniqueId"))
-        return teamblue, teamred, kdalist, alivelist
+        return teamblue, teamred, kdalist, alivelist, scorelist

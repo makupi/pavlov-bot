@@ -48,12 +48,15 @@ class Polling(commands.Cog):
 
     async def player_polling(self, pollings, server, old_state: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
-        ctx = ''
+        ctx = 'noctx'
+        logging.info(f"Starting poll with state: {old_state}")
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
+        logging.info(f"Server has {amt} players")
         lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
         if int(highs) <= amt:
             new_state = 'high'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
             if old_state == new_state:
                 return new_state, ctx
@@ -62,6 +65,7 @@ class Polling(commands.Cog):
                 return new_state, ctx
         elif int(meds) <= amt:
             new_state = 'medium'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
             if old_state == new_state:
                 return new_state, ctx
@@ -70,6 +74,7 @@ class Polling(commands.Cog):
                 return new_state, ctx
         elif int(lows) <= amt:
             new_state = 'low'
+            logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
             if old_state == new_state:
                 return new_state, ctx
@@ -83,10 +88,11 @@ class Polling(commands.Cog):
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = 'noctx'
-        teamblue, teamred, kdalist, _ = await get_stats(server)
-        for k, v in kdalist.items():
-            kda = v.split("/")
-            score = int(kda[2])  
+        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
+        for k, v in scorelist.items():
+            if v is None:
+                score = 0
+            score = int(v)  
             if score < int(pollings.get("tk_threshold")):
                 logging.info(f"Task {poll}: TK threshold triggered for {k}")
                 logging.info(f"Task {poll}: Peforming tk action {pollings.get('tk_action')}")
@@ -101,17 +107,22 @@ class Polling(commands.Cog):
                     pass
         logging.info(f"Starting autobalance at {len(teamblue)}/{len(teamred)}")
         if len(teamblue) == len(teamred):
+            logging.info(f"Exiting autobalance on equal teams")
             pass
-        elif len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
+        elif len(teamred) - 1 == len(teamblue) or len(teamred) + 1 == len(teamblue):
+            logging.info(f"Exiting autobalance on odd number equal teams")
             pass
         elif int(pollings.get("autobalance_min_players")) > len(teamblue) + len(teamred):
+            logging.info(f"Exiting autobalance on min players")
             pass
         elif int(pollings.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
             try:
                 while True:
-                    teamblue, teamred, _, _ = await get_stats(server)
-                    print(len(teamblue) + " " + len(teamred))
-                    if len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
+                    teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
+                    logging.info(f"Blue:{(len(teamblue)} Red: {len(teamred))}")
+                    if len(teamred) == len(teamblue):
+                        raise Exception
+                    elif len(teamred) - 1 == len(teamblue) or len(teamred) + 1 == len(teamblue):
                         raise Exception
                     elif len(teamblue) > len(teamred):
                         switcher = random.choice(teamblue)
@@ -120,10 +131,7 @@ class Polling(commands.Cog):
                             logging.info(f"Just testing")
                             pass
                         else:
-                            data = await exec_server_command(
-                                ctx, server, f"SwitchTeam {switcher} 1"
-                            )
-                            print(data)
+                            await exec_server_command(ctx, server, f"SwitchTeam {switcher} 1")
                     elif len(teamred) > len(teamblue):
                         switcher = random.choice(teamred)
                         logging.info(f"Player {switcher} moved from red to blue on {server} at playercount {len(teamblue) + len(teamred)} ratio {len(teamblue)}/{len(teamred)} ")
@@ -131,15 +139,14 @@ class Polling(commands.Cog):
                             logging.info(f"Just testing")
                             pass
                         else:
-                            data = await exec_server_command(
-                                ctx, server, f"SwitchTeam {switcher} 0"
-                            )
-                            print(data)
+                            data = await exec_server_command(ctx, server, f"SwitchTeam {switcher} 0")
             except:
+                logging.info(f"exiting autobalance")
                 pass
-            embed = discord.Embed(title=f"Autobalanced `{server}`")
-            await channel.send(embed=embed)
-
+            #embed = discord.Embed(title=f"Autobalanced `{server}`")
+            #await channel.send(embed=embed)
+        else:
+            logging.info(f"Exiting autobalance on tolerence players")
 
 def setup(bot):
     bot.add_cog(Polling(bot))
