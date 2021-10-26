@@ -86,7 +86,7 @@ class Polling(commands.Cog):
     async def autobalance_polling(self, pollings, server, poll: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         ctx = 'noctx'
-        teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server)
+        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
         for k, v in kdalist.items():
             if v == "None":
                 v = "0/0/0"
@@ -117,7 +117,7 @@ class Polling(commands.Cog):
         elif int(pollings.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
             try:
                 while True:
-                    teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server)
+                    teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
                     print(len(teamblue) + " " + len(teamred))
                     if len(teamred) - 1 == len(teamblue) and len(teamred) == len(teamblue) + 1:
                         raise Exception

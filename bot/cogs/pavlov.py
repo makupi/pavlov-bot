@@ -242,7 +242,7 @@ class Pavlov(commands.Cog):
             embed.description = f"Round {gameround} on map {map_name}:\n"
         else:
             embed.description = f"Playing map {map_name}:\n" 
-        teamblue, teamred, kdalist, alivelist = await get_stats(ctx, server_name)
+        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
                 if alivelist.get(i):
