@@ -61,30 +61,30 @@ class Polling(commands.Cog):
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
             if old_state == new_state:
-                return new_state, ctx
+                return new_state
             else:
                 await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state, ctx
+                return new_state
         elif int(meds) <= amt:
             new_state = 'medium'
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
             if old_state == new_state:
-                return new_state, ctx
+                return new_state
             else:
                 await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state, ctx
+                return new_state
         elif int(lows) <= amt:
             new_state = 'low'
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
             if old_state == new_state:
-                return new_state, ctx
+                return new_state
             else:
                 await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state, ctx
+                return new_state
         else:
-            return 'none', ctx
+            return 'none'
                 
 
     #async def autobalance_polling(self, pollings, server, poll: str):
