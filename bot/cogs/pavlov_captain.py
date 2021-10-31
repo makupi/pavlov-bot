@@ -59,35 +59,6 @@ class PavlovCaptain(commands.Cog):
                 title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
             )
         await ctx.send(embed=embed)
-        components = [
-            [
-            Select(
-                placeholder='Select something!',
-                options=[
-                    SelectOption(label='Option 1', value='option_1', emoji='1️⃣'),
-                    SelectOption(label='Option 2', value='option_2', emoji='2️⃣'),
-                    SelectOption(label='Option 3', value='option_3', emoji='3️⃣')
-                ],
-                min_values=1,
-                max_values=3
-            )
-            ]
-        ]
-
-        await ctx.send('Select!', components=components)
-
-    while True:
-        try:
-            interaction = await self.bot.wait_for(
-                'select_option',
-                check=lambda inter: inter.message.id == message.id,
-                timeout=60
-            )
-        except asyncio.TimeoutError:
-            for row in components:
-                row.disable_components()
-            return await message.edit(content='Timed out!', components=components)
-        await interaction.send(f'You selected `{interaction.values}`!')
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server):
@@ -107,7 +78,12 @@ class PavlovCaptain(commands.Cog):
         else:
             embed = discord.Embed(title=f"SND successfully reset")
         await ctx.send(embed=embed)
-
+        await ctx.send(
+            "Hello, World!",
+            components=[
+                Button(label="WOW button!", custom_id="button1")
+            ],
+        )
     @commands.command()
     async def switchteam(
         self,
