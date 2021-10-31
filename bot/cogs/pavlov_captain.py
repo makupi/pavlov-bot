@@ -6,6 +6,9 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
+import discord_components
+from discord_components import Button, Select, SelectOption, ComponentsBot
+
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
@@ -56,6 +59,35 @@ class PavlovCaptain(commands.Cog):
                 title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
             )
         await ctx.send(embed=embed)
+        components = [
+            [
+            Select(
+                placeholder='Select something!',
+                options=[
+                    SelectOption(label='Option 1', value='option_1', emoji='1️⃣'),
+                    SelectOption(label='Option 2', value='option_2', emoji='2️⃣'),
+                    SelectOption(label='Option 3', value='option_3', emoji='3️⃣')
+                ],
+                min_values=1,
+                max_values=3
+            )
+            ]
+        ]
+
+        await ctx.send('Select!', components=components)
+
+    while True:
+        try:
+            interaction = await self.bot.wait_for(
+                'select_option',
+                check=lambda inter: inter.message.id == message.id,
+                timeout=60
+            )
+        except asyncio.TimeoutError:
+            for row in components:
+                row.disable_components()
+            return await message.edit(content='Timed out!', components=components)
+        await interaction.send(f'You selected `{interaction.values}`!')
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server):
