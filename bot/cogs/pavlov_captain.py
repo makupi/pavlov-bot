@@ -6,9 +6,9 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from discord_components import Button, Select, SelectOption, ComponentsBot
+from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
 
-from bot.utils import SteamPlayer, aliases, config
+from bot.utils import SteamPlayer, aliases, config, servers
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
 
@@ -25,6 +25,100 @@ class PavlovCaptain(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
+
+    @commands.command()
+    async def gamesetup(self, ctx):
+
+        async def team1(t1):
+            global team_one
+            team_one = t1.values[0]
+
+        async def team2(t2):
+            global team_two
+            team_two = t2.values[0]
+
+        async def actions(i1):
+            await message.edit(content='')
+            global server_name
+            server_name = i1.values[0]
+            if not await check_perm_captain(ctx, server_name):
+                return
+            if i1.author.id == ctx.author.id:
+                embed = discord.Embed(title=f"**{server_name} Game Menu**")
+                await i1.send(
+                    embed=embed,
+                    components=[
+                        self.bot.components_manager.add_callback(
+                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"), matchsetup
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kick", custom_id="button2"), kicker
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give All RPGs", custom_id="button3"), giverpgs
+                        )
+                    ],
+                )
+            else:
+                return
+
+        async def slapper(i1):
+            idata = await exec_command_all_players(ctx, server_name, "Slap all 69")
+            embed = discord.Embed(title=f"**Slap all 69** \n")
+            embed = await parse_player_command_results(ctx, idata, embed, server_name)
+            await i1.send(embed=embed)
+
+        async def giverpgs(i1):
+            cmd = "GiveItem all rl_rpg"
+            idata = await exec_command_all_players(ctx, server_name, cmd)
+            embed = discord.Embed(title=f"**{cmd}** \n")
+            embed = await parse_player_command_results(ctx, idata, embed, server_name)
+            await i1.send(embed=embed)
+
+        async def kicker(i1):
+            pdata = await exec_server_command(ctx, server_name, "RefreshList")
+            plist = pdata.get("PlayerList")
+            if len(plist) == 0:
+                embed = discord.Embed(title=f'**No players on `{server_name}`**')
+                await i1.send(embed=embed)
+                return
+            else:
+                pslist = []
+                for i in plist:
+                    pslist.append(
+                        SelectOption(label=str(i.get("Username")), value=str(i.get("UniqueId")))
+                    )
+                await i1.send(components=[Select(placeholder="Players", options=pslist)])
+                interaction = await self.bot.wait_for("select_option")
+                idata = await exec_server_command(ctx, server_name, f"Kick {interaction.values[0]}")
+                embed = discord.Embed(title=f"**Kick {interaction.values[0]}** \n")
+                embed = await parse_player_command_results(ctx, idata, embed, server_name)
+                await i1.send(embed=embed)
+        team_options = []
+        teams = aliases.get_teams_list()
+        for team in teams:
+            team_options.append(SelectOption(label=str(team.name), value=str(team.name)))
+        options = []
+        for i in servers.get_names():
+            options.append(SelectOption(label=str(i), value=str(i)))
+        embed = discord.Embed(title="**Select a server and team below:**")
+        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        message = await ctx.send(
+            embed=embed,
+            components=[
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Team1", options=team_options), team1
+                ),
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Team2", options=team_options), team2
+                ),
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Server", options=options), actions
+                )
+            ],
+        )
+
+
 
     @commands.command(aliases=["map"])
     async def switchmap(
@@ -66,6 +160,11 @@ class PavlovCaptain(commands.Cog):
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
+        async def resetoncemore(i):
+            if i.author.id == ctx.author.id:
+                data = await exec_server_command(ctx, server_name, "ResetSND")
+            else:
+                return
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, "ResetSND")
@@ -91,6 +190,7 @@ class PavlovCaptain(commands.Cog):
                 lambda interaction: resetsnd(ctx, server_name, interaction)
                 )
             ])
+
     @commands.command()
     async def switchteam(
         self,
