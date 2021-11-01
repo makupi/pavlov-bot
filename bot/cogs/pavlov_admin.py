@@ -32,35 +32,27 @@ class PavlovAdmin(commands.Cog):
                 return
             if i1.author.id == ctx.author.id:
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
+                ctx.interaction_exec = True
+                slap = self.bot.all_commands.get("slap")
                 await i1.send(
                     embed=embed,
                     components=[
                         self.bot.components_manager.add_callback(
-                            Button(label="Slap All", custom_id="button1"), slapper
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Kick", custom_id="button2"), kicker
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Give All RPGs", custom_id="button3"), giverpgs
+                            Button(label="Slap All Players for 69 HP", custom_id="button1"),
+                            lambda interaction: slap(ctx, 'all', '69', server_name, interaction)
                         )
+                        #self.bot.components_manager.add_callback(
+                        #    Button(label="Kick", custom_id="button2"),
+                        #    lambda interaction: self.slapper(interaction, ctx)
+                        #),
+                        #self.bot.components_manager.add_callback(
+                        #    Button(label="Give All RPGs", custom_id="button3"),
+                        #    lambda interaction: self.slapper(interaction, ctx)
+                        #)
                     ],
                 )
             else:
                 return
-
-        async def slapper(i1):
-            idata = await exec_command_all_players(ctx, server_name, "Slap all 69")
-            embed = discord.Embed(title=f"**Slap all 69** \n")
-            embed = await parse_player_command_results(ctx, idata, embed, server_name)
-            await i1.send(embed=embed)
-        
-        async def giverpgs(i1):
-            cmd = "GiveItem all rl_rpg"
-            idata = await exec_command_all_players(ctx, server_name, cmd)
-            embed = discord.Embed(title=f"**{cmd}** \n")
-            embed = await parse_player_command_results(ctx, idata, embed, server_name)
-            await i1.send(embed=embed)
 
         async def kicker(i1):
             pdata = await exec_server_command(ctx, server_name, "RefreshList")
