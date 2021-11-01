@@ -44,56 +44,24 @@ class PavlovCaptain(commands.Cog):
             if not await check_perm_captain(ctx, server_name):
                 return
             if i1.author.id == ctx.author.id:
+                matchsetup = self.bot.all_commands.get("matchsetup")
                 embed = discord.Embed(title=f"**{server_name} Game Menu**")
                 await i1.send(
                     embed=embed,
                     components=[
                         self.bot.components_manager.add_callback(
-                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"), matchsetup
+                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"), 
+                            lambda interaction: matchsetup(ctx, team_one, team_two, server_name, interaction)
                         ),
                         self.bot.components_manager.add_callback(
-                            Button(label="Kick", custom_id="button2"), kicker
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Give All RPGs", custom_id="button3"), giverpgs
+                            Button(label=f"T:{team_one} vs CT:{team_two}", custom_id="button1"), 
+                            lambda interaction: matchsetup(ctx, team_two, team_one, server_name, interaction)
                         )
                     ],
                 )
             else:
                 return
 
-        async def slapper(i1):
-            idata = await exec_command_all_players(ctx, server_name, "Slap all 69")
-            embed = discord.Embed(title=f"**Slap all 69** \n")
-            embed = await parse_player_command_results(ctx, idata, embed, server_name)
-            await i1.send(embed=embed)
-
-        async def giverpgs(i1):
-            cmd = "GiveItem all rl_rpg"
-            idata = await exec_command_all_players(ctx, server_name, cmd)
-            embed = discord.Embed(title=f"**{cmd}** \n")
-            embed = await parse_player_command_results(ctx, idata, embed, server_name)
-            await i1.send(embed=embed)
-
-        async def kicker(i1):
-            pdata = await exec_server_command(ctx, server_name, "RefreshList")
-            plist = pdata.get("PlayerList")
-            if len(plist) == 0:
-                embed = discord.Embed(title=f'**No players on `{server_name}`**')
-                await i1.send(embed=embed)
-                return
-            else:
-                pslist = []
-                for i in plist:
-                    pslist.append(
-                        SelectOption(label=str(i.get("Username")), value=str(i.get("UniqueId")))
-                    )
-                await i1.send(components=[Select(placeholder="Players", options=pslist)])
-                interaction = await self.bot.wait_for("select_option")
-                idata = await exec_server_command(ctx, server_name, f"Kick {interaction.values[0]}")
-                embed = discord.Embed(title=f"**Kick {interaction.values[0]}** \n")
-                embed = await parse_player_command_results(ctx, idata, embed, server_name)
-                await i1.send(embed=embed)
         team_options = []
         teams = aliases.get_teams_list()
         for team in teams:
