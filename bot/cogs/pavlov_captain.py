@@ -54,7 +54,7 @@ class PavlovCaptain(commands.Cog):
                             lambda interaction: matchsetup(ctx, team_one, team_two, server_name, interaction)
                         ),
                         self.bot.components_manager.add_callback(
-                            Button(label=f"T:{team_one} vs CT:{team_two}", custom_id="button1"), 
+                            Button(label=f"T:{team_one} vs CT:{team_two}", custom_id="button2"), 
                             lambda interaction: matchsetup(ctx, team_two, team_one, server_name, interaction)
                         )
                     ],
