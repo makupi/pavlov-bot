@@ -131,7 +131,7 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def slap(
-        self, ctx, player_arg: str, dmg: str, server_name: str = config.default_server
+        self, ctx, player_arg: str, dmg: str, server_name: str = config.default_server, interaction: str = ''
     ):
         """`{prefix}slap <player_id/all/team> <damage_amount> <server_name>`
         **Description**: Slaps a player for a specified damage amount.
@@ -154,6 +154,9 @@ class PavlovMod(commands.Cog):
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
             return embed.description
+        elif ctx.interaction_exec:
+            await interaction.send(embed=embed)
+            return
         await ctx.send(embed=embed)
 
     @commands.command()
