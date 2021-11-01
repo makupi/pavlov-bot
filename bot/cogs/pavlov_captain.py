@@ -61,6 +61,11 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server):
+        async def resetoncemore(i):
+            if i.author.id == ctx.author.id:
+                data = await exec_server_command(ctx, server_name, "ResetSND")
+            else:
+                return
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
@@ -77,7 +82,10 @@ class PavlovCaptain(commands.Cog):
         else:
             embed = discord.Embed(title=f"SND successfully reset")
         await ctx.send(embed=embed, components=[
-                Button(label="WOW button!", custom_id="button1")
+                self.bot.components_manager.add_callback(
+                    Button(label="Slap All", custom_id="button1")
+                , resetoncemore
+                )
             ])
     @commands.command()
     async def switchteam(
