@@ -25,23 +25,40 @@ class PavlovAdmin(commands.Cog):
     @commands.command()
     async def menu(self, ctx):
         async def actions(i1):
+            await message.edit(content='**Select Server:**')
             global server_name
             server_name = i1.values[0]
-            await i1.send(
-                f"**{server_name} Admin Menu**",
-                components=[
-                    self.bot.components_manager.add_callback(
-                        Button(label="Slap All", custom_id="button1"), slapper
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Kick", custom_id="button2"), kicker
-                    )
-                ],
-            )
+            if not await check_perm_admin(ctx, server_name):
+                return
+            if i1.author.id == ctx.author.id:
+                embed = discord.Embed(title=f"**{server_name} Admin Menu**")
+                await i1.send(
+                    embed=embed,
+                    components=[
+                        self.bot.components_manager.add_callback(
+                            Button(label="Slap All", custom_id="button1"), slapper
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kick", custom_id="button2"), kicker
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give All RPGs", custom_id="button3"), giverpgs
+                        )
+                    ],
+                )
+            else:
+                return
 
         async def slapper(i1):
             idata = await exec_command_all_players(ctx, server_name, "Slap all 69")
             embed = discord.Embed(title=f"**Slap all 69** \n")
+            embed = await parse_player_command_results(ctx, idata, embed, server_name)
+            await i1.send(embed=embed)
+        
+        async def giverpgs(i1):
+            cmd = "GiveItem all rl_rpg"
+            idata = await exec_command_all_players(ctx, server_name, cmd)
+            embed = discord.Embed(title=f"**{cmd}** \n")
             embed = await parse_player_command_results(ctx, idata, embed, server_name)
             await i1.send(embed=embed)
 
@@ -49,7 +66,8 @@ class PavlovAdmin(commands.Cog):
             pdata = await exec_server_command(ctx, server_name, "RefreshList")
             plist = pdata.get("PlayerList")
             if len(plist) == 0:
-                await i1.send(f'**No players on `{server_name}`**')
+                embed = discord.Embed(title=f'**No players on `{server_name}`**')
+                await i1.send(embed=embed)
                 return
             else:
                 pslist = []
@@ -67,10 +85,10 @@ class PavlovAdmin(commands.Cog):
         options = []
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
-        ar = ActionRow([Button(label="Slap All for 69 Damage"), Select(options=options)])
-        ar.custom_id = "potato"
-        await ctx.send(
-            "**Select Server:**",
+        embed = discord.Embed(title="**Select a server below:**")
+        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        message = await ctx.send(
+            embed=embed,
             components=[
                 self.bot.components_manager.add_callback(
                     Select(placeholder="Server", options=options), actions
