@@ -10,10 +10,11 @@ from datetime import datetime
 import aiohttp
 import discord
 from discord.ext import tasks, commands
+from discord_components import Button, Select, SelectOption, ComponentsBot
 
 from bot.utils import Paginator, aliases, servers, config
-from bot.utils.pavlov import exec_server_command
-from bot.utils.players import get_stats
+from bot.utils.pavlov import exec_server_command, check_perm_admin
+from bot.utils.players import get_stats, exec_command_all_players, parse_player_command_results
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -276,7 +277,7 @@ class Pavlov(commands.Cog):
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
-
+        
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}playerinfo <player_id> <server_name>`

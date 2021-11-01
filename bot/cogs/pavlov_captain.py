@@ -6,7 +6,6 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-import discord_components
 from discord_components import Button, Select, SelectOption, ComponentsBot
 
 from bot.utils import SteamPlayer, aliases, config
@@ -77,13 +76,9 @@ class PavlovCaptain(commands.Cog):
             embed = discord.Embed(title=f"**Failed** reset SND")
         else:
             embed = discord.Embed(title=f"SND successfully reset")
-        await ctx.send(embed=embed)
-        await ctx.send(
-            "Hello, World!",
-            components=[
+        await ctx.send(embed=embed, components=[
                 Button(label="WOW button!", custom_id="button1")
-            ],
-        )
+            ])
     @commands.command()
     async def switchteam(
         self,

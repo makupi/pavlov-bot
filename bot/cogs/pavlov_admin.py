@@ -3,10 +3,15 @@ import asyncio
 
 import discord
 from discord.ext import commands
+from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
 
-from bot.utils import SteamPlayer, config
+from bot.utils import SteamPlayer, config, servers
 from bot.utils.pavlov import check_perm_admin, exec_server_command
-from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
+from bot.utils.players import (
+    exec_command_all_players,
+    exec_command_all_players_on_team,
+    parse_player_command_results,
+)
 
 
 class PavlovAdmin(commands.Cog):
@@ -16,6 +21,62 @@ class PavlovAdmin(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
+
+    @commands.command()
+    async def menu(self, ctx):
+        async def actions(i1):
+            global server_name
+            server_name = i1.values[0]
+            await i1.send(
+                f"**{server_name} Admin Menu**",
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Button(label="Slap All", custom_id="button1"), slapper
+                    ),
+                    self.bot.components_manager.add_callback(
+                        Button(label="Kick", custom_id="button2"), kicker
+                    )
+                ],
+            )
+
+        async def slapper(i1):
+            idata = await exec_command_all_players(ctx, server_name, "Slap all 69")
+            embed = discord.Embed(title=f"**Slap all 69** \n")
+            embed = await parse_player_command_results(ctx, idata, embed, server_name)
+            await i1.send(embed=embed)
+
+        async def kicker(i1):
+            pdata = await exec_server_command(ctx, server_name, "RefreshList")
+            plist = pdata.get("PlayerList")
+            if len(plist) == 0:
+                await i1.send(f'**No players on `{server_name}`**')
+                return
+            else:
+                pslist = []
+                for i in plist:
+                    pslist.append(
+                        SelectOption(label=str(i.get("Username")), value=str(i.get("UniqueId")))
+                    )
+                await i1.send(components=[Select(placeholder="Players", options=pslist)])
+                interaction = await self.bot.wait_for("select_option")
+                idata = await exec_server_command(ctx, server_name, f"Kick {interaction.values[0]}")
+                embed = discord.Embed(title=f"**Kick {interaction.values[0]}** \n")
+                embed = await parse_player_command_results(ctx, idata, embed, server_name)
+                await i1.send(embed=embed)
+
+        options = []
+        for i in servers.get_names():
+            options.append(SelectOption(label=str(i), value=str(i)))
+        ar = ActionRow([Button(label="Slap All for 69 Damage"), Select(options=options)])
+        ar.custom_id = "potato"
+        await ctx.send(
+            "**Select Server:**",
+            components=[
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Server", options=options), actions
+                )
+            ],
+        )
 
     @commands.command()
     async def giveitem(
@@ -32,11 +93,13 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
-            if player_arg.casefold() == 'all':
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
-            elif player_arg.startswith('team'):
-                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"GiveItem team {item_id}")
+            elif player_arg.startswith("team"):
+                data = await exec_command_all_players_on_team(
+                    ctx, server_name, player_arg, f"GiveItem team {item_id}"
+                )
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
@@ -88,7 +151,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg.casefold() == 'all':
+        if player_arg.casefold() == "all":
             data = await exec_command_all_players(ctx, server_name, f"GiveCash all {cash_amount}")
         else:
             player = SteamPlayer.convert(player_arg)
@@ -116,14 +179,12 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        team_id = team_id.replace('team', '')
+        team_id = team_id.replace("team", "")
         if team_id.casefold() == "blue":
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        data = await exec_server_command(
-            ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}"
-        )
+        data = await exec_server_command(ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}")
         embed = discord.Embed(title=f"**GiveTeamCash {team_id} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
@@ -145,11 +206,15 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
-            if player_arg.casefold() == 'all':
-                data = await exec_command_all_players(ctx, server_name, f"SetPlayerSkin all {skin_id}")
-            elif player_arg.startswith('team'):
-                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"SetPlayerSkin team {skin_id}")
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
+                data = await exec_command_all_players(
+                    ctx, server_name, f"SetPlayerSkin all {skin_id}"
+                )
+            elif player_arg.startswith("team"):
+                data = await exec_command_all_players_on_team(
+                    ctx, server_name, player_arg, f"SetPlayerSkin team {skin_id}"
+                )
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(
@@ -162,9 +227,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def custom(
-        self, ctx, rcon_command: str, server_name: str = config.default_server
-    ):
+    async def custom(self, ctx, rcon_command: str, server_name: str = config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name`
         **Description**: Runs a custom RCON command.
         **Requires**: Admin permissions for the server
@@ -182,9 +245,7 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def repeat(
-        self, ctx, cmdr: str, aot: str
-    ):
+    async def repeat(self, ctx, cmdr: str, aot: str):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
         **Description**: Repeats a complete pavlov-bot command multiple times.
         **Requires**: Admin permissions for the server
@@ -199,7 +260,7 @@ class PavlovAdmin(commands.Cog):
             command = self.bot.all_commands.get(cmd.lower())
             ctx.batch_exec = True
             await asyncio.sleep(0.2)
-            if cmd.lower() == 'repeat':
+            if cmd.lower() == "repeat":
                 return
             elif int(aot) > 100:
                 return
@@ -207,9 +268,7 @@ class PavlovAdmin(commands.Cog):
                 data = await command(ctx, *_args[1:])
             if data is None:
                 data = "No response"
-        embed = discord.Embed(
-            title=f"Executed '{cmdr}' {aot} times"
-        )
+        embed = discord.Embed(title=f"Executed '{cmdr}' {aot} times")
         await ctx.send(embed=embed)
 
 
