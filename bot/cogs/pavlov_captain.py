@@ -28,19 +28,28 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def gamesetup(self, ctx):
+
+        async def team1(t1):
+            global team_one
+            team_one = t1.values[0]
+
+        async def team2(t2):
+            global team_two
+            team_two = t2.values[0]
+
         async def actions(i1):
             await message.edit(content='')
             global server_name
             server_name = i1.values[0]
-            if not await check_perm_admin(ctx, server_name):
+            if not await check_perm_captain(ctx, server_name):
                 return
             if i1.author.id == ctx.author.id:
-                embed = discord.Embed(title=f"**{server_name} Admin Menu**")
+                embed = discord.Embed(title=f"**{server_name} Game Menu**")
                 await i1.send(
                     embed=embed,
                     components=[
                         self.bot.components_manager.add_callback(
-                            Button(label="Slap All", custom_id="button1"), slapper
+                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"), matchsetup
                         ),
                         self.bot.components_manager.add_callback(
                             Button(label="Kick", custom_id="button2"), kicker
@@ -98,10 +107,10 @@ class PavlovCaptain(commands.Cog):
             embed=embed,
             components=[
                 self.bot.components_manager.add_callback(
-                    Select(placeholder="Team1", options=team_options), actions
+                    Select(placeholder="Team1", options=team_options), team1
                 ),
                 self.bot.components_manager.add_callback(
-                    Select(placeholder="Team2", options=team_options), actions
+                    Select(placeholder="Team2", options=team_options), team2
                 ),
                 self.bot.components_manager.add_callback(
                     Select(placeholder="Server", options=options), actions
