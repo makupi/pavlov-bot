@@ -60,37 +60,34 @@ class PavlovCaptain(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ''):
+    async def resetsnd(self, ctx, server_name: str = config.default_server):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
+        async def resetoncemore(i):
+            if i.author.id == ctx.author.id:
+                data = await exec_server_command(ctx, server_name, "ResetSND")
+            else:
+                return
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
+        if ctx.batch_exec:
+            return reset_snd
         if not reset_snd:
             embed = discord.Embed(title=f"**Failed** reset SND")
         else:
             embed = discord.Embed(title=f"SND successfully reset")
-        resetsnd = self.bot.all_commands.get("resetsnd")
-        if ctx.batch_exec:
-            return reset_snd
-        elif interaction != '':
-            await interaction.send(embed=embed, components=[
-                self.bot.components_manager.add_callback(
-                    Button(label="Reset SND", custom_id="button1"), 
-                lambda interaction: resetsnd(ctx, server_name, interaction)
-                )
-            ])
-            return
         await ctx.send(embed=embed, components=[
                 self.bot.components_manager.add_callback(
-                    Button(label="Reset SND", custom_id="button1"), 
-                lambda interaction: resetsnd(ctx, server_name, interaction)
+                    Button(label="Reset SND", custom_id="button1")
+                , resetoncemore
                 )
             ])
+
     @commands.command()
     async def switchteam(
         self,
