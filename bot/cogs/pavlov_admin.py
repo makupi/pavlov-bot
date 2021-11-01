@@ -25,7 +25,7 @@ class PavlovAdmin(commands.Cog):
     @commands.command()
     async def menu(self, ctx):
         async def actions(i1):
-            await message.edit(content='**Select Server:**')
+            await message.edit(content='')
             global server_name
             server_name = i1.values[0]
             if not await check_perm_admin(ctx, server_name):
