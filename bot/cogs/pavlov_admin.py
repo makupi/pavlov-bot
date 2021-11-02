@@ -86,10 +86,10 @@ class PavlovAdmin(commands.Cog):
             return
         if ctx.interaction_exec:
                 player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
-                #if player_arg == 'NoPlayers':
-                #    embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                #    await interaction.send(embed=embed)
-                #    return
+                if player_arg == 'NoPlayers':
+                    embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                    await interaction.send(embed=embed)
+                    return
                 item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
                 if item_id == 'ListTooLong':
                     embed = discord.Embed(title=f"**Your item list `{iteml}` contains more than 25 items!**", description="**Keep your item list to 25 items or lower.**")
