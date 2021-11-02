@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from os import kill
 
 import discord
 from discord.ext import commands
@@ -28,15 +29,13 @@ class PavlovAdmin(commands.Cog):
     async def menu(self, ctx):
         async def actions(i1):
             await message.edit(content="")
-            global server_name
             server_name = i1.values[0]
-            if not await check_perm_admin(ctx, server_name):
-                return
-            if i1.author.id == ctx.author.id:
+            if await check_perm_admin(ctx, server_name):
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
                 slap = self.bot.all_commands.get("slap")
                 giveitem = self.bot.all_commands.get('giveitem')
+                kill = self.bot.all_commands.get('kill')
                 components = [
                     self.bot.components_manager.add_callback(
                         Button(label="Godmode", custom_id="godmode"),
@@ -45,6 +44,10 @@ class PavlovAdmin(commands.Cog):
                     self.bot.components_manager.add_callback(
                         Button(label="Give Item", custom_id="giveitem"),
                         lambda interaction: giveitem(ctx, "", "", server_name, interaction),
+                    ),
+                    self.bot.components_manager.add_callback(
+                        Button(label="Kill", custom_id="kill"),
+                        lambda interaction: kill(ctx, "", server_name, interaction),
                     )
                 ]
                 await i1.send(
@@ -58,7 +61,7 @@ class PavlovAdmin(commands.Cog):
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
-        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        #embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
         message = await ctx.send(
             embed=embed,
             components=[

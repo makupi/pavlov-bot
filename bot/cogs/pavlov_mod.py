@@ -39,7 +39,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kill(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def kill(self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ''):
         """`{prefix}kill <player_id/all/team> <server_name>`
         **Description**: Kills a player.
         **Requires**: Moderator permissions or higher for the server
@@ -47,6 +47,12 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
+        if ctx.interaction_exec:
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == 'NoPlayers':
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"Kill all ")
@@ -55,10 +61,16 @@ class PavlovMod(commands.Cog):
                     ctx, server_name, player_arg, f"Kill team "
                 )
         else:
-            player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id} ")
+            if ctx.interaction_exec:
+                data = await exec_server_command(ctx, server_name, f"Kill {player_arg}")
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id} ")
         embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await interaction.send(embed=embed)
+            return
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
