@@ -29,33 +29,38 @@ class PavlovCaptain(commands.Cog):
     @commands.command()
     async def gamesetup(self, ctx):
 
-        async def team1(t1):
+        async def def_team1(t1):
             global team_one
             team_one = t1.values[0]
 
-        async def team2(t2):
+        async def def_team2(t2):
             global team_two
             team_two = t2.values[0]
 
         async def actions(i1):
             await message.edit(content='')
-            global server_name
-            server_name = i1.values[0]
-            if not await check_perm_captain(ctx, server_name):
+#            global server_name_gamesetup
+            server_name_gamesetup = i1.values[0]
+            if not await check_perm_captain(ctx, server_name_gamesetup):
                 return
             if i1.author.id == ctx.author.id:
                 matchsetup = self.bot.all_commands.get("matchsetup")
-                embed = discord.Embed(title=f"**{server_name} Game Menu**")
+                resetsnd = self.bot.all_commands.get("resetsnd")
+                embed = discord.Embed(title=f"**{server_name_gamesetup} Match Menu**")
                 await i1.send(
                     embed=embed,
                     components=[
                         self.bot.components_manager.add_callback(
                             Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"), 
-                            lambda interaction: matchsetup(ctx, team_one, team_two, server_name, interaction)
+                            lambda interaction: matchsetup(ctx, team_one, team_two, server_name_gamesetup)
                         ),
                         self.bot.components_manager.add_callback(
-                            Button(label=f"T:{team_one} vs CT:{team_two}", custom_id="button2"), 
-                            lambda interaction: matchsetup(ctx, team_two, team_one, server_name, interaction)
+                            Button(label=f"CT:{team_two} vs T:{team_one}", custom_id="button2"),
+                            lambda interaction: matchsetup(ctx, team_two, team_one, server_name_gamesetup)
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label=f"ResetSND", custom_id="button3"),
+                            lambda interaction: resetsnd(ctx, server_name_gamesetup)
                         )
                     ],
                 )
@@ -71,17 +76,25 @@ class PavlovCaptain(commands.Cog):
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server and team below:**")
         embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        embed.description = "\n"
+#        if team_one == None and team_two == None:
+#           embed.description = f"Default teams currently active"
+#        else:
+#            embed.description = f"Team1 is {team_one} and Team2 set to {team_two}. Check that you want to change"
         message = await ctx.send(
             embed=embed,
             components=[
                 self.bot.components_manager.add_callback(
-                    Select(placeholder="Team1", options=team_options), team1
+                    Select(placeholder="Team1", options=team_options), def_team1
+
                 ),
                 self.bot.components_manager.add_callback(
-                    Select(placeholder="Team2", options=team_options), team2
+                    Select(placeholder="Team2", options=team_options), def_team2
+
                 ),
                 self.bot.components_manager.add_callback(
                     Select(placeholder="Server", options=options), actions
+
                 )
             ],
         )
@@ -104,6 +117,8 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        gamesetup = self.bot.all_commands.get("gamesetup")
+        resetsnd = self.bot.all_commands.get("resetsnd")
         map_label = aliases.get_map(map_name)
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
@@ -116,10 +131,19 @@ class PavlovCaptain(commands.Cog):
                 title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()}"
             )
         else:
-            embed = discord.Embed(
-                title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
+            await ctx.send(
+                embed=discord.Embed(title=f"Switched map to {map_name} with game mode {game_mode.upper()}"),
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Button(label=f"Go to gamesetup?", custom_id="button1"),
+                        lambda interaction: gamesetup(ctx)
+                    ),
+                    self.bot.components_manager.add_callback(
+                        Button(label=f"ResetSND on {server_name}", custom_id="button2"),
+                        lambda interaction: resetsnd(ctx, server_name)
+                    )
+                ]
             )
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ''):
