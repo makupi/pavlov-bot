@@ -54,29 +54,6 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        async def kicker(i1):
-            pdata = await exec_server_command(ctx, server_name, "RefreshList")
-            plist = pdata.get("PlayerList")
-            if len(plist) == 0:
-                embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await i1.send(embed=embed)
-                return
-            else:
-                pslist = []
-                for i in plist:
-                    pslist.append(
-                        SelectOption(label=str(i.get("Username")), value=str(i.get("UniqueId")))
-                    )
-                await i1.send(
-                    "Select a player below:",
-                    components=[Select(placeholder="Players", options=pslist)],
-                )
-                interaction = await self.bot.wait_for("select_option")
-                idata = await exec_server_command(ctx, server_name, f"Kick {interaction.values[0]}")
-                embed = discord.Embed(title=f"**Kick {interaction.values[0]}** \n")
-                embed = await parse_player_command_results(ctx, idata, embed, server_name)
-                await i1.send(embed=embed)
-
         options = []
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
@@ -109,7 +86,15 @@ class PavlovAdmin(commands.Cog):
             return
         if ctx.interaction_exec:
                 player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
-                item_id, interaction = await spawn_iselect(self, ctx, server_name, interaction)
+                #if player_arg == 'NoPlayers':
+                #    embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                #    await interaction.send(embed=embed)
+                #    return
+                item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
+                if item_id == 'ListTooLong':
+                    embed = discord.Embed(title=f"**Your item list `{iteml}` contains more than 25 items!**", description="**Keep your item list to 25 items or lower.**")
+                    await interaction.send(embed=embed)
+                    return
 
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
