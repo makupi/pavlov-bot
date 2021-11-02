@@ -32,20 +32,25 @@ class Polling(commands.Cog):
                 )
 
     async def new_poll(self, pollings, server: str, poll: str):
-        while True:
-            if pollings.get("type") == "player":
-                interval = float(pollings.get("polling_interval")) * 60
-                await asyncio.sleep(interval)
-                logging.info(f"Executing Task {poll} on server {server}")
+            while True:
                 try:
-                    state = await self.player_polling(pollings, server, state)
+                    if pollings.get("type") == "player":
+                        interval = float(pollings.get("polling_interval")) * 60
+                        await asyncio.sleep(interval)
+                        logging.info(f"Executing Task {poll} on server {server}")
+                        try:
+                            state = await self.player_polling(pollings, server, state)
+                        except:
+                            state = await self.player_polling(pollings, server, 'none')
+                    #if pollings.get("type") == "autobalance":
+                    #    interval = float(pollings.get("polling_interval")) * 60
+                    #    await asyncio.sleep(interval)
+                    #    logging.info(f"Executing Task {poll} on server {server}")
+                    #    await self.autobalance_polling(pollings, server, poll)
                 except:
-                    state = await self.player_polling(pollings, server, 'none')
-            #if pollings.get("type") == "autobalance":
-            #    interval = float(pollings.get("polling_interval")) * 60
-            #    await asyncio.sleep(interval)
-            #    logging.info(f"Executing Task {poll} on server {server}")
-            #    await self.autobalance_polling(pollings, server, poll)
+                    asyncio.sleep(1)
+                    logging.info(f"Exception appeared in {poll} on server {server}!")
+                    pass
 
 
     async def player_polling(self, pollings, server, old_state: str):
