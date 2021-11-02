@@ -76,6 +76,7 @@ async def on_command_error(ctx, error):
 @bot.before_invoke
 async def before_invoke(ctx):
     ctx.batch_exec = False
+    ctx.interaction_exec = False
     await ctx.trigger_typing()
     user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
