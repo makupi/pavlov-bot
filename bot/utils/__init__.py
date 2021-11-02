@@ -5,6 +5,7 @@ from .config import Config
 from .paginator import Paginator
 from .servers import Servers
 from .polling import Polling
+from .lists import Lists
 from .steamplayer import SteamPlayer
 
 config = Config()
@@ -13,6 +14,7 @@ aliases = Aliases()
 SteamPlayer.set_aliases(aliases)
 aliases.load_teams()
 polling = Polling()
+lists = Lists()
 
 
 def user_action_log(ctx, message, log_level=logging.INFO):

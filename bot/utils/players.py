@@ -1,6 +1,8 @@
 from bot.utils.pavlov import exec_server_command
 import asyncio
+import logging
 import discord
+from bot.utils import lists
 from discord_components import Button, Select, SelectOption
 
 
@@ -114,11 +116,12 @@ async def get_stats(ctx: str = "noctx", server: str = ""):
 
 
 async def spawn_pselect(self, ctx: str, server: str, interaction):
+    logging.info(f"Spawning player selection menu!")
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     if len(player_list) == 0:
-        return "NoPlayers"
+        return "NoPlayers", interaction
     else:
         for player in player_list:
             plist.append(
@@ -133,32 +136,39 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
 
 
 async def spawn_iselect(self, ctx: str, server: str, interaction):
-    itemdata = await exec_server_command(ctx, server, "ItemList")
-    item_list = itemdata.get("ItemList")
+    logging.info(f"Spawning item selection menu!")
     i_list = []
-    counter = 0
-    for item in item_list:
-        #if counter >= 75:
-        #    counter += 1
-        #    i_list4.append(SelectOption(label=str(item), value=str(item)))
-        #elif counter >= 50:
-        #    counter += 1
-        #    i_list3.append(SelectOption(label=str(item), value=str(item)))
-        if counter >= 25:
-        #   counter += 1
-        #    i_list2.append(SelectOption(label=str(item), value=str(item)))
-            pass
-        else:
-            counter += 1
+    itemlists = lists.get_names()
+    for item in itemlists:
+        alist = lists.get(item)
+        if alist.get('type') == 'item':
             i_list.append(SelectOption(label=str(item), value=str(item)))
     await interaction.send(
-        "Select a item below:",
+        "Select a item list below:",
         components=[
-            Select(placeholder="Items", options=i_list)
+            Select(placeholder="Item Lists", options=i_list)
             #self.bot.components_manager.add_callback(
             #    Button(label="Next", custom_id="next"), switchlist
             #),
         ],
     )
-    interaction = await self.bot.wait_for("select_option")
-    return interaction.values[0], interaction
+    interaction1 = await self.bot.wait_for("select_option")
+    slist = lists.get(interaction1.values[0])
+    items = slist.get('list')
+    itemsilist = []
+    for i in items:
+        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
+    if len(itemsilist) > 25:
+        return "ListTooLong", interaction1, interaction1.values[0]
+    await interaction1.send(
+        "Select a item below:",
+        components=[
+            Select(placeholder="Items", options=itemsilist)
+            #self.bot.components_manager.add_callback(
+            #    Button(label="Next", custom_id="next"), switchlist
+            #),
+        ],
+    )
+    interaction2 = await self.bot.wait_for("select_option")
+    
+    return interaction2.values[0], interaction2, interaction1.values[0]

@@ -141,6 +141,10 @@ class PavlovMod(commands.Cog):
             return
         if ctx.interaction_exec:
             player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == 'NoPlayers':
+                    embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                    await interaction.send(embed=embed)
+                    return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
