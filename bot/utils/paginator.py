@@ -109,7 +109,11 @@ class Paginator:
         ctx.bot.loop.create_task(self._create(ctx, embed, timeout, footer_text))
 
     async def _create(
-        self, ctx, embed: discord.Embed, timeout: int, footer_text: str,
+        self,
+        ctx,
+        embed: discord.Embed,
+        timeout: int,
+        footer_text: str,
     ):
         if embed is None:
             embed = discord.Embed()

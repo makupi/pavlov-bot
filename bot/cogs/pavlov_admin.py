@@ -13,7 +13,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
     spawn_pselect,
-    spawn_iselect
+    spawn_iselect,
 )
 
 
@@ -34,12 +34,14 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
                 slap = self.bot.all_commands.get("slap")
-                giveitem = self.bot.all_commands.get('giveitem')
-                kill = self.bot.all_commands.get('kill')
+                giveitem = self.bot.all_commands.get("giveitem")
+                kill = self.bot.all_commands.get("kill")
                 components = [
                     self.bot.components_manager.add_callback(
                         Button(label="Godmode", custom_id="godmode"),
-                        lambda interaction: slap(ctx, '', "-99999999999999999", server_name, interaction),
+                        lambda interaction: slap(
+                            ctx, "", "-99999999999999999", server_name, interaction
+                        ),
                     ),
                     self.bot.components_manager.add_callback(
                         Button(label="Give Item", custom_id="giveitem"),
@@ -48,7 +50,7 @@ class PavlovAdmin(commands.Cog):
                     self.bot.components_manager.add_callback(
                         Button(label="Kill", custom_id="kill"),
                         lambda interaction: kill(ctx, "", server_name, interaction),
-                    )
+                    ),
                 ]
                 await i1.send(
                     embed=embed,
@@ -61,7 +63,7 @@ class PavlovAdmin(commands.Cog):
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
-        #embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
         message = await ctx.send(
             embed=embed,
             components=[
@@ -78,7 +80,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         item_id: str,
         server_name: str = config.default_server,
-        interaction: str = ''
+        interaction: str = "",
     ):
         """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
         **Description**: Spawns a item for a player.
@@ -88,16 +90,19 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-                player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
-                if player_arg == 'NoPlayers':
-                    embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                    await interaction.send(embed=embed)
-                    return
-                item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
-                if item_id == 'ListTooLong':
-                    embed = discord.Embed(title=f"**Your item list `{iteml}` contains more than 25 items!**", description="**Keep your item list to 25 items or lower.**")
-                    await interaction.send(embed=embed)
-                    return
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+            item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
+            if item_id == "ListTooLong":
+                embed = discord.Embed(
+                    title=f"**Your item list `{iteml}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await interaction.send(embed=embed)
+                return
 
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
@@ -108,7 +113,9 @@ class PavlovAdmin(commands.Cog):
                 )
         else:
             if ctx.interaction_exec:
-                data = await exec_server_command(ctx, server_name, f"GiveItem {player_arg} {item_id}")
+                data = await exec_server_command(
+                    ctx, server_name, f"GiveItem {player_arg} {item_id}"
+                )
             else:
                 player = SteamPlayer.convert(player_arg)
                 data = await exec_server_command(

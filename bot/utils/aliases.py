@@ -116,11 +116,11 @@ class Aliases:
         if name.startswith(WORKSHOP_URL):
             parsed_url = urlparse.urlparse(name)
             try:
-                id = parse_qs(parsed_url.query)['id'][0]
+                id = parse_qs(parsed_url.query)["id"][0]
                 return f"UGC{id}"
             except KeyError:
                 raise AliasNotFoundError("maps", name)
-            jid = parse_qs(parsed_url.query)['id'][0]
+            jid = parse_qs(parsed_url.query)["id"][0]
             return f"UGC{id}"
         if check_map_already_label(name):
             return name
