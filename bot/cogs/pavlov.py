@@ -221,11 +221,11 @@ class Pavlov(commands.Cog):
         data = await exec_server_command(ctx, server_name, "RefreshList")
         data2 = await exec_server_command(ctx, server_name, "ServerInfo")
         player_list = data.get("PlayerList")
-        blue_score = data2.get('ServerInfo').get("Team0Score")
-        red_score = data2.get('ServerInfo').get("Team1Score")
-        gameround = data2.get('ServerInfo').get("Round")
-        gamemode = data2.get('ServerInfo').get("GameMode")
-        map_label = data2.get('ServerInfo').get("MapLabel")
+        blue_score = data2.get("ServerInfo").get("Team0Score")
+        red_score = data2.get("ServerInfo").get("Team1Score")
+        gameround = data2.get("ServerInfo").get("Round")
+        gamemode = data2.get("ServerInfo").get("GameMode")
+        map_label = data2.get("ServerInfo").get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
         if map_alias == None:
             map_name = map_label
@@ -242,7 +242,7 @@ class Pavlov(commands.Cog):
         if gamemode == "SND":
             embed.description = f"Round {gameround} on map {map_name}:\n"
         else:
-            embed.description = f"Playing map {map_name}:\n" 
+            embed.description = f"Playing map {map_name}:\n"
         teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
@@ -250,7 +250,9 @@ class Pavlov(commands.Cog):
                     dead = ":skull:"
                 elif not alivelist.get(i):
                     dead = ":slight_smile:"
-                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}" 
+                embed.description += (
+                    f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}"
+                )
         else:
             embed.description += f"\n **Team Blue Score: {blue_score}**"
             for i in teamblue:
@@ -260,9 +262,11 @@ class Pavlov(commands.Cog):
                 elif not alivelist.get(i):
                     dead = ":slight_smile:"
                 for ir in player_list:
-                    if i == ir.get('UniqueId'):
-                        user_name = ir.get('Username')
-                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
             embed.description += f"\n **Team Red Score: {red_score}**"
             for i in teamred:
                 team_name = ":red_circle:"
@@ -271,13 +275,15 @@ class Pavlov(commands.Cog):
                 elif not alivelist.get(i):
                     dead = ":slight_smile:"
                 for ir in player_list:
-                    if i == ir.get('UniqueId'):
-                        user_name = ir.get('Username')
-                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
-        
+
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}playerinfo <player_id> <server_name>`
@@ -362,7 +368,7 @@ class Pavlov(commands.Cog):
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")
                 map_label = server_info.get("MapLabel")
-                if map_label.startswith('SVR'):
+                if map_label.startswith("SVR"):
                     map_name = map_label
                 else:
                     map_name, _ = await self.get_map_alias(map_label)

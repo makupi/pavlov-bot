@@ -58,7 +58,7 @@ async def parse_player_command_results(ctx, data, embed, server_name):
         return embed
     elif data == "NotValidTeam":
         embed = discord.Embed(
-            title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n"
+            title="**Invalid team. Must be number team0/team1 or teamblue/teamred**\n"
         )
         return embed
     elif type(data) == dict:
@@ -120,11 +120,7 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
-    extras = [
-        'all',
-        'teamblue',
-        'teamred'
-    ]
+    extras = ["all", "teamblue", "teamred"]
     if len(player_list) == 0:
         return "NoPlayers", interaction
     else:
@@ -147,20 +143,20 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     itemlists = lists.get_names()
     for item in itemlists:
         alist = lists.get(item)
-        if alist.get('type') == 'item':
+        if alist.get("type") == "item":
             i_list.append(SelectOption(label=str(item), value=str(item)))
     await interaction.send(
         "Select a item list below:",
         components=[
             Select(placeholder="Item Lists", options=i_list)
-            #self.bot.components_manager.add_callback(
+            # self.bot.components_manager.add_callback(
             #    Button(label="Next", custom_id="next"), switchlist
-            #),
+            # ),
         ],
     )
     interaction1 = await self.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
-    items = slist.get('list')
+    items = slist.get("list")
     itemsilist = []
     for i in items:
         itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
@@ -170,11 +166,11 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
         "Select a item below:",
         components=[
             Select(placeholder="Items", options=itemsilist)
-            #self.bot.components_manager.add_callback(
+            # self.bot.components_manager.add_callback(
             #    Button(label="Next", custom_id="next"), switchlist
-            #),
+            # ),
         ],
     )
     interaction2 = await self.bot.wait_for("select_option")
-    
+
     return interaction2.values[0], interaction2, interaction1.values[0]
