@@ -49,7 +49,7 @@ class Polling(commands.Cog):
                     #    logging.info(f"Executing Task {poll} on server {server}")
                     #    await self.autobalance_polling(pollings, server, poll)
                 except Exception as e:
-                    asyncio.sleep(1)
+                    await asyncio.sleep(1)
                     logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
                     pass
 
