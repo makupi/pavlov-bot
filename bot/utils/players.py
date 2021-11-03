@@ -120,6 +120,11 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
+    extras = [
+        'all',
+        'teamblue',
+        'teamred'
+    ]
     if len(player_list) == 0:
         return "NoPlayers", interaction
     else:
@@ -127,7 +132,8 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
             plist.append(
                 SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
             )
-        plist.append(SelectOption(label="all", value="all"))
+        for i in extras:
+            plist.append(SelectOption(label=i, value=i))
         await interaction.send(
             "Select a player below:", components=[Select(placeholder="Players", options=plist)]
         )
