@@ -34,24 +34,24 @@ class Polling(commands.Cog):
 
     async def new_poll(self, pollings, server: str, poll: str):
         while True:
-            try:
-                if pollings.get("type") == "player":
-                    interval = float(pollings.get("polling_interval")) * 60
-                    await asyncio.sleep(interval)
-                    logging.info(f"Executing Task {poll} on server {server}")
-                    try:
-                        state, ctx = await self.player_polling(ctx, pollings, server, state)
-                    except:
-                        state, ctx = await self.player_polling("noctx", pollings, server, "none")
+            #try:
+            if pollings.get("type") == "player":
+                interval = float(pollings.get("polling_interval")) * 60
+                await asyncio.sleep(interval)
+                logging.info(f"Executing Task {poll} on server {server}")
+                try:
+                    state, ctx = await self.player_polling(ctx, pollings, server, state)
+                except:
+                    state, ctx = await self.player_polling("noctx", pollings, server, "none")
                 # if pollings.get("type") == "autobalance":
                 #    interval = float(pollings.get("polling_interval")) * 60
                 #    await asyncio.sleep(interval)
                 #    logging.info(f"Executing Task {poll} on server {server}")
                 #    await self.autobalance_polling(pollings, server, poll)
-            except Exception as e:
-                await asyncio.sleep(1)
-                logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
-                pass
+            #except Exception as e:
+            #    await asyncio.sleep(1)
+            #    logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
+            #    pass
 
     async def player_polling(self, ctx, pollings, server, old_state):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
