@@ -33,20 +33,27 @@ class Polling(commands.Cog):
                 )
 
     async def new_poll(self, pollings, server: str, poll: str):
-        while True:
-            if pollings.get("type") == "player":
-                interval = float(pollings.get("polling_interval")) * 60
-                await asyncio.sleep(interval)
-                logging.info(f"Executing Task {poll} on server {server}")
+            while True:
                 try:
-                    state = await self.player_polling(pollings, server, state)
-                except:
-                    state = await self.player_polling(pollings, server, "none")
-            # if pollings.get("type") == "autobalance":
-            #    interval = float(pollings.get("polling_interval")) * 60
-            #    await asyncio.sleep(interval)
-            #    logging.info(f"Executing Task {poll} on server {server}")
-            #    await self.autobalance_polling(pollings, server, poll)
+
+                    if pollings.get("type") == "player":
+                        interval = float(pollings.get("polling_interval")) * 60
+                        await asyncio.sleep(interval)
+                        logging.info(f"Executing Task {poll} on server {server}")
+                        try:
+                            state = await self.player_polling(pollings, server, state)
+                        except:
+                            state = await self.player_polling(pollings, server, 'none')
+                    #if pollings.get("type") == "autobalance":
+                    #    interval = float(pollings.get("polling_interval")) * 60
+                    #    await asyncio.sleep(interval)
+                    #    logging.info(f"Executing Task {poll} on server {server}")
+                    #    await self.autobalance_polling(pollings, server, poll)
+                except Exception as e:
+                    asyncio.sleep(1)
+                    logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
+                    pass
+
 
     async def player_polling(self, pollings, server, old_state: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
@@ -55,11 +62,9 @@ class Polling(commands.Cog):
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
         logging.info(f"{server} has {amt} players")
-        lows, meds, highs = (
-            pollings.get("low_threshold"),
-            pollings.get("medium_threshold"),
-            pollings.get("high_threshold"),
-        )
+
+        lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
+
         if int(highs) <= amt:
             new_state = "high"
             logging.info(f"New state is {new_state}")
