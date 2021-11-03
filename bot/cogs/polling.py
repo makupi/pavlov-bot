@@ -10,6 +10,7 @@ from discord.ext import tasks, commands
 
 CHECK_INTERVAL = 15
 
+
 class Polling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -32,83 +33,87 @@ class Polling(commands.Cog):
                 )
 
     async def new_poll(self, pollings, server: str, poll: str):
-            while True:
-                try:
-                    if pollings.get("type") == "player":
-                        interval = float(pollings.get("polling_interval")) * 60
-                        await asyncio.sleep(interval)
-                        logging.info(f"Executing Task {poll} on server {server}")
-                        try:
-                            state = await self.player_polling(pollings, server, state)
-                        except:
-                            state = await self.player_polling(pollings, server, 'none')
-                    #if pollings.get("type") == "autobalance":
-                    #    interval = float(pollings.get("polling_interval")) * 60
-                    #    await asyncio.sleep(interval)
-                    #    logging.info(f"Executing Task {poll} on server {server}")
-                    #    await self.autobalance_polling(pollings, server, poll)
-                except Exception as e:
-                    await asyncio.sleep(1)
-                    logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
-                    pass
+        while True:
+            try:
+                if pollings.get("type") == "player":
+                    interval = float(pollings.get("polling_interval")) * 60
+                    await asyncio.sleep(interval)
+                    logging.info(f"Executing Task {poll} on server {server}")
+                    try:
+                        state, ctx = await self.player_polling(ctx, pollings, server, state)
+                    except:
+                        state, ctx = await self.player_polling("noctx", pollings, server, "none")
+                # if pollings.get("type") == "autobalance":
+                #    interval = float(pollings.get("polling_interval")) * 60
+                #    await asyncio.sleep(interval)
+                #    logging.info(f"Executing Task {poll} on server {server}")
+                #    await self.autobalance_polling(pollings, server, poll)
+            except Exception as e:
+                await asyncio.sleep(1)
+                logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
+                pass
 
-
-    async def player_polling(self, pollings, server, old_state: str):
+    async def player_polling(self, ctx, pollings, server, old_state):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
-        ctx = 'noctx'
         logging.info(f"Starting poll with state: {old_state}")
-        data = await exec_server_command(ctx, server, "RefreshList")
+        data, ctx = await exec_server_command(ctx, server, "RefreshList", "True")
         amt = len(data.get("PlayerList"))
         logging.info(f"{server} has {amt} players")
-        if pollings.get('show_scoreboard') == "True":
+        if pollings.get("show_scoreboard") == "True":
             scoreboardcmd = self.bot.all_commands.get("players")
             scoreboard = await scoreboardcmd(ctx, server)
-        lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
+        lows, meds, highs = (
+            pollings.get("low_threshold"),
+            pollings.get("medium_threshold"),
+            pollings.get("high_threshold"),
+        )
         if int(highs) <= amt:
-            new_state = 'high'
+            new_state = "high"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
-            if pollings.get('show_scoreboard') == "True":
-                embed.description = scoreboard
+            if pollings.get("show_scoreboard") == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
-                return new_state
+                return new_state, ctx
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state
+                await channel.send(pollings.get("polling_role"), embed=embed)
+                return new_state, ctx
         elif int(meds) <= amt:
-            new_state = 'medium'
+            new_state = "medium"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
-            if pollings.get('show_scoreboard') == "True":
-                embed.description = scoreboard
+            if pollings.get("show_scoreboard") == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
-                return new_state
+                return new_state, ctx
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state
+                await channel.send(pollings.get("polling_role"), embed=embed)
+                return new_state, ctx
         elif int(lows) <= amt:
-            new_state = 'low'
+            new_state = "low"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
-            if pollings.get('show_scoreboard') == "True":
-                embed.description = scoreboard
+            if pollings.get("show_scoreboard") == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
-                return new_state
+                return new_state, ctx
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
-                return new_state
+                await channel.send(pollings.get("polling_role"), embed=embed)
+                return new_state, ctx
         else:
-            return 'none'
-                
+            return "none", ctx
 
-    #async def autobalance_polling(self, pollings, server, poll: str):
+    # async def autobalance_polling(self, pollings, server, poll: str):
     #    channel = self.bot.get_channel(int(pollings.get("polling_channel")))
     #    ctx = 'noctx'
     #    teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
     #    for k, v in scorelist.items():
     #        if v is None:
     #            score = 0
-    #        score = int(v)  
+    #        score = int(v)
     #        if score < int(pollings.get("tk_threshold")):
     #            logging.info(f"Task {poll}: TK threshold triggered for {k}")
     #            logging.info(f"Task {poll}: Peforming tk action {pollings.get('tk_action')}")
@@ -163,6 +168,7 @@ class Polling(commands.Cog):
     #        await channel.send(embed=embed)
     #    else:
     #        logging.info(f"Exiting autobalance on tolerence players")
+
 
 def setup(bot):
     bot.add_cog(Polling(bot))
