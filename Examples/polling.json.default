@@ -1,7 +1,7 @@
 {
     "playerpoll": {
         "type": "player",
-        "servers": "TTT TDM",
+        "servers": "server_alias_1 server_alias_2",
         "polling_interval": "5",
         "polling_channel": "900210429043830814",
         "polling_role": "<@&900500899166842911>",
