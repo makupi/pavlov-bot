@@ -54,7 +54,7 @@ class Polling(commands.Cog):
         logging.info(f"Starting poll with state: {old_state}")
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
-        logging.info(f"Server has {amt} players")
+        logging.info(f"{server} has {amt} players")
         lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
         if int(highs) <= amt:
             new_state = 'high'
