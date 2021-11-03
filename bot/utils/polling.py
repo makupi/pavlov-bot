@@ -23,11 +23,13 @@ class Polling:
         if pollingsettings is None:
             for key in self._pollingsettings.keys():
                 if key.lower() == name.lower():
-                    server = self._pollingsettings.get(key)
+                    pollingsettings = self._pollingsettings.get(key)
                     break
             else:
                 raise PollingSettingsNotFoundError(name)
         return pollingsettings
 
     def get_names(self, poll_group: str = None):
+        if self._pollingsettings.keys() is None:
+            return 'NoPolls'
         return list(self._pollingsettings.keys())

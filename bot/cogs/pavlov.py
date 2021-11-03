@@ -273,7 +273,9 @@ class Pavlov(commands.Cog):
                     if i == ir.get('UniqueId'):
                         user_name = ir.get('Username')
                 embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-        if ctx.batch_exec or ctx == 'noctx':
+        if ctx == 'noctx':
+            return embed.description
+        if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
 

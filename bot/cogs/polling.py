@@ -18,18 +18,21 @@ class Polling(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
         polls = polling.get_names()
-        for poll in polls:
-            pollings = polling.get(poll)
-            servers = pollings.get("servers").split(" ")
-            for server in servers:
-                logging.info(f"Task {poll} created for server {server}")
-                asyncio.create_task(
-                    self.new_poll(
-                        pollings,
-                        server,
-                        poll,
+        if polls == 'NoPolls':
+            return
+        else:
+            for poll in polls:
+                pollings = polling.get(poll)
+                servers = pollings.get("servers").split(" ")
+                for server in servers:
+                    logging.info(f"Task {poll} created for server {server}")
+                    asyncio.create_task(
+                        self.new_poll(
+                            pollings,
+                            server,
+                            poll,
+                        )
                     )
-                )
 
     async def new_poll(self, pollings, server: str, poll: str):
             while True:
@@ -60,11 +63,16 @@ class Polling(commands.Cog):
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
         logging.info(f"{server} has {amt} players")
+        if pollings.get('show_scoreboard') == "True":
+            scoreboardcmd = self.bot.all_commands.get("players")
+            scoreboard = await scoreboardcmd(ctx, server)
         lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
         if int(highs) <= amt:
             new_state = 'high'
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state
             else:
@@ -74,6 +82,8 @@ class Polling(commands.Cog):
             new_state = 'medium'
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state
             else:
@@ -83,6 +93,8 @@ class Polling(commands.Cog):
             new_state = 'low'
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state
             else:
