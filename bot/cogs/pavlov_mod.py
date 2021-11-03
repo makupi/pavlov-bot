@@ -7,8 +7,12 @@ from discord.ext import commands
 
 from bot.utils import SteamPlayer, config
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
-from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
-
+from bot.utils.players import (
+    exec_command_all_players,
+    exec_command_all_players_on_team,
+    parse_player_command_results,
+    spawn_pselect,
+)
 
 
 class PavlovMod(commands.Cog):
@@ -36,7 +40,7 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def kill(
-        self, ctx, player_arg: str, server_name: str = config.default_server
+        self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ""
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
         **Description**: Kills a player.
@@ -45,26 +49,36 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
-            if player_arg.casefold() == 'all':
+        if ctx.interaction_exec:
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"Kill all ")
-            elif player_arg.startswith('team'):
-                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Kill team ")
+            elif player_arg.startswith("team"):
+                data = await exec_command_all_players_on_team(
+                    ctx, server_name, player_arg, f"Kill team "
+                )
         else:
-            player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(
-                ctx, server_name, f"Kill {player.unique_id} "
-            )
+            if ctx.interaction_exec:
+                data = await exec_server_command(ctx, server_name, f"Kill {player_arg}")
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id} ")
         embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await interaction.send(embed=embed)
+            return
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kick(
-        self, ctx, player_arg: str, server_name: str = config.default_server
-    ):
+    async def kick(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}kick <player_id> <server_name>`
         **Description**: Kicks a player from the specified server.
         **Requires**: Moderator permissions or higher for the server
@@ -79,9 +93,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def unban(
-        self, ctx, player_arg: str, server_name: str = config.default_server
-    ):
+    async def unban(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}unban <player_id> <server_name>`
         **Description**: Removes a player from blacklist.txt
         **Requires**: Moderator permissions or higher for the server
@@ -96,9 +108,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def addmod(
-        self, ctx, player_arg: str, server_name: str = config.default_server
-    ):
+    async def addmod(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}addmod <player_id> <server_name>`
         **Description**: Adds a player to mods.txt
         **Requires**: Moderator permissions or higher for the server
@@ -113,9 +123,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def removemod(
-        self, ctx, player_arg: str, server_name: str = config.default_server
-    ):
+    async def removemod(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}removemod <player_id> <server_name>`
         **Description**: Removes a player from mods.txt
         **Requires**: Moderator permissions or higher for the server
@@ -131,7 +139,12 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def slap(
-        self, ctx, player_arg: str, dmg: str, server_name: str = config.default_server
+        self,
+        ctx,
+        player_arg: str,
+        dmg: str,
+        server_name: str = config.default_server,
+        interaction: str = "",
     ):
         """`{prefix}slap <player_id/all/team> <damage_amount> <server_name>`
         **Description**: Slaps a player for a specified damage amount.
@@ -140,26 +153,36 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        if player_arg.casefold() == 'all' or player_arg.startswith('team'):
-            if player_arg.casefold() == 'all':
+        if ctx.interaction_exec:
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"Slap all {dmg}")
-            elif player_arg.startswith('team'):
-                data = await exec_command_all_players_on_team(ctx, server_name, player_arg, f"Slap team {dmg}")
+            elif player_arg.startswith("team"):
+                data = await exec_command_all_players_on_team(
+                    ctx, server_name, player_arg, f"Slap team {dmg}"
+                )
         else:
-            player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(
-                ctx, server_name, f"Slap {player.unique_id} {dmg}"
-            )
+            if ctx.interaction_exec:
+                data = await exec_server_command(ctx, server_name, f"Slap {player_arg} {dmg}")
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data = await exec_server_command(ctx, server_name, f"Slap {player.unique_id} {dmg}")
         embed = discord.Embed(title=f"**Slap {player_arg} {dmg}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
             return embed.description
+        elif ctx.interaction_exec:
+            await interaction.send(embed=embed)
+            return
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def setpin(
-        self, ctx, pin: str, server_name: str = config.default_server
-    ):
+    async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
         """`{prefix}setpin <pin> <server_name>`
         **Description**: Sets a password for your server. Must be 4-digits.
         **Requires**: Moderator permissions or higher for the server
@@ -169,30 +192,22 @@ class PavlovMod(commands.Cog):
             return
         if len(pin) == 4 and pin.isdigit():
             data = await exec_server_command(ctx, server_name, f"SetPin {pin}")
-        elif pin.lower() == 'remove':
+        elif pin.lower() == "remove":
             data = await exec_server_command(ctx, server_name, f"SetPin")
         else:
-            embed = discord.Embed(
-                title=f"Pin must be either a 4-digit number or remove"
-            )
+            embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
             await ctx.send(embed=embed)
             return
         spin = data.get("Successful")
         if ctx.batch_exec:
             return spin
         if not spin:
-            embed = discord.Embed(
-                title=f"**Failed** to set pin {pin}"
-            )
+            embed = discord.Embed(title=f"**Failed** to set pin {pin}")
         else:
-            if pin.lower() == 'remove':
-                embed = discord.Embed(
-                title=f"Pin removed"
-                )
+            if pin.lower() == "remove":
+                embed = discord.Embed(title=f"Pin removed")
             else:
-                embed = discord.Embed(
-                title=f"Pin {pin} successfully set"
-                )
+                embed = discord.Embed(title=f"Pin {pin} successfully set")
         await ctx.send(embed=embed)
 
 

@@ -6,13 +6,18 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, aliases, config
+from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
+
+from bot.utils import SteamPlayer, aliases, config, servers
 from bot.utils.pavlov import check_perm_captain, exec_server_command
-from bot.utils.players import exec_command_all_players, exec_command_all_players_on_team, parse_player_command_results
+from bot.utils.players import (
+    exec_command_all_players,
+    exec_command_all_players_on_team,
+    parse_player_command_results,
+)
 
 
-
-MATCH_DELAY_RESETSND = 5 
+MATCH_DELAY_RESETSND = 5
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
 
 
@@ -23,6 +28,79 @@ class PavlovCaptain(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
+
+    @commands.command()
+    async def gamesetup(self, ctx):
+        async def def_team1(t1):
+            global team_one
+            team_one = t1.values[0]
+
+        async def def_team2(t2):
+            global team_two
+            team_two = t2.values[0]
+
+        async def actions(i1):
+            await message.edit(content="")
+            #            global server_name_gamesetup
+            server_name_gamesetup = i1.values[0]
+            if not await check_perm_captain(ctx, server_name_gamesetup):
+                return
+            if i1.author.id == ctx.author.id:
+                matchsetup = self.bot.all_commands.get("matchsetup")
+                resetsnd = self.bot.all_commands.get("resetsnd")
+                embed = discord.Embed(title=f"**{server_name_gamesetup} Match Menu**")
+                await i1.send(
+                    embed=embed,
+                    components=[
+                        self.bot.components_manager.add_callback(
+                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"),
+                            lambda interaction: matchsetup(
+                                ctx, team_one, team_two, server_name_gamesetup
+                            ),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label=f"CT:{team_two} vs T:{team_one}", custom_id="button2"),
+                            lambda interaction: matchsetup(
+                                ctx, team_two, team_one, server_name_gamesetup
+                            ),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label=f"ResetSND", custom_id="button3"),
+                            lambda interaction: resetsnd(ctx, server_name_gamesetup),
+                        ),
+                    ],
+                )
+            else:
+                return
+
+        team_options = []
+        teams = aliases.get_teams_list()
+        for team in teams:
+            team_options.append(SelectOption(label=str(team.name), value=str(team.name)))
+        options = []
+        for i in servers.get_names():
+            options.append(SelectOption(label=str(i), value=str(i)))
+        embed = discord.Embed(title="**Select a server and team below:**")
+        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        embed.description = "\n"
+        #        if team_one == None and team_two == None:
+        #           embed.description = f"Default teams currently active"
+        #        else:
+        #            embed.description = f"Team1 is {team_one} and Team2 set to {team_two}. Check that you want to change"
+        message = await ctx.send(
+            embed=embed,
+            components=[
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Team1", options=team_options), def_team1
+                ),
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Team2", options=team_options), def_team2
+                ),
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Server", options=options), actions
+                ),
+            ],
+        )
 
     @commands.command(aliases=["map"])
     async def switchmap(
@@ -40,6 +118,8 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
+        gamesetup = self.bot.all_commands.get("gamesetup")
+        resetsnd = self.bot.all_commands.get("resetsnd")
         map_label = aliases.get_map(map_name)
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
@@ -52,29 +132,67 @@ class PavlovCaptain(commands.Cog):
                 title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()}"
             )
         else:
-            embed = discord.Embed(
-                title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
+            await ctx.send(
+                embed=discord.Embed(
+                    title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
+                ),
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Button(label=f"Go to gamesetup?", custom_id="button1"),
+                        lambda interaction: gamesetup(ctx),
+                    ),
+                    self.bot.components_manager.add_callback(
+                        Button(label=f"ResetSND on {server_name}", custom_id="button2"),
+                        lambda interaction: resetsnd(ctx, server_name),
+                    ),
+                ],
             )
-        await ctx.send(embed=embed)
 
     @commands.command()
-    async def resetsnd(self, ctx, server_name: str = config.default_server):
+    async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ""):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
+
+        async def resetoncemore(i):
+            if i.author.id == ctx.author.id:
+                data = await exec_server_command(ctx, server_name, "ResetSND")
+            else:
+                return
+
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
-        if ctx.batch_exec:
-            return reset_snd
         if not reset_snd:
             embed = discord.Embed(title=f"**Failed** reset SND")
         else:
             embed = discord.Embed(title=f"SND successfully reset")
-        await ctx.send(embed=embed)
+        resetsnd = self.bot.all_commands.get("resetsnd")
+        if ctx.batch_exec:
+            return reset_snd
+        elif interaction != "":
+            await interaction.send(
+                embed=embed,
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Button(label="Reset SND", custom_id="button1"),
+                        lambda interaction: resetsnd(ctx, server_name, interaction),
+                    )
+                ],
+            )
+            return
+        await ctx.send(
+            embed=embed,
+            components=[
+                self.bot.components_manager.add_callback(
+                    Button(label="Reset SND", custom_id="button1"),
+                    lambda interaction: resetsnd(ctx, server_name, interaction),
+                )
+            ],
+        )
 
     @commands.command()
     async def switchteam(
@@ -138,9 +256,7 @@ class PavlovCaptain(commands.Cog):
         teams = [aliases.get_team(team_a_name), aliases.get_team(team_b_name)]
         embed = discord.Embed()
         for team in teams:
-            embed.add_field(
-                name=f"{team.name} members", value=team.member_repr(), inline=False
-            )
+            embed.add_field(name=f"{team.name} members", value=team.member_repr(), inline=False)
         await ctx.send(embed=embed)
 
         for index, team in enumerate(teams):
@@ -161,37 +277,34 @@ class PavlovCaptain(commands.Cog):
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
-    @commands.command() 
-    async def flush(self, ctx: commands.Context, server_name: str = config.default_server): 
-        """`{prefix}flush <servername>` 
+    @commands.command()
+    async def flush(self, ctx: commands.Context, server_name: str = config.default_server):
+        """`{prefix}flush <servername>`
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}flush snd1`
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, "RefreshList") 
-        player_list = data.get("PlayerList") 
-        non_alias_player_ids = list() 
-        for player in player_list: 
-            check = aliases.find_player_alias(player.get("UniqueId")) 
-            if check is None: 
-                non_alias_player_ids.append(player.get("UniqueId")) 
-        if len(non_alias_player_ids) == 0: 
-            await ctx.send( 
-                embed=discord.Embed(title=f"No players to flush on `{server_name}`") 
-            ) 
-            return 
-        to_kick_id = random.choice(non_alias_player_ids) 
-        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}") 
-        kick = data.get("Kick") 
-        if not kick: 
-            await ctx.send( 
-                embed=discord.Embed( 
-                    title=f"Encountered error while flushing on `{server_name}`" 
-                ) 
-            ) 
-        else: 
-            await ctx.send(embed=discord.Embed(title=f"Successfully flushed `{server_name}`")) 
+        data = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = data.get("PlayerList")
+        non_alias_player_ids = list()
+        for player in player_list:
+            check = aliases.find_player_alias(player.get("UniqueId"))
+            if check is None:
+                non_alias_player_ids.append(player.get("UniqueId"))
+        if len(non_alias_player_ids) == 0:
+            await ctx.send(embed=discord.Embed(title=f"No players to flush on `{server_name}`"))
+            return
+        to_kick_id = random.choice(non_alias_player_ids)
+        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
+        kick = data.get("Kick")
+        if not kick:
+            await ctx.send(
+                embed=discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
+            )
+        else:
+            await ctx.send(embed=discord.Embed(title=f"Successfully flushed `{server_name}`"))
+
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))

@@ -10,6 +10,7 @@ from discord.ext import tasks, commands
 
 CHECK_INTERVAL = 15
 
+
 class Polling(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -34,6 +35,7 @@ class Polling(commands.Cog):
     async def new_poll(self, pollings, server: str, poll: str):
             while True:
                 try:
+
                     if pollings.get("type") == "player":
                         interval = float(pollings.get("polling_interval")) * 60
                         await asyncio.sleep(interval)
@@ -55,51 +57,52 @@ class Polling(commands.Cog):
 
     async def player_polling(self, pollings, server, old_state: str):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
-        ctx = 'noctx'
+        ctx = "noctx"
         logging.info(f"Starting poll with state: {old_state}")
         data = await exec_server_command(ctx, server, "RefreshList")
         amt = len(data.get("PlayerList"))
         logging.info(f"{server} has {amt} players")
+
         lows, meds, highs = pollings.get("low_threshold"), pollings.get("medium_threshold"), pollings.get("high_threshold")
+
         if int(highs) <= amt:
-            new_state = 'high'
+            new_state = "high"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
+                await channel.send(pollings.get("polling_role"), embed=embed)
                 return new_state
         elif int(meds) <= amt:
-            new_state = 'medium'
+            new_state = "medium"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
+                await channel.send(pollings.get("polling_role"), embed=embed)
                 return new_state
         elif int(lows) <= amt:
-            new_state = 'low'
+            new_state = "low"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
             if old_state == new_state:
                 return new_state
             else:
-                await channel.send(pollings.get('polling_role'),embed=embed)
+                await channel.send(pollings.get("polling_role"), embed=embed)
                 return new_state
         else:
-            return 'none'
-                
+            return "none"
 
-    #async def autobalance_polling(self, pollings, server, poll: str):
+    # async def autobalance_polling(self, pollings, server, poll: str):
     #    channel = self.bot.get_channel(int(pollings.get("polling_channel")))
     #    ctx = 'noctx'
     #    teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
     #    for k, v in scorelist.items():
     #        if v is None:
     #            score = 0
-    #        score = int(v)  
+    #        score = int(v)
     #        if score < int(pollings.get("tk_threshold")):
     #            logging.info(f"Task {poll}: TK threshold triggered for {k}")
     #            logging.info(f"Task {poll}: Peforming tk action {pollings.get('tk_action')}")
@@ -154,6 +157,7 @@ class Polling(commands.Cog):
     #        await channel.send(embed=embed)
     #    else:
     #        logging.info(f"Exiting autobalance on tolerence players")
+
 
 def setup(bot):
     bot.add_cog(Polling(bot))

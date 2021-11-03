@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from bot.utils import aliases, config, servers, user_action_log
+from discord_components import DiscordComponents, ComponentsBot, Button
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)
@@ -30,7 +31,7 @@ async def get_prefix(_bot, message):
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
-
+DiscordComponents(bot)
 
 @bot.event
 async def on_ready():
@@ -75,6 +76,7 @@ async def on_command_error(ctx, error):
 @bot.before_invoke
 async def before_invoke(ctx):
     ctx.batch_exec = False
+    ctx.interaction_exec = False
     await ctx.trigger_typing()
     user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
