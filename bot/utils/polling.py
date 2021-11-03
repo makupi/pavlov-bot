@@ -14,7 +14,7 @@ class Polling:
         self.PollingSettingsNotFoundError = PollingSettingsNotFoundError
         if not os.path.isfile(filename):
             with open(filename, "w") as file:
-                json.dump("{}", file)
+                json.dump({}, file)
         with open(filename) as file:
             self._pollingsettings = json.load(file)
 
@@ -30,6 +30,4 @@ class Polling:
         return pollingsettings
 
     def get_names(self, poll_group: str = None):
-        if self._pollingsettings.keys() is None:
-            return 'NoPolls'
         return list(self._pollingsettings.keys())

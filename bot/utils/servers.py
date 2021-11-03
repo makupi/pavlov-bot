@@ -12,7 +12,7 @@ class Servers:
         self.ServerNotFoundError = ServerNotFoundError
         if not os.path.isfile(filename):
             with open(filename, "w") as file:
-                json.dump("{}", file)
+                json.dump({}, file)
         with open(filename) as file:
             self._servers = json.load(file)
 

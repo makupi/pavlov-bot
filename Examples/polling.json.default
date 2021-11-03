@@ -1,10 +1,14 @@
 {
     "playerpoll": {
         "type": "player",
-        "servers": "ttt tdm",
-        "polling_interval": "1",
+        "servers": "TTT TDM",
+        "polling_interval": "5",
         "polling_channel": "900210429043830814",
-        "polling_role": "900500899166842911",
+        "polling_role": "<@&900500899166842911>",
+        "low_threshold": "3",
+        "medium_threshold": "6",
+        "high_threshold": "9",
+        "show_scoreboard": "True"
     },
     "autobalance": {
         "type": "autobalance",
@@ -15,5 +19,4 @@
         "tk_action": "kick",
         "autobalance_min_players": "6"
     }
-
 }

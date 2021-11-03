@@ -18,21 +18,18 @@ class Polling(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
         polls = polling.get_names()
-        if polls == 'NoPolls':
-            return
-        else:
-            for poll in polls:
-                pollings = polling.get(poll)
-                servers = pollings.get("servers").split(" ")
-                for server in servers:
-                    logging.info(f"Task {poll} created for server {server}")
-                    asyncio.create_task(
-                        self.new_poll(
-                            pollings,
-                            server,
-                            poll,
-                        )
+        for poll in polls:
+            pollings = polling.get(poll)
+            servers = pollings.get("servers").split(" ")
+            for server in servers:
+                logging.info(f"Task {poll} created for server {server}")
+                asyncio.create_task(
+                    self.new_poll(
+                        pollings,
+                        server,
+                        poll,
                     )
+                )
 
     async def new_poll(self, pollings, server: str, poll: str):
             while True:
