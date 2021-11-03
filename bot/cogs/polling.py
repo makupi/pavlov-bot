@@ -59,6 +59,9 @@ class Polling(commands.Cog):
         data, ctx = await exec_server_command(ctx, server, "RefreshList", "True")
         amt = len(data.get("PlayerList"))
         logging.info(f"{server} has {amt} players")
+        if pollings.get('show_scoreboard') == "True":
+            scoreboardcmd = self.bot.all_commands.get("players")
+            scoreboard = await scoreboardcmd(ctx, server)
         lows, meds, highs = (
             pollings.get("low_threshold"),
             pollings.get("medium_threshold"),
@@ -68,6 +71,9 @@ class Polling(commands.Cog):
             new_state = "high"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
                 return new_state, ctx
             else:
@@ -77,6 +83,9 @@ class Polling(commands.Cog):
             new_state = "medium"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
                 return new_state, ctx
             else:
@@ -86,6 +95,9 @@ class Polling(commands.Cog):
             new_state = "low"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
+            if pollings.get('show_scoreboard') == "True":
+                scoreboardcmd = self.bot.all_commands.get("players")
+                scoreboard = await scoreboardcmd(ctx, server)
             if old_state == new_state:
                 return new_state, ctx
             else:
