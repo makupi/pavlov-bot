@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from os import kill
 
 import discord
 from discord.ext import commands
@@ -12,7 +13,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
     spawn_pselect,
-    spawn_iselect
+    spawn_iselect,
 )
 
 
@@ -28,24 +29,28 @@ class PavlovAdmin(commands.Cog):
     async def menu(self, ctx):
         async def actions(i1):
             await message.edit(content="")
-            global server_name
             server_name = i1.values[0]
-            if not await check_perm_admin(ctx, server_name):
-                return
-            if i1.author.id == ctx.author.id:
+            if await check_perm_admin(ctx, server_name):
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
                 slap = self.bot.all_commands.get("slap")
-                giveitem = self.bot.all_commands.get('giveitem')
+                giveitem = self.bot.all_commands.get("giveitem")
+                kill = self.bot.all_commands.get("kill")
                 components = [
                     self.bot.components_manager.add_callback(
                         Button(label="Godmode", custom_id="godmode"),
-                        lambda interaction: slap(ctx, '', "-99999999999999999", server_name, interaction),
+                        lambda interaction: slap(
+                            ctx, "", "-99999999999999999", server_name, interaction
+                        ),
                     ),
                     self.bot.components_manager.add_callback(
                         Button(label="Give Item", custom_id="giveitem"),
                         lambda interaction: giveitem(ctx, "", "", server_name, interaction),
-                    )
+                    ),
+                    self.bot.components_manager.add_callback(
+                        Button(label="Kill", custom_id="kill"),
+                        lambda interaction: kill(ctx, "", server_name, interaction),
+                    ),
                 ]
                 await i1.send(
                     embed=embed,
@@ -54,34 +59,11 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        async def kicker(i1):
-            pdata = await exec_server_command(ctx, server_name, "RefreshList")
-            plist = pdata.get("PlayerList")
-            if len(plist) == 0:
-                embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await i1.send(embed=embed)
-                return
-            else:
-                pslist = []
-                for i in plist:
-                    pslist.append(
-                        SelectOption(label=str(i.get("Username")), value=str(i.get("UniqueId")))
-                    )
-                await i1.send(
-                    "Select a player below:",
-                    components=[Select(placeholder="Players", options=pslist)],
-                )
-                interaction = await self.bot.wait_for("select_option")
-                idata = await exec_server_command(ctx, server_name, f"Kick {interaction.values[0]}")
-                embed = discord.Embed(title=f"**Kick {interaction.values[0]}** \n")
-                embed = await parse_player_command_results(ctx, idata, embed, server_name)
-                await i1.send(embed=embed)
-
         options = []
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
-        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
         message = await ctx.send(
             embed=embed,
             components=[
@@ -98,7 +80,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         item_id: str,
         server_name: str = config.default_server,
-        interaction: str = ''
+        interaction: str = "",
     ):
         """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
         **Description**: Spawns a item for a player.
@@ -108,8 +90,19 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-                player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
-                item_id, interaction = await spawn_iselect(self, ctx, server_name, interaction)
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+            item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
+            if item_id == "ListTooLong":
+                embed = discord.Embed(
+                    title=f"**Your item list `{iteml}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await interaction.send(embed=embed)
+                return
 
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
@@ -120,7 +113,9 @@ class PavlovAdmin(commands.Cog):
                 )
         else:
             if ctx.interaction_exec:
-                data = await exec_server_command(ctx, server_name, f"GiveItem {player_arg} {item_id}")
+                data = await exec_server_command(
+                    ctx, server_name, f"GiveItem {player_arg} {item_id}"
+                )
             else:
                 player = SteamPlayer.convert(player_arg)
                 data = await exec_server_command(

@@ -22,7 +22,7 @@ async def check_banned(ctx):
 async def check_perm_admin(
     ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
 ):
-    """ Admin permissions are stored per server in the servers.json """
+    """Admin permissions are stored per server in the servers.json"""
     if not server_name and not global_check:
         return False
     _servers = list()
@@ -45,7 +45,11 @@ async def check_perm_admin(
 
 
 def check_has_any_role(
-    ctx, super_roles: list, role_format: str, server_name: str = None, global_check: bool = True,
+    ctx,
+    super_roles: list,
+    role_format: str,
+    server_name: str = None,
+    global_check: bool = True,
 ):
     for super_role in super_roles:
         super_role = discord.utils.get(ctx.author.roles, name=super_role)
@@ -107,17 +111,20 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
 
 async def exec_server_command(ctx, server_name: str, command: str):
     pavlov = None
-    if ctx == 'noctx':
-            pavlov = ctx
+    if ctx == "noctx":
+        pavlov = ctx
     else:
         if hasattr(ctx, "pavlov"):
             pavlov = ctx.pavlov.get(server_name)
     if not hasattr(ctx, "pavlov") or pavlov is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
-            server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT,
+            server.get("ip"),
+            server.get("port"),
+            server.get("password"),
+            timeout=RCON_TIMEOUT,
         )
-        if ctx == 'noctx':
+        if ctx == "noctx":
             ctx = pavlov
         else:
             if not hasattr(ctx, "pavlov"):
