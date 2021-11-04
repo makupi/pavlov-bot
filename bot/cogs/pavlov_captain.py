@@ -156,12 +156,9 @@ class PavlovCaptain(commands.Cog):
         **Example**: `{prefix}resetsnd servername`
         """
 
-        async def resetoncemore(i):
-            if i.author.id == ctx.author.id:
-                data = await exec_server_command(ctx, server_name, "ResetSND")
-            else:
-                return
-
+        if interaction != "":
+           if not await check_perm_captain(interaction, server_name):
+               return
         if not await check_perm_captain(ctx, server_name):
             return
         data = await exec_server_command(ctx, server_name, "ResetSND")
