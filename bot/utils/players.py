@@ -172,5 +172,4 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
         ],
     )
     interaction2 = await self.bot.wait_for("select_option")
-
     return interaction2.values[0], interaction2, interaction1.values[0]
