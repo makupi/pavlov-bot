@@ -121,6 +121,19 @@ class PavlovCaptain(commands.Cog):
         gamesetup = self.bot.all_commands.get("gamesetup")
         resetsnd = self.bot.all_commands.get("resetsnd")
         map_label = aliases.get_map(map_name)
+        if game_mode.upper() == "SND":
+            components = [
+                             self.bot.components_manager.add_callback(
+                                 Button(label=f"Go to gamesetup?", custom_id="button1"),
+                                 lambda interaction: gamesetup(ctx),
+                             ),
+                             self.bot.components_manager.add_callback(
+                                 Button(label=f"ResetSND on {server_name}", custom_id="button2"),
+                                 lambda interaction: resetsnd(ctx, server_name),
+                             ),
+                         ]
+        else:
+            components = []
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
@@ -136,16 +149,7 @@ class PavlovCaptain(commands.Cog):
                 embed=discord.Embed(
                     title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
                 ),
-                components=[
-                    self.bot.components_manager.add_callback(
-                        Button(label=f"Go to gamesetup?", custom_id="button1"),
-                        lambda interaction: gamesetup(ctx),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label=f"ResetSND on {server_name}", custom_id="button2"),
-                        lambda interaction: resetsnd(ctx, server_name),
-                    ),
-                ],
+                components=components
             )
 
     @commands.command()
