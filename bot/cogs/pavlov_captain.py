@@ -162,9 +162,10 @@ class PavlovCaptain(commands.Cog):
 
         if interaction != "":
            if not await check_perm_captain(interaction, server_name):
-               return
-        if not await check_perm_captain(ctx, server_name):
-            return
+                return
+        else:
+            if not await check_perm_captain(ctx, server_name):
+                return
         data = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
         if not reset_snd:
@@ -190,7 +191,7 @@ class PavlovCaptain(commands.Cog):
             components=[
                 self.bot.components_manager.add_callback(
                     Button(label="Reset SND", custom_id="button1"),
-                    lambda interaction: resetoncemore(ctx),
+                    lambda interaction: resetsnd(ctx, server_name, interaction),
                 )
             ],
         )
