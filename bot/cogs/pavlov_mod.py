@@ -78,7 +78,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kick(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def kick(self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ''):
         """`{prefix}kick <player_id> <server_name>`
         **Description**: Kicks a player from the specified server.
         **Requires**: Moderator permissions or higher for the server
@@ -86,10 +86,21 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
+        if ctx.interaction_exec:
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+            data = await exec_server_command(ctx, server_name, f"Slap {player_arg} {dmg}")
+        else:
+            player = SteamPlayer.convert(player_arg)
+            data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
         embed = discord.Embed(title=f"**Kick {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await interaction.send(embed=embed)
+            return
         await ctx.send(embed=embed)
 
     @commands.command()

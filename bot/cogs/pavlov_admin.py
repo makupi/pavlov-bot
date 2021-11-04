@@ -36,6 +36,7 @@ class PavlovAdmin(commands.Cog):
                 slap = self.bot.all_commands.get("slap")
                 giveitem = self.bot.all_commands.get("giveitem")
                 kill = self.bot.all_commands.get("kill")
+                kick = self.bot.all_commands.get("kick")
                 components = [
                     self.bot.components_manager.add_callback(
                         Button(label="Godmode", custom_id="godmode"),
@@ -51,6 +52,10 @@ class PavlovAdmin(commands.Cog):
                         Button(label="Kill", custom_id="kill"),
                         lambda interaction: kill(ctx, "", server_name, interaction),
                     ),
+                    self.bot.components_manager.add_callback(
+                        Button(label="Kick", custom_id="kick"),
+                        lambda interaction: kick(ctx, "", server_name, interaction),
+                    ),
                 ]
                 await i1.send(
                     embed=embed,
@@ -61,7 +66,9 @@ class PavlovAdmin(commands.Cog):
 
         options = []
         for i in servers.get_names():
-            options.append(SelectOption(label=str(i), value=str(i)))
+            data = await exec_server_command(ctx, i, "RefreshList")
+            plist = data.get('PlayerList')
+            options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
         # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
         message = await ctx.send(

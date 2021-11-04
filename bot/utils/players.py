@@ -120,7 +120,7 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
-    extras = ["all", "teamblue", "teamred"]
+    extras = ["all", "teamblue/team0", "teamred/team1"]
     if len(player_list) == 0:
         return "NoPlayers", interaction
     else:

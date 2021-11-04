@@ -280,9 +280,12 @@ class Pavlov(commands.Cog):
                 embed.description += (
                     f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
                 )
-        if ctx.batch_exec:
+        if hasattr(ctx, 'batch_exec'):
+            if ctx.batch_exec:
+                return embed.description
+            await ctx.send(embed=embed)
+        else:
             return embed.description
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
