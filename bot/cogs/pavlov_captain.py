@@ -193,7 +193,7 @@ class PavlovCaptain(commands.Cog):
             components=[
                 self.bot.components_manager.add_callback(
                     Button(label="Reset SND", custom_id="button1"),
-                    lambda interaction: resetsnd(ctx, server_name, interaction),
+                    lambda interaction: resetoncemore(ctx),
                 )
             ],
         )
