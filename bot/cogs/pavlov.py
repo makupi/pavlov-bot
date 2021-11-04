@@ -241,7 +241,7 @@ class Pavlov(commands.Cog):
         if gamemode == "SND":
             embed.description = f"Round {gameround} on map {map_name}:\n"
         else:
-            embed.description = f"Playing map {map_name}:\n" 
+            embed.description = f"Playing map `{map_name}`:\n" 
         teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
@@ -273,8 +273,6 @@ class Pavlov(commands.Cog):
                     if i == ir.get('UniqueId'):
                         user_name = ir.get('Username')
                 embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-        
-            return embed.description
         if hasattr(ctx, 'batch_exec'):
             if ctx.batch_exec:
                 return embed.description
