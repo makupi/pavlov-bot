@@ -31,9 +31,9 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def gamesetup(self, ctx):
-        async def actions(i1):
-            await message.edit(content="")
+    async def gamesetup(self, ctx, interaction: str = ''):
+        async def actions(i1, msg):
+            await msg.edit(content="")
             server_name = i1.values[0]
             if await check_perm_captain(ctx, server_name):
                 ctx.interaction_exec = True
@@ -107,14 +107,26 @@ class PavlovCaptain(commands.Cog):
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
-        message = await ctx.send(
+        if ctx.interaction_exec == True:
+            message = await interaction.send(
             embed=embed,
             components=[
                 self.bot.components_manager.add_callback(
-                    Select(placeholder="Server", options=options), actions
+                    Select(placeholder="Server", options=options),
+                    lambda interaction: actions(interaction, message)
                 )
             ]
         )
+        else:
+            message = await ctx.send(
+                embed=embed,
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Select(placeholder="Server", options=options),
+                        lambda interaction: actions(interaction, message)
+                    )
+                ]
+            )
 
     @commands.command(aliases=["map"])
     async def switchmap(
@@ -136,18 +148,25 @@ class PavlovCaptain(commands.Cog):
         resetsnd = self.bot.all_commands.get("resetsnd")
         map_label = aliases.get_map(map_name)
         if game_mode.upper() == "SND":
+            ctx.interaction_exec = True
             components = [
                              self.bot.components_manager.add_callback(
-                                 Button(label=f"Go to gamesetup?", custom_id="button1"),
-                                 lambda interaction: gamesetup(ctx),
+                                 Button(label=f"Match Menu", custom_id="button1"),
+                                 lambda interaction: gamesetup(ctx, interaction),
                              ),
                              self.bot.components_manager.add_callback(
-                                 Button(label=f"ResetSND on {server_name}", custom_id="button2"),
+                                 Button(label=f"ResetSND", custom_id="button2"),
                                  lambda interaction: resetsnd(ctx, server_name, interaction),
                              ),
                          ]
         else:
-            components = []
+            ctx.interaction_exec = True
+            components = [
+                self.bot.components_manager.add_callback(
+                                 Button(label=f"Match Menu", custom_id="button1"),
+                                 lambda interaction: gamesetup(ctx, interaction),
+                             )
+            ]
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
@@ -156,15 +175,14 @@ class PavlovCaptain(commands.Cog):
             return switch_map
         if not switch_map:
             embed = discord.Embed(
-                title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()}"
+                title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()} on {server_name}."
             )
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(
-                embed=discord.Embed(
-                    title=f"Switched map to {map_name} with game mode {game_mode.upper()}"
-                ),
-                components=components
-            )
+            embed = discord.Embed(
+                    title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+                )
+            await ctx.send(embed=embed, components=components)
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ""):
@@ -183,9 +201,9 @@ class PavlovCaptain(commands.Cog):
         data = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
         if not reset_snd:
-            embed = discord.Embed(title=f"**Failed** to reset SND.")
+            embed = discord.Embed(title=f"**Failed** to reset SND on {server_name}.")
         else:
-            embed = discord.Embed(title=f"SND has been successfully reset.")
+            embed = discord.Embed(title=f"SND has been successfully reset on {server_name}.")
         if ctx.interaction_exec == True:
             await interaction.send(embed=embed)
             return
@@ -231,9 +249,9 @@ class PavlovCaptain(commands.Cog):
         if ctx.batch_exec:
             return rotate_map
         if not rotate_map:
-            embed = discord.Embed(title=f"**Failed** to rotate map")
+            embed = discord.Embed(title=f"**Failed** to rotate map on {server_name}.")
         else:
-            embed = discord.Embed(title=f"Rotated map successfully")
+            embed = discord.Embed(title=f"Rotated map successfully on {server_name}.")
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -272,21 +290,14 @@ class PavlovCaptain(commands.Cog):
                     ctx, server_name, f"SwitchTeam {member.unique_id} {index}"
                 )
                 await asyncio.sleep(RCON_COMMAND_PAUSE)
+        embed = discord.Embed(title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds on {server_name}.")
         if ctx.interaction_exec == True:
-            await interaction.send(
-            embed=discord.Embed(
-                title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds."
-            )
-        )
+            await interaction.send(embed=embed)
         else:
-            await ctx.send(
-                embed=discord.Embed(
-                    title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds."
-                )
-            )
+            await ctx.send(embed=embed)
         await asyncio.sleep(MATCH_DELAY_RESETSND)
         await exec_server_command(ctx, server_name, "ResetSND")
-        embed = discord.Embed(title="SND has been reset. Good luck!")
+        embed = discord.Embed(title=f"SND has been reset on {server_name}. Good luck!")
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         if ctx.interaction_exec == True:
             await interaction.send(embed=embed)
