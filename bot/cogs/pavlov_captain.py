@@ -36,33 +36,66 @@ class PavlovCaptain(commands.Cog):
             await message.edit(content="")
             server_name = i1.values[0]
             if await check_perm_captain(ctx, server_name):
+                ctx.interaction_exec = True
                 matchsetup = self.bot.all_commands.get("matchsetup")
                 resetsnd = self.bot.all_commands.get("resetsnd")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
-                team_one, i1 = await spawn_tselect(self, ctx, server_name, i1)
-                team_two, i1 = await spawn_tselect(self, ctx, server_name, i1)
-                ctx.interaction_exec = True
-                await i1.send(
-                    embed=embed,
-                    components=[
+                team_one, i1 = await spawn_tselect(self, ctx, server_name, i1, '1')
+                team_two, i1 = await spawn_tselect(self, ctx, server_name, i1, '2')
+                if team_one == 'empty' and team_two == 'empty':
+                    embed.description = '**No teams defined in aliases.json! Team buttons disabled.**'
+                    await i1.send(embed=embed, components=[
                         self.bot.components_manager.add_callback(
-                            Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"),
-                            lambda interaction: matchsetup(
-                                ctx, team_one, team_two, server_name, interaction
+                                Button(label=f"ResetSND", custom_id="button3"),
+                                lambda interaction: resetsnd(ctx, server_name, interaction)
                             )
-                        ),
+                    ])
+                elif team_one == team_two:
+                    embed.description = "**Duplicate teams detected! Team buttons disabled.**"
+                    await i1.send(embed=embed, components=[
                         self.bot.components_manager.add_callback(
-                            Button(label=f"CT:{team_two} vs T:{team_one}", custom_id="button2"),
-                            lambda interaction: matchsetup(
-                                ctx, team_two, team_one, server_name, interaction
+                                Button(label=f"ResetSND", custom_id="button3"),
+                                lambda interaction: resetsnd(ctx, server_name, interaction)
                             )
-                        ),
+                    ])
+                elif team_one == 'empty':
+                    embed.description = "**Missing team one! Team buttons disabled.**"
+                    await i1.send(embed=embed, components=[
                         self.bot.components_manager.add_callback(
-                            Button(label=f"ResetSND", custom_id="button3"),
-                            lambda interaction: resetsnd(ctx, server_name, interaction)
-                        ),
-                    ],
-                )
+                                Button(label=f"ResetSND", custom_id="button3"),
+                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                            )
+                    ])
+                elif team_two == 'empty':
+                    embed.description = "**Missing team two! Team buttons disabled.**"
+                    await i1.send(embed=embed, components=[
+                        self.bot.components_manager.add_callback(
+                                Button(label=f"ResetSND", custom_id="button3"),
+                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                            )
+                    ])
+                else:
+                    await i1.send(
+                        embed=embed,
+                        components=[
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"),
+                                lambda interaction: matchsetup(
+                                    ctx, team_one, team_two, server_name, interaction
+                                )
+                            ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"CT:{team_two} vs T:{team_one}", custom_id="button2"),
+                                lambda interaction: matchsetup(
+                                    ctx, team_two, team_one, server_name, interaction
+                                )
+                            ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"ResetSND", custom_id="button3"),
+                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                            ),
+                        ],
+                    )
             else:
                 return
 

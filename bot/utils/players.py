@@ -174,19 +174,22 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     interaction2 = await self.bot.wait_for("select_option")
     return interaction2.values[0], interaction2, interaction1.values[0]
 
-async def spawn_tselect(self, ctx: str, server: str, interaction):
+async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
     team_options = []
     teams = aliases.get_teams_list()
     for team in teams:
         team_options.append(SelectOption(label=str(team.name), value=str(team.name)))
-    await interaction.send(
-        "Select a team below:",
-        components=[
-            Select(placeholder="Teams", options=team_options)
-            # self.bot.components_manager.add_callback(
-            #    Button(label="Next", custom_id="next"), switchlist
-            # ),
-        ],
-    )
-    interaction1 = await self.bot.wait_for("select_option")
-    return interaction1.values[0], interaction1
+    if len(team_options) == 0:
+        return 'empty', interaction
+    else:
+        await interaction.send(
+            f"Select Team {team_num} below:",
+            components=[
+                Select(placeholder="Teams", options=team_options)
+                # self.bot.components_manager.add_callback(
+                #    Button(label="Next", custom_id="next"), switchlist
+                # ),
+            ],
+        )
+        interaction1 = await self.bot.wait_for("select_option")
+        return interaction1.values[0], interaction1
