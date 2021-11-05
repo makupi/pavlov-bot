@@ -12,10 +12,12 @@ from bot.utils.players import (
     exec_command_all_players,
     exec_command_all_players_on_team,
     parse_player_command_results,
+)
+from bot.utils.interactions import (
     spawn_pselect,
     spawn_iselect,
+    spawn_tselect
 )
-
 
 class PavlovAdmin(commands.Cog):
     def __init__(self, bot):
