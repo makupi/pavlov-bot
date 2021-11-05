@@ -39,8 +39,9 @@ async def check_perm_admin(
             f"ADMIN CHECK FAILED server={server_name}, global_check={global_check}",
             log_level=logging.WARNING,
         )
-        if not ctx.batch_exec:
-            await ctx.send(embed=discord.Embed(description=f"This command is only for Admins."))
+        if hasattr(ctx, "batch_exec"):
+            if not ctx.batch_exec:
+                await ctx.send(embed=discord.Embed(description=f"This command is only for Admins."))
     return False
 
 
@@ -82,12 +83,13 @@ async def check_perm_moderator(
                 f"MOD CHECK FAILED server={server_name}, global_check={global_check}",
                 log_level=logging.WARNING,
             )
-            if not ctx.batch_exec:
-                await ctx.send(
-                    embed=discord.Embed(
-                        description=f"This command is only for Moderators and above."
+            if hasattr(ctx, "batch_exec"):
+                if not ctx.batch_exec:
+                    await ctx.send(
+                        embed=discord.Embed(
+                            description=f"This command is only for Moderators and above."
+                        )
                     )
-                )
         return False
     return True
 
@@ -101,10 +103,11 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
             f"CAPTAIN CHECK FAILED server={server_name} global_check={global_check}",
             log_level=logging.WARNING,
         )
-        if not ctx.batch_exec:
-            await ctx.send(
-                embed=discord.Embed(description=f"This command is only for Captains and above.")
-            )
+        if hasattr(ctx, "batch_exec"):
+            if not ctx.batch_exec:
+                await ctx.send(
+                    embed=discord.Embed(description=f"This command is only for Captains and above.")
+                )
         return False
     return True
 
