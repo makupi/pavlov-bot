@@ -251,7 +251,7 @@ class Pavlov(commands.Cog):
                 elif not alivelist.get(i.get('UniqueId')):
                     dead = ":slight_smile:"
                 embed.description += (
-                    f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}"
+                    f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
                 )
         else:
             embed.description += f"\n **Team Blue Score: {blue_score}**"
