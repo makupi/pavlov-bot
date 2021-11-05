@@ -74,6 +74,7 @@ class Polling(commands.Cog):
             if pollings.get("show_scoreboard") == "True":
                 scoreboardcmd = self.bot.all_commands.get("players")
                 scoreboard = await scoreboardcmd(ctx, server)
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state, ctx
             else:
@@ -86,6 +87,7 @@ class Polling(commands.Cog):
             if pollings.get("show_scoreboard") == "True":
                 scoreboardcmd = self.bot.all_commands.get("players")
                 scoreboard = await scoreboardcmd(ctx, server)
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state, ctx
             else:
@@ -98,6 +100,7 @@ class Polling(commands.Cog):
             if pollings.get("show_scoreboard") == "True":
                 scoreboardcmd = self.bot.all_commands.get("players")
                 scoreboard = await scoreboardcmd(ctx, server)
+                embed.description = scoreboard
             if old_state == new_state:
                 return new_state, ctx
             else:
