@@ -246,9 +246,9 @@ class Pavlov(commands.Cog):
         teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
-                if alivelist.get(i.get('UniqueID')):
+                if alivelist.get(i.get('UniqueId')):
                     dead = ":skull:"
-                elif not alivelist.get(i.get('UniqueID')):
+                elif not alivelist.get(i.get('UniqueId')):
                     dead = ":slight_smile:"
                 embed.description += (
                     f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA:{kdalist.get(i)}"
