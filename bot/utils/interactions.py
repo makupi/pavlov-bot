@@ -43,9 +43,6 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
         "Select a item list below:",
         components=[
             Select(placeholder="Item Lists", options=i_list)
-            # self.bot.components_manager.add_callback(
-            #    Button(label="Next", custom_id="next"), switchlist
-            # ),
         ],
     )
     interaction1 = await self.bot.wait_for("select_option")
@@ -54,18 +51,18 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     itemsilist = []
     for i in items:
         itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
+    itemsilist.append(SelectOption(label='all', value='all'))
     if len(itemsilist) > 25:
         return "ListTooLong", interaction1, interaction1.values[0]
     await interaction1.send(
         "Select a item below:",
         components=[
             Select(placeholder="Items", options=itemsilist)
-            # self.bot.components_manager.add_callback(
-            #    Button(label="Next", custom_id="next"), switchlist
-            # ),
         ],
     )
     interaction2 = await self.bot.wait_for("select_option")
+    if interaction2.values[0] == 'all':
+        return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):

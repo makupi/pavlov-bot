@@ -36,9 +36,10 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def gamesetup(self, ctx, interaction: str = ''):
-        async def actions(i1, msg):
+        async def actions(i1, msg, server_name: str = ''):
             await msg.edit(content="")
-            server_name = i1.values[0]
+            if server_name == '':
+                server_name = i1.values[0]
             if await check_perm_captain(ctx, server_name):
                 ctx.interaction_exec = True
                 matchsetup = self.bot.all_commands.get("matchsetup")
@@ -60,6 +61,10 @@ class PavlovCaptain(commands.Cog):
                         self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction)
+                            ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"Change Settings", custom_id="button4"),
+                                lambda interaction: actions(interaction, msg, server_name)
                             )
                     ])
                 elif team_one == 'empty':
@@ -68,6 +73,10 @@ class PavlovCaptain(commands.Cog):
                         self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction)
+                            ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"Change Settings", custom_id="button4"),
+                                lambda interaction: actions(interaction, msg, server_name)
                             )
                     ])
                 elif team_two == 'empty':
@@ -76,6 +85,10 @@ class PavlovCaptain(commands.Cog):
                         self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction)
+                            ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"Change Settings", custom_id="button4"),
+                                lambda interaction: actions(interaction, msg, server_name)
                             )
                     ])
                 else:
@@ -83,13 +96,13 @@ class PavlovCaptain(commands.Cog):
                         embed=embed,
                         components=[
                             self.bot.components_manager.add_callback(
-                                Button(label=f"CT:{team_one} vs T:{team_two}", custom_id="button1"),
+                                Button(label=f"CT: {team_one} vs T: {team_two}", custom_id="button1"),
                                 lambda interaction: matchsetup(
                                     ctx, team_one, team_two, server_name, interaction
                                 )
                             ),
                             self.bot.components_manager.add_callback(
-                                Button(label=f"CT:{team_two} vs T:{team_one}", custom_id="button2"),
+                                Button(label=f"CT: {team_two} vs T: {team_one}", custom_id="button2"),
                                 lambda interaction: matchsetup(
                                     ctx, team_two, team_one, server_name, interaction
                                 )
@@ -98,6 +111,10 @@ class PavlovCaptain(commands.Cog):
                                 Button(label=f"ResetSND", custom_id="button3"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction)
                             ),
+                            self.bot.components_manager.add_callback(
+                                Button(label=f"Change Settings", custom_id="button4"),
+                                lambda interaction: actions(interaction, msg, server_name)
+                            )
                         ],
                     )
             else:

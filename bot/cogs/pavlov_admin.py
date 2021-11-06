@@ -115,16 +115,35 @@ class PavlovAdmin(commands.Cog):
 
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
-                data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
+                if type(item_id) == dict:
+                    for i in item_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id.get(i)}")
+                else:
+                    data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
             elif player_arg.startswith("team"):
-                data = await exec_command_all_players_on_team(
-                    ctx, server_name, player_arg, f"GiveItem team {item_id}"
-                )
+                if type(item_id) == dict:
+                    for i in item_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_command_all_players_on_team(
+                        ctx, server_name, player_arg, f"GiveItem team {item_id.get(i)}"
+                    )
+                else:
+                    data = await exec_command_all_players_on_team(
+                        ctx, server_name, player_arg, f"GiveItem team {item_id}"
+                    )
         else:
             if ctx.interaction_exec:
-                data = await exec_server_command(
-                    ctx, server_name, f"GiveItem {player_arg} {item_id}"
-                )
+                if type(item_id) == dict:
+                    for i in item_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_server_command(
+                            ctx, server_name, f"GiveItem {player_arg} {item_id.get(i)}"
+                        )
+                else:
+                    data = await exec_server_command(
+                        ctx, server_name, f"GiveItem {player_arg} {item_id}"
+                    )
             else:
                 player = SteamPlayer.convert(player_arg)
                 data = await exec_server_command(
