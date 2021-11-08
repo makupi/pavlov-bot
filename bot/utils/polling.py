@@ -14,7 +14,7 @@ class Polling:
         self.PollingSettingsNotFoundError = PollingSettingsNotFoundError
         if not os.path.isfile(filename):
             with open(filename, "w") as file:
-                json.dump("{}", file)
+                json.dump({}, file)
         with open(filename) as file:
             self._pollingsettings = json.load(file)
 
@@ -23,7 +23,7 @@ class Polling:
         if pollingsettings is None:
             for key in self._pollingsettings.keys():
                 if key.lower() == name.lower():
-                    server = self._pollingsettings.get(key)
+                    pollingsettings = self._pollingsettings.get(key)
                     break
             else:
                 raise PollingSettingsNotFoundError(name)

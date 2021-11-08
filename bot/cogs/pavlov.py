@@ -9,8 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import discord
-from discord.ext import tasks, commands
-from discord_components import Button, Select, SelectOption, ComponentsBot
+from discord.ext import commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command, check_perm_admin
@@ -49,7 +48,7 @@ class Pavlov(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    async def get_map_alias(self, map_label: str):
+    async def get_map_alias(self, map_label: str) -> [str, str]:
         if map_label in self._map_aliases:
             _map = self._map_aliases.get(map_label)
             return _map.get("name"), _map.get("image")
@@ -242,7 +241,7 @@ class Pavlov(commands.Cog):
         if gamemode == "SND":
             embed.description = f"Round {gameround} on map {map_name}:\n"
         else:
-            embed.description = f"Playing {gamemode.upper()} on map {map_name}:\n"
+            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n" 
         teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
@@ -275,11 +274,9 @@ class Pavlov(commands.Cog):
                 elif not alivelist.get(i):
                     dead = ":slight_smile:"
                 for ir in player_list:
-                    if i == ir.get("UniqueId"):
-                        user_name = ir.get("Username")
-                embed.description += (
-                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-                )
+                    if i == ir.get('UniqueId'):
+                        user_name = ir.get('Username')
+                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
         if hasattr(ctx, 'batch_exec'):
             if ctx.batch_exec:
                 return embed.description
