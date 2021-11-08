@@ -17,7 +17,6 @@ from bot.utils.players import (
 )
 from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
 
-
 MATCH_DELAY_RESETSND = 5
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
 

@@ -1,10 +1,10 @@
 # Changelog
 
-##0.5.2 - 2020-11-?
+## v0.6.1 - 2020-11-?
 - Improved performance of `;players` command
 - Improved output of `;players` command to give player stats and game score
 - Created the start of a polling system that continually runs commands against servers. First use case is a polling system that can send messages to discord channels when a server is filling up or emptying out
-- Shortened pause before ResetSND on `;matchsetup` to 5 seconds from 10
+- Shortened pause before ResetSND on `;matchsetup` to 5 seconds from 10 seconds
 
 ## v0.5.1 - 2020-10-21
 - Fixed Blacklist command changing to Banlist
