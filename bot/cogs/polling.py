@@ -2,11 +2,10 @@ import logging
 from bot.utils import servers, polling
 from bot.utils.pavlov import exec_server_command
 from bot.utils.players import get_stats
-from collections import namedtuple
 import discord
 import asyncio
 import random
-from discord.ext import tasks, commands
+from discord.ext import commands
 
 CHECK_INTERVAL = 15
 
