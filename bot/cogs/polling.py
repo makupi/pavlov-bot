@@ -36,7 +36,7 @@ class Polling(commands.Cog):
         while True:
             # try:
             if poll_config.get("type") == "player":
-                interval = float(poll_config.get("polling_interval")) * 60
+                interval = poll_config.get("polling_interval") * 60
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {poll} on server {server}")
                 try:
@@ -54,7 +54,7 @@ class Polling(commands.Cog):
             #    pass
 
     async def player_polling(self, ctx, poll_config, server, old_state):
-        channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
+        channel = self.bot.get_channel(poll_config.get("polling_channel"))
         logging.info(f"Starting poll with state: {old_state}")
         data, ctx = await exec_server_command(ctx, server, "RefreshList", True)
         amt = len(data.get("PlayerList"))
@@ -68,7 +68,7 @@ class Polling(commands.Cog):
             poll_config.get("medium_threshold"),
             poll_config.get("high_threshold"),
         )
-        if int(highs) <= amt:
+        if highs <= amt:
             new_state = "high"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
@@ -81,7 +81,7 @@ class Polling(commands.Cog):
             else:
                 await channel.send(p_role, embed=embed)
                 return new_state, ctx
-        elif int(meds) <= amt:
+        elif meds <= amt:
             new_state = "medium"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
@@ -94,7 +94,7 @@ class Polling(commands.Cog):
             else:
                 await channel.send(p_role, embed=embed)
                 return new_state, ctx
-        elif int(lows) <= amt:
+        elif lows <= amt:
             new_state = "low"
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
