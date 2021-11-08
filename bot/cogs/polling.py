@@ -34,7 +34,7 @@ class Polling(commands.Cog):
 
     async def new_poll(self, pollings, server: str, poll: str):
         while True:
-            #try:
+            # try:
             if pollings.get("type") == "player":
                 interval = float(pollings.get("polling_interval")) * 60
                 await asyncio.sleep(interval)
@@ -48,12 +48,12 @@ class Polling(commands.Cog):
                 #    await asyncio.sleep(interval)
                 #    logging.info(f"Executing Task {poll} on server {server}")
                 #    await self.autobalance_polling(pollings, server, poll)
-            #except Exception as e:
+            # except Exception as e:
             #    await asyncio.sleep(1)
             #    logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
             #    pass
 
-    async def player_polling(self, pollings, server, old_state = None, ctx = None):
+    async def player_polling(self, pollings, server, old_state=None, ctx=None):
         channel = self.bot.get_channel(int(pollings.get("polling_channel")))
         logging.info(f"Starting poll with state: {old_state}")
         data, ctx = await exec_server_command(ctx, server, "RefreshList", True)

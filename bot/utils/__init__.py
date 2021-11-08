@@ -20,12 +20,4 @@ def user_action_log(ctx, message, log_level=logging.INFO):
     logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
 
 
-__all__ = [
-    "config",
-    "servers",
-    "aliases",
-    "SteamPlayer",
-    "Paginator",
-    "user_action_log",
-    "Polling"
-]
+__all__ = ["config", "servers", "aliases", "SteamPlayer", "Paginator", "user_action_log", "Polling"]

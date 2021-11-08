@@ -84,7 +84,7 @@ async def parse_player_command_results(ctx, data, embed, server_name):
 
 async def get_stats(ctx: str = "noctx", server: str = ""):
     if server == "":
-        return 'NoServerSpecified'
+        return "NoServerSpecified"
     else:
         teamblue = []
         teamred = []
@@ -95,7 +95,9 @@ async def get_stats(ctx: str = "noctx", server: str = ""):
         player_list = data.get("PlayerList")
         for player in player_list:
             await asyncio.sleep(0.1)
-            data2 = await exec_server_command(ctx, server, f"InspectPlayer {player.get('UniqueId')}")
+            data2 = await exec_server_command(
+                ctx, server, f"InspectPlayer {player.get('UniqueId')}"
+            )
             dead = data2.get("PlayerInfo").get("Dead")
             alivelist.update({player.get("UniqueId"): dead})
             kda = data2.get("PlayerInfo").get("KDA")
