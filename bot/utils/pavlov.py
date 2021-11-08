@@ -111,7 +111,7 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
 
 async def exec_server_command(ctx, server_name: str, command: str, polling=False):
     pavlov = None
-    if polling == False:
+    if not polling:
         if hasattr(ctx, "pavlov"):
             pavlov = ctx.pavlov.get(server_name)
         if not hasattr(ctx, "pavlov") or pavlov is None:
@@ -129,9 +129,9 @@ async def exec_server_command(ctx, server_name: str, command: str, polling=False
         data = await pavlov.send(command)
         return data
     else:
-        if ctx != None:
+        if ctx is not None:
             pavlov = ctx
-        elif ctx == None:
+        elif ctx is None:
             server = servers.get(server_name)
             pavlov = PavlovRCON(
                 server.get("ip"),
