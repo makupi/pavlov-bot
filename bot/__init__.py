@@ -33,6 +33,7 @@ bot.version = __version__
 bot.remove_command("help")
 DiscordComponents(bot)
 
+
 @bot.event
 async def on_ready():
     bot.invite = invite_link.format(bot.user.id)

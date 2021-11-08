@@ -5,13 +5,14 @@ import discord
 from bot.utils import lists, aliases
 from discord_components import Button, Select, SelectOption
 
+
 async def spawn_pselect(self, ctx: str, server: str, interaction):
     logging.info(f"Spawning player selection menu!")
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     extras = {
-        "all": "all", 
+        "all": "all",
         "teamblue/team0": "teamblue",
         "teamred/team1": "teamred",
     }
@@ -41,9 +42,7 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
             i_list.append(SelectOption(label=str(item), value=str(item)))
     await interaction.send(
         "Select a item list below:",
-        components=[
-            Select(placeholder="Item Lists", options=i_list)
-        ],
+        components=[Select(placeholder="Item Lists", options=i_list)],
     )
     interaction1 = await self.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
@@ -51,19 +50,18 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     itemsilist = []
     for i in items:
         itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
-    itemsilist.append(SelectOption(label='all', value='all'))
+    itemsilist.append(SelectOption(label="all", value="all"))
     if len(itemsilist) > 25:
         return "ListTooLong", interaction1, interaction1.values[0]
     await interaction1.send(
         "Select a item below:",
-        components=[
-            Select(placeholder="Items", options=itemsilist)
-        ],
+        components=[Select(placeholder="Items", options=itemsilist)],
     )
     interaction2 = await self.bot.wait_for("select_option")
-    if interaction2.values[0] == 'all':
+    if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
+
 
 async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
     team_options = []
@@ -71,7 +69,7 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
     for team in teams:
         team_options.append(SelectOption(label=str(team.name), value=str(team.name)))
     if len(team_options) == 0:
-        return 'empty', interaction
+        return "empty", interaction
     else:
         await interaction.send(
             f"Select Team {team_num} below:",
@@ -85,13 +83,14 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
         interaction1 = await self.bot.wait_for("select_option")
         return interaction1.values[0], interaction1
 
+
 async def spawn_mselect(self, ctx: str, server: str, interaction):
     map_options = []
     maps = aliases.get_teams_list()
     for alias, label in maps.items():
         map_options.append(SelectOption(label=alias, value=label))
     if len(maps) == 0:
-        return 'empty', interaction
+        return "empty", interaction
     else:
         await interaction.send(
             f"Select a map below:",

@@ -13,11 +13,8 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import (
-    spawn_pselect,
-    spawn_iselect,
-    spawn_tselect
-)
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
+
 
 class PavlovAdmin(commands.Cog):
     def __init__(self, bot):
@@ -69,7 +66,7 @@ class PavlovAdmin(commands.Cog):
         options = []
         for i in servers.get_names():
             data = await exec_server_command(ctx, i, "RefreshList")
-            plist = data.get('PlayerList')
+            plist = data.get("PlayerList")
             options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")
         # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
@@ -118,16 +115,20 @@ class PavlovAdmin(commands.Cog):
                 if type(item_id) == dict:
                     for i in item_id:
                         await asyncio.sleep(0.1)
-                        data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id.get(i)}")
+                        data = await exec_command_all_players(
+                            ctx, server_name, f"GiveItem all {item_id.get(i)}"
+                        )
                 else:
-                    data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
+                    data = await exec_command_all_players(
+                        ctx, server_name, f"GiveItem all {item_id}"
+                    )
             elif player_arg.startswith("team"):
                 if type(item_id) == dict:
                     for i in item_id:
                         await asyncio.sleep(0.1)
                         data = await exec_command_all_players_on_team(
-                        ctx, server_name, player_arg, f"GiveItem team {item_id.get(i)}"
-                    )
+                            ctx, server_name, player_arg, f"GiveItem team {item_id.get(i)}"
+                        )
                 else:
                     data = await exec_command_all_players_on_team(
                         ctx, server_name, player_arg, f"GiveItem team {item_id}"

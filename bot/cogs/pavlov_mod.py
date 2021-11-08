@@ -12,11 +12,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import (
-    spawn_pselect,
-    spawn_iselect,
-    spawn_tselect
-)
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
 
 
 class PavlovMod(commands.Cog):
@@ -82,7 +78,9 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def kick(self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ''):
+    async def kick(
+        self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ""
+    ):
         """`{prefix}kick <player_id> <server_name>`
         **Description**: Kicks a player from the specified server.
         **Requires**: Moderator permissions or higher for the server

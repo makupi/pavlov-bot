@@ -15,11 +15,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import (
-    spawn_pselect,
-    spawn_iselect,
-    spawn_tselect
-)
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
 
 
 MATCH_DELAY_RESETSND = 5
@@ -35,86 +31,104 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def gamesetup(self, ctx, interaction: str = ''):
-        async def actions(i1, msg, server_name: str = ''):
+    async def gamesetup(self, ctx, interaction: str = ""):
+        async def actions(i1, msg, server_name: str = ""):
             await msg.edit(content="")
-            if server_name == '':
+            if server_name == "":
                 server_name = i1.values[0]
             if await check_perm_captain(ctx, server_name):
                 ctx.interaction_exec = True
                 matchsetup = self.bot.all_commands.get("matchsetup")
                 resetsnd = self.bot.all_commands.get("resetsnd")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
-                team_one, i1 = await spawn_tselect(self, ctx, server_name, i1, '1')
-                team_two, i1 = await spawn_tselect(self, ctx, server_name, i1, '2')
-                if team_one == 'empty' and team_two == 'empty':
-                    embed.description = '**No teams defined in aliases.json! Team buttons disabled.**'
-                    await i1.send(embed=embed, components=[
-                        self.bot.components_manager.add_callback(
+                team_one, i1 = await spawn_tselect(self, ctx, server_name, i1, "1")
+                team_two, i1 = await spawn_tselect(self, ctx, server_name, i1, "2")
+                if team_one == "empty" and team_two == "empty":
+                    embed.description = (
+                        "**No teams defined in aliases.json! Team buttons disabled.**"
+                    )
+                    await i1.send(
+                        embed=embed,
+                        components=[
+                            self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
-                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                                lambda interaction: resetsnd(ctx, server_name, interaction),
                             )
-                    ])
+                        ],
+                    )
                 elif team_one == team_two:
                     embed.description = "**Duplicate teams detected! Team buttons disabled.**"
-                    await i1.send(embed=embed, components=[
-                        self.bot.components_manager.add_callback(
+                    await i1.send(
+                        embed=embed,
+                        components=[
+                            self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
-                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                                lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"Change Settings", custom_id="button4"),
-                                lambda interaction: actions(interaction, msg, server_name)
-                            )
-                    ])
-                elif team_one == 'empty':
+                                lambda interaction: actions(interaction, msg, server_name),
+                            ),
+                        ],
+                    )
+                elif team_one == "empty":
                     embed.description = "**Missing team one! Team buttons disabled.**"
-                    await i1.send(embed=embed, components=[
-                        self.bot.components_manager.add_callback(
+                    await i1.send(
+                        embed=embed,
+                        components=[
+                            self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
-                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                                lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"Change Settings", custom_id="button4"),
-                                lambda interaction: actions(interaction, msg, server_name)
-                            )
-                    ])
-                elif team_two == 'empty':
+                                lambda interaction: actions(interaction, msg, server_name),
+                            ),
+                        ],
+                    )
+                elif team_two == "empty":
                     embed.description = "**Missing team two! Team buttons disabled.**"
-                    await i1.send(embed=embed, components=[
-                        self.bot.components_manager.add_callback(
+                    await i1.send(
+                        embed=embed,
+                        components=[
+                            self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
-                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                                lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"Change Settings", custom_id="button4"),
-                                lambda interaction: actions(interaction, msg, server_name)
-                            )
-                    ])
+                                lambda interaction: actions(interaction, msg, server_name),
+                            ),
+                        ],
+                    )
                 else:
                     await i1.send(
                         embed=embed,
                         components=[
                             self.bot.components_manager.add_callback(
-                                Button(label=f"CT: {team_one} vs T: {team_two}", custom_id="button1"),
+                                Button(
+                                    label=f"CT: {team_one} vs T: {team_two}", custom_id="button1"
+                                ),
                                 lambda interaction: matchsetup(
                                     ctx, team_one, team_two, server_name, interaction
-                                )
+                                ),
                             ),
                             self.bot.components_manager.add_callback(
-                                Button(label=f"CT: {team_two} vs T: {team_one}", custom_id="button2"),
+                                Button(
+                                    label=f"CT: {team_two} vs T: {team_one}", custom_id="button2"
+                                ),
                                 lambda interaction: matchsetup(
                                     ctx, team_two, team_one, server_name, interaction
-                                )
+                                ),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"ResetSND", custom_id="button3"),
-                                lambda interaction: resetsnd(ctx, server_name, interaction)
+                                lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"Change Settings", custom_id="button4"),
-                                lambda interaction: actions(interaction, msg, server_name)
-                            )
+                                lambda interaction: actions(interaction, msg, server_name),
+                            ),
                         ],
                     )
             else:
@@ -130,23 +144,23 @@ class PavlovCaptain(commands.Cog):
         embed = discord.Embed(title="**Select a server below:**")
         if ctx.interaction_exec == True:
             message = await interaction.send(
-            embed=embed,
-            components=[
-                self.bot.components_manager.add_callback(
-                    Select(placeholder="Server", options=options),
-                    lambda interaction: actions(interaction, message)
-                )
-            ]
-        )
+                embed=embed,
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Select(placeholder="Server", options=options),
+                        lambda interaction: actions(interaction, message),
+                    )
+                ],
+            )
         else:
             message = await ctx.send(
                 embed=embed,
                 components=[
                     self.bot.components_manager.add_callback(
                         Select(placeholder="Server", options=options),
-                        lambda interaction: actions(interaction, message)
+                        lambda interaction: actions(interaction, message),
                     )
-                ]
+                ],
             )
 
     @commands.command(aliases=["map"])
@@ -171,22 +185,22 @@ class PavlovCaptain(commands.Cog):
         if game_mode.upper() == "SND":
             ctx.interaction_exec = True
             components = [
-                             self.bot.components_manager.add_callback(
-                                 Button(label=f"Match Menu", custom_id="button1"),
-                                 lambda interaction: gamesetup(ctx, interaction),
-                             ),
-                             self.bot.components_manager.add_callback(
-                                 Button(label=f"ResetSND", custom_id="button2"),
-                                 lambda interaction: resetsnd(ctx, server_name, interaction),
-                             ),
-                         ]
+                self.bot.components_manager.add_callback(
+                    Button(label=f"Match Menu", custom_id="button1"),
+                    lambda interaction: gamesetup(ctx, interaction),
+                ),
+                self.bot.components_manager.add_callback(
+                    Button(label=f"ResetSND", custom_id="button2"),
+                    lambda interaction: resetsnd(ctx, server_name, interaction),
+                ),
+            ]
         else:
             ctx.interaction_exec = True
             components = [
                 self.bot.components_manager.add_callback(
-                                 Button(label=f"Match Menu", custom_id="button1"),
-                                 lambda interaction: gamesetup(ctx, interaction),
-                             )
+                    Button(label=f"Match Menu", custom_id="button1"),
+                    lambda interaction: gamesetup(ctx, interaction),
+                )
             ]
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
@@ -201,8 +215,8 @@ class PavlovCaptain(commands.Cog):
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                    title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
-                )
+                title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+            )
             await ctx.send(embed=embed, components=components)
 
     @commands.command()
@@ -282,7 +296,7 @@ class PavlovCaptain(commands.Cog):
         team_a_name: str,
         team_b_name: str,
         server_name: str = config.default_server,
-        interaction: str = ''
+        interaction: str = "",
     ):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
@@ -311,7 +325,9 @@ class PavlovCaptain(commands.Cog):
                     ctx, server_name, f"SwitchTeam {member.unique_id} {index}"
                 )
                 await asyncio.sleep(RCON_COMMAND_PAUSE)
-        embed = discord.Embed(title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds on {server_name}.")
+        embed = discord.Embed(
+            title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds on {server_name}."
+        )
         if ctx.interaction_exec == True:
             await interaction.send(embed=embed)
         else:

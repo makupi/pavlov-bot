@@ -241,17 +241,15 @@ class Pavlov(commands.Cog):
         if gamemode == "SND":
             embed.description = f"Round {gameround} on map {map_name}:\n"
         else:
-            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n" 
+            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n"
         teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
         if len(teamred) == 0:
             for i in player_list:
-                if alivelist.get(i.get('UniqueId')):
+                if alivelist.get(i.get("UniqueId")):
                     dead = ":skull:"
-                elif not alivelist.get(i.get('UniqueId')):
+                elif not alivelist.get(i.get("UniqueId")):
                     dead = ":slight_smile:"
-                embed.description += (
-                    f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
-                )
+                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
         else:
             embed.description += f"\n **Team Blue Score: {blue_score}**"
             for i in teamblue:
@@ -274,10 +272,12 @@ class Pavlov(commands.Cog):
                 elif not alivelist.get(i):
                     dead = ":slight_smile:"
                 for ir in player_list:
-                    if i == ir.get('UniqueId'):
-                        user_name = ir.get('Username')
-                embed.description += f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
-        if hasattr(ctx, 'batch_exec'):
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
+        if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
                 return embed.description
             await ctx.send(embed=embed)
