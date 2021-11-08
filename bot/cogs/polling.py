@@ -34,24 +34,24 @@ class Polling(commands.Cog):
 
     async def new_poll(self, poll_config, server: str, poll: str):
         while True:
-            # try:
-            if poll_config.get("type") == "player":
-                interval = poll_config.get("polling_interval") * 60
-                await asyncio.sleep(interval)
-                logging.info(f"Executing Task {poll} on server {server}")
-                try:
-                    state, ctx = await self.player_polling(ctx, poll_config, server, state)
-                except:
-                    state, ctx = await self.player_polling(None, poll_config, server, None)
-                # if poll_config.get("type") == "autobalance":
-                #    interval = float(poll_config.get("polling_interval")) * 60
-                #    await asyncio.sleep(interval)
-                #    logging.info(f"Executing Task {poll} on server {server}")
-                #    await self.autobalance_polling(poll_config, server, poll)
-            # except Exception as e:
-            #    await asyncio.sleep(1)
-            #    logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
-            #    pass
+            try:
+                if poll_config.get("type") == "player":
+                    interval = poll_config.get("polling_interval") * 60
+                    await asyncio.sleep(interval)
+                    logging.info(f"Executing Task {poll} on server {server}")
+                    try:
+                        state, ctx = await self.player_polling(ctx, poll_config, server, state)
+                    except:
+                        state, ctx = await self.player_polling(None, poll_config, server, None)
+                    # if poll_config.get("type") == "autobalance":
+                    #    interval = float(poll_config.get("polling_interval")) * 60
+                    #    await asyncio.sleep(interval)
+                    #    logging.info(f"Executing Task {poll} on server {server}")
+                    #    await self.autobalance_polling(poll_config, server, poll)
+            except Exception as e:
+               await asyncio.sleep(1)
+               logging.info(f"Exception appeared in {poll} on server {server}! Exception: {e}")
+               pass
 
     async def player_polling(self, ctx, poll_config, server, old_state):
         channel = self.bot.get_channel(poll_config.get("polling_channel"))
