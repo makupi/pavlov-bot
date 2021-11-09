@@ -1,14 +1,120 @@
 {
-    "tttlist": {
+    "WW2 Guns": {
         "type": "item",
         "list": {
-            "1":"de",
-            "2":"reddot",
-            "3":"supp_rifle",
-            "4":"goldengun",
-            "5":"tttc4",
-            "6":"tazer",
-            "7":"syringe"
+            "1":"ppsh",
+            "2":"mp40",
+            "3":"g43",
+            "4":"m1garand",
+            "5":"svt40",
+            "6":"luger",
+            "7":"tokarev",
+            "8":"webley",
+            "9":"bren",
+            "10":"bar",
+            "11":"sten",
+            "12":"stg44",
+            "13":"mosin",
+            "14":"springfield",
+            "15":"thompson",
+            "16":"mg42",
+            "17":"leeenfield"
+
         }
+    },
+    "Grenades": {
+        "type": "item",
+        "list": {
+            "1":"grenade_us",
+            "2":"grenade_ger",
+            "3":"smoke_us",
+            "4":"smoke_ger",
+            "5":"grenade_svt",
+            "6":"smoke_svt",
+            "7":"grenade",
+            "8":"grenade_ru",
+            "9":"flash",
+            "10":"smoke",
+            "11":"smoke_ru"
+        }
+    },
+        "Launchers": {
+            "type": "item",
+            "list": {
+                "1":"rl_piat",
+                "2":"rl_m1a1",
+                "3":"rl_panzer"
+            }
+    },
+    "Guns-pistol": {
+        "type": "item",
+        "list": {
+            "1":"cet9",
+            "2":"m9",
+            "3":"1911",
+            "4":"sock",
+            "5":"57",
+            "6":"de",
+            "7":"revolver",
+            "8":"sawedoff"
+        }
+},
+"Guns-rifle": {
+    "type": "item",
+    "list": {
+        "1":"shotgun",
+        "2":"autoshotgun",
+        "3":"drumshotgun",
+        "4":"lmga",
+        "5":"uzi",
+        "6":"mp5",
+        "7":"smg",
+        "8":"vanas",
+        "9":"p90",
+        "10":"kar98",
+        "11":"ak47",
+        "12":"ak12",
+        "13":"ak",
+        "14":"ar",
+        "15":"aug",
+        "16":"autosniper",
+        "17":"antitank",
+        "18":"awp"
     }
+},
+"Attachments": {
+    "type": "item",
+    "list": {
+        "1":"reddot",
+        "2":"holo",
+        "3":"acog",
+        "4":"supp_pistol",
+        "5":"supp_rifle",
+        "6":"grip_angled",
+        "7":"grip_vertical",
+        "8":"armour",
+        "9":"kevlarhelmet"
+    }
+},
+"Misc": {
+    "type": "item",
+    "list": {
+        "1":"defuse",
+        "2":"knife",
+        "3":"painkillers",
+        "4":"taser",
+        "5":"syringe"
+    }
+},
+"Ammo": {
+    "type": "item",
+    "list": {
+        "1":"ammo_rifle",
+        "2":"ammo_sniper",
+        "3":"ammo_pistol",
+        "4":"ammo_smg",
+        "5":"ammo_shotgun",
+        "6":"ammo_special"
+    }
+}
 }

@@ -62,6 +62,36 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
+async def spawn_vselect(self, ctx: str, server: str, interaction):
+    logging.info(f"Spawning item selection menu!")
+    i_list = []
+    itemlists = lists.get_names()
+    for item in itemlists:
+        alist = lists.get(item)
+        if alist.get("type") == "vehicle":
+            i_list.append(SelectOption(label=str(item), value=str(item)))
+    await interaction.send(
+        "Select a vehicle list below:",
+        components=[Select(placeholder="Vehicle Lists", options=i_list)],
+    )
+    interaction1 = await self.bot.wait_for("select_option")
+    slist = lists.get(interaction1.values[0])
+    items = slist.get("list")
+    itemsilist = []
+    for i in items:
+        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
+    itemsilist.append(SelectOption(label="all", value="all"))
+    if len(itemsilist) > 25:
+        return "ListTooLong", interaction1, interaction1.values[0]
+    await interaction1.send(
+        "Select a vehicle below:",
+        components=[Select(placeholder="Vehicles", options=itemsilist)],
+    )
+    interaction2 = await self.bot.wait_for("select_option")
+    if interaction2.values[0] == "all":
+        return items, interaction2, interaction1.values[0]
+    return interaction2.values[0], interaction2, interaction1.values[0]
+
 
 async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
     team_options = []
