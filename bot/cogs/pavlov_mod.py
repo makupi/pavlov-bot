@@ -94,7 +94,7 @@ class PavlovMod(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await interaction.send(embed=embed)
                 return
-            data = await exec_server_command(ctx, server_name, f"Slap {player_arg} {dmg}")
+            data = await exec_server_command(ctx, server_name, f"Kick {player_arg}")
         else:
             player = SteamPlayer.convert(player_arg)
             data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")

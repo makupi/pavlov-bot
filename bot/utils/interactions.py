@@ -7,7 +7,7 @@ from discord_components import Button, Select, SelectOption
 
 
 async def spawn_pselect(self, ctx: str, server: str, interaction):
-    logging.info(f"Spawning player selection menu!")
+    logging.info(f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
     plist = []
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
@@ -33,7 +33,7 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
 
 
 async def spawn_iselect(self, ctx: str, server: str, interaction):
-    logging.info(f"Spawning item selection menu!")
+    logging.info(f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
     i_list = []
     itemlists = lists.get_names()
     for item in itemlists:
@@ -63,7 +63,7 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 async def spawn_vselect(self, ctx: str, server: str, interaction):
-    logging.info(f"Spawning item selection menu!")
+    logging.info(f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
     i_list = []
     itemlists = lists.get_names()
     for item in itemlists:
@@ -94,6 +94,7 @@ async def spawn_vselect(self, ctx: str, server: str, interaction):
 
 
 async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
+    logging.info(f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
     team_options = []
     teams = aliases.get_teams_list()
     for team in teams:
@@ -115,6 +116,7 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
 
 
 async def spawn_mselect(self, ctx: str, server: str, interaction):
+    logging.info(f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
     map_options = []
     maps = aliases.get_teams_list()
     for alias, label in maps.items():

@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from .aliases import Aliases
 from .config import Config
@@ -20,6 +21,9 @@ lists = Lists()
 def user_action_log(ctx, message, log_level=logging.INFO):
     name = f"{ctx.author.name}#{ctx.author.discriminator}"
     logging.log(log_level, f"USER: {name} <{ctx.author.id}> -- {message}")
+    file_object = open('user_action_log.txt', 'a')
+    file_object.write(f"{datetime.now()} - USER: {name} <{ctx.author.id}> -- {message}\n")
+    file_object.close()
 
 
 __all__ = ["config", "servers", "aliases", "SteamPlayer", "Paginator", "user_action_log", "Polling"]
