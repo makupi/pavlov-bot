@@ -65,9 +65,12 @@ class PavlovAdmin(commands.Cog):
 
         options = []
         for i in servers.get_names():
-            data = await exec_server_command(ctx, i, "RefreshList")
-            plist = data.get("PlayerList")
-            options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+            try:
+                data = await exec_server_command(ctx, i, "RefreshList")
+                plist = data.get("PlayerList")
+                options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+            except:
+                pass
         embed = discord.Embed(title="**Select a server below:**")
         # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
         message = await ctx.send(
