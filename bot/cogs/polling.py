@@ -59,9 +59,6 @@ class Polling(commands.Cog):
         amt = len(data.get("PlayerList"))
         p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
         logging.info(f"{server} has {amt} players")
-        if poll_config.get("show_scoreboard"):
-            scoreboardcmd = self.bot.all_commands.get("players")
-            scoreboard = await scoreboardcmd(ctx, server)
         lows, meds, highs = (
             poll_config.get("low_threshold"),
             poll_config.get("medium_threshold"),
