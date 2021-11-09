@@ -29,9 +29,14 @@ class PavlovAdmin(commands.Cog):
         async def actions(i1):
             await message.edit(content="")
             server_name = i1.values[0]
-            if await check_perm_admin(ctx, server_name):
+            if server_name == 'OFFLINE':
+                embed = discord.Embed(title="Server is offline.")
+                await i1.send(embed=embed)
+                return
+            if i1.author.id == ctx.author.id:
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
+                ctx.batch_exec = False
                 slap = self.bot.all_commands.get("slap")
                 giveitem = self.bot.all_commands.get("giveitem")
                 kill = self.bot.all_commands.get("kill")
@@ -65,22 +70,28 @@ class PavlovAdmin(commands.Cog):
 
         options = []
         for i in servers.get_names():
-            try:
-                data = await exec_server_command(ctx, i, "RefreshList")
-                plist = data.get("PlayerList")
-                options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
-            except:
-                pass
+            ctx.batch_exec = True
+            if await check_perm_admin(ctx, i):
+                try:
+                    data = await exec_server_command(ctx, i, "RefreshList")
+                    plist = data.get("PlayerList")
+                    options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+                except:
+                    options.append(SelectOption(label=f"{i} (OFFLINE)", value='OFFLINE'))
         embed = discord.Embed(title="**Select a server below:**")
-        # embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
-        message = await ctx.send(
-            embed=embed,
-            components=[
-                self.bot.components_manager.add_callback(
-                    Select(placeholder="Server", options=options), actions
-                )
-            ],
-        )
+        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+        if len(options) == 0:
+            embed.title = "You do not have access to this menu."
+            message = await ctx.send(embed=embed)
+        else:    
+            message = await ctx.send(
+                embed=embed,
+                components=[
+                    self.bot.components_manager.add_callback(
+                        Select(placeholder="Server", options=options), actions
+                    )
+                ],
+            )
 
     @commands.command()
     async def giveitem(
