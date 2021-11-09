@@ -1,3 +1,4 @@
+
 {
     "WW2 Guns": {
         "type": "item",
@@ -18,7 +19,8 @@
             "14":"springfield",
             "15":"thompson",
             "16":"mg42",
-            "17":"leeenfield"
+            "17":"leeenfield",
+            "18":"dp27"
 
         }
     },
@@ -35,7 +37,8 @@
             "8":"grenade_ru",
             "9":"flash",
             "10":"smoke",
-            "11":"smoke_ru"
+            "11":"smoke_ru",
+            "12":"grenade_dis"
         }
     },
         "Launchers": {
@@ -62,24 +65,28 @@
 "Guns-rifle": {
     "type": "item",
     "list": {
-        "1":"shotgun",
-        "2":"autoshotgun",
-        "3":"drumshotgun",
-        "4":"lmga",
-        "5":"uzi",
-        "6":"mp5",
-        "7":"smg",
-        "8":"vanas",
-        "9":"p90",
-        "10":"kar98",
-        "11":"ak47",
-        "12":"ak12",
-        "13":"ak",
-        "14":"ar",
-        "15":"aug",
-        "16":"autosniper",
-        "17":"antitank",
-        "18":"awp"
+        "1":"lmga",
+        "2":"uzi",
+        "3":"mp5",
+        "4":"smg",
+        "5":"vanas",
+        "6":"p90",
+        "7":"kar98",
+        "8":"ak47",
+        "9":"ak12",
+        "10":"ak",
+        "11":"ar",
+        "12":"aug",
+        "13":"autosniper",
+        "14":"antitank",
+        "15":"awp",
+        "16":"sks",
+        "17":"akshorty",
+        "19":"ar9",
+        "20":"m16",
+        "21":"kross",
+        "22":"vzz",
+        "23":"scur"
     }
 },
 "Attachments": {
@@ -93,7 +100,22 @@
         "6":"grip_angled",
         "7":"grip_vertical",
         "8":"armour",
-        "9":"kevlarhelmet"
+        "9":"kevlarhelmet",
+        "10":"scope_kar98",
+        "11":"scope_leeenfield",
+        "12":"scope_springfield",
+        "13":"scope_mosin",
+        "14":"bayonet_trenchgun",
+        "15":"bayonet_leeenfield",
+        "16":"bayonet_m1garand",
+        "17":"bayonet_mosin",
+        "18":"bayonet_springfield",
+        "19":"bayonet_kar98",
+        "20":"Flashlight_Rifle",
+        "21":"Laser_Rifle",
+        "22":"Laser_Pistol",
+        "23":"reddot_pistol",
+        "24":"Canted_Reddot"
     }
 },
 "Misc": {
@@ -103,7 +125,18 @@
         "2":"knife",
         "3":"painkillers",
         "4":"taser",
-        "5":"syringe"
+        "5":"syringe",
+        "6":"PushBomb",
+        "7":"medkit",
+        "8":"antitankmine",
+        "9":"antipersonnelmine",
+        "10":"BallisticsShield",
+        "11":"tankmg",
+        "12":"tankturret",
+        "13":"skinhelmet_us",
+        "14":"skinhelmet_ger",
+        "15":"skinhelmet_svt",
+        "16":"galul"
     }
 },
 "Ammo": {
@@ -114,7 +147,34 @@
         "3":"ammo_pistol",
         "4":"ammo_smg",
         "5":"ammo_shotgun",
-        "6":"ammo_special"
+        "6":"ammo_special",
+        "7":"ammocrate"
+    }
+},
+"TTT": {
+    "type": "item",
+    "list": {
+        "1":"tttknife",
+        "2":"detectivesmg",
+        "3":"dnascanner",
+        "4":"silentcet9",
+        "5":"TTTC4",
+        "6":"goldengun",
+        "7":"pipe",
+        "8":"monocular",
+        "9":"teleporter",
+        "10":"newtonlauncher",
+        "11":"healthstation",   
+        "12":"flaregun"
+    }
+},
+"Guns-shotgun": {
+    "type": "item",
+    "list": {
+        "1":"shotgun",
+        "2":"autoshotgun",
+        "3":"drumshotgun",
+        "":"trenchgun"
     }
 }
 }
