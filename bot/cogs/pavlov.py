@@ -11,6 +11,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
+from discord_slash import cog_ext, SlashContext
+
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command, check_perm_admin
 from bot.utils.players import get_stats, exec_command_all_players, parse_player_command_results
@@ -193,8 +195,8 @@ class Pavlov(commands.Cog):
             return embed.description
         await ctx.send(embed=embed)
 
-    @commands.command()  # Exceeds Helptext embed, maplist hidden for now
-    async def maplist(self, ctx, server_name: str = config.default_server):
+    @slash.slash(name="maplist")
+    async def maplist(self, ctx: SlashContext, server_name: str = config.default_server):
         """`{prefix}maplist <server_name>`
 
         **Example**: `{prefix}maplist rush`

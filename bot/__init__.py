@@ -8,6 +8,7 @@ from discord.ext import commands
 
 from bot.utils import aliases, config, servers, user_action_log
 from discord_components import DiscordComponents, ComponentsBot, Button
+from discord_slash import SlashCommand
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)
@@ -32,6 +33,7 @@ bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
 DiscordComponents(bot)
+slash = SlashCommand(bot)
 
 
 @bot.event
