@@ -10,7 +10,6 @@ from datetime import datetime
 import aiohttp
 import discord
 from discord.ext import commands
-
 from discord_slash import cog_ext, SlashContext
 
 from bot.utils import Paginator, aliases, servers, config
@@ -72,8 +71,8 @@ class Pavlov(commands.Cog):
             logging.error(f"Getting map label {map_label} failed with {ex}")
         return None, None
 
-    @commands.command()
-    async def servers(self, ctx):
+    @cog_ext.cog_slash(name="servers", description="A command.")
+    async def _servers(self, ctx):
         """`{prefix}servers` - *Lists available servers*"""
         server_names = servers.get_names()
         embed = discord.Embed(title="Servers", description="\n- ".join([""] + server_names))
@@ -120,8 +119,8 @@ class Pavlov(commands.Cog):
         teams_cog = self.bot.get_cog("Teams")
         await teams_cog.teams(ctx)
 
-    @commands.command()
-    async def serverinfo(self, ctx, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="serverinfo", description="A command.")
+    async def _serverinfo(self, ctx, server_name: str = config.default_server):
         """`{prefix}serverinfo <server_name>`
 
         **Example**: `{prefix}serverinfo rush`
@@ -131,20 +130,21 @@ class Pavlov(commands.Cog):
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
         map_alias = aliases.find_map_alias(map_label)
-        if ctx.batch_exec:
-            map_alias_str = ""
-            if map_alias:
-                map_alias_str = f"Map Alias:   {map_alias}\n"
-            return (
-                f"```"
-                f'Server Name: {server_info.get("ServerName")}\n'
-                f'Round State: {server_info.get("RoundState")}\n'
-                f'Players:     {server_info.get("PlayerCount")}\n'
-                f'Game Mode:   {server_info.get("GameMode")}\n'
-                f"Map:         {map_name}\n"
-                f"{map_alias_str}"
-                f"Map Label:   {map_label}```"
-            )
+        if hasattr(ctx, "batch_exec"):
+            if ctx.batch_exec:
+                map_alias_str = ""
+                if map_alias:
+                    map_alias_str = f"Map Alias:   {map_alias}\n"
+                return (
+                    f"```"
+                    f'Server Name: {server_info.get("ServerName")}\n'
+                    f'Round State: {server_info.get("RoundState")}\n'
+                    f'Players:     {server_info.get("PlayerCount")}\n'
+                    f'Game Mode:   {server_info.get("GameMode")}\n'
+                    f"Map:         {map_name}\n"
+                    f"{map_alias_str}"
+                    f"Map Label:   {map_label}```"
+                )
         embed = discord.Embed(title=f"**ServerInfo** for `{server_name}`")
         if map_image:
             embed.set_thumbnail(url=map_image)
@@ -159,8 +159,8 @@ class Pavlov(commands.Cog):
             embed.add_field(name="Map Alias", value=map_alias)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def banlist(self, ctx, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="banlist", description="A command.")
+    async def _banlist(self, ctx, server_name: str = config.default_server):
         """`{prefix}banlist <server_name> - Lists banned players on a server`
 
         **Example**: `{prefix}banlist rush`
@@ -177,8 +177,8 @@ class Pavlov(commands.Cog):
             embed.description = "No banned players found."
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def itemlist(self, ctx, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="itemlist", description="A command.")
+    async def _itemlist(self, ctx, server_name: str = config.default_server):
         """`{prefix}itemlist <servername>`
 
         **Example**: `{prefix}itemlist snd1`
@@ -191,12 +191,13 @@ class Pavlov(commands.Cog):
             embed.description = f"Currently no Items available"
         for item in item_list:
             embed.description += f"\n - <{str(item)}>"
-        if ctx.batch_exec:
-            return embed.description
+        if hasattr(ctx, "batch_exec"):
+            if ctx.batch_exec:
+                return embed.description
         await ctx.send(embed=embed)
 
-    @slash.slash(name="maplist")
-    async def maplist(self, ctx: SlashContext, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="maplist", description="A command.")
+    async def _maplist(self, ctx: SlashContext, server_name: str = config.default_server):
         """`{prefix}maplist <server_name>`
 
         **Example**: `{prefix}maplist rush`
@@ -209,12 +210,13 @@ class Pavlov(commands.Cog):
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
             embed.description += f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
-        if ctx.batch_exec:
-            return embed.description
+        if hasattr(ctx, "batch_exec"):
+            if ctx.batch_exec:
+                return embed.description
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def players(self, ctx, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="players", description="A command.")
+    async def _players(self, ctx, server_name: str = config.default_server):
         """`{prefix}players <server_name>`
 
         **Example**: `{prefix}players rush`
@@ -286,8 +288,8 @@ class Pavlov(commands.Cog):
         else:
             return embed.description
 
-    @commands.command()
-    async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
+    @cog_ext.cog_slash(name="playerinfo", description="A command.")
+    async def _playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
@@ -295,8 +297,9 @@ class Pavlov(commands.Cog):
         player = SteamPlayer.convert(player_arg)
         data = await exec_server_command(ctx, server_name, f"InspectPlayer {player.unique_id}")
         player_info = data.get("PlayerInfo")
-        if ctx.batch_exec:
-            return player_info
+        if hasattr(ctx, "batch_exec"):
+            if ctx.batch_exec:
+                return player_info
         if not player_info:
             embed = discord.Embed(
                 title=f"Player <{player.unique_id}> not found on `{server_name}`."
@@ -312,8 +315,8 @@ class Pavlov(commands.Cog):
                 embed.add_field(name="Alias", value=player.name)
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def batch(self, ctx, *batch_commands):
+    @cog_ext.cog_slash(name="batch", description="A command.")
+    async def _batch(self, ctx, *batch_commands):
         """`{prefix}batch "<command with arguments>" "<command with args>"`
 
         **Example**: `{prefix}batch "rotatemap rush" "serverinfo rush"`
@@ -351,8 +354,8 @@ class Pavlov(commands.Cog):
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def anyoneplaying(self, ctx, server_group: str = None):
+    @cog_ext.cog_slash(name="anyoneplaying", description="A command.")
+    async def _anyoneplaying(self, ctx, server_group: str = None):
         """`{prefix}anyoneplaying [server_group]`"""
         ctx.batch_exec = True
         players_header = ANYONEPLAYING_ROW_FORMAT.format(

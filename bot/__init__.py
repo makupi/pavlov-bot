@@ -33,7 +33,7 @@ bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
 DiscordComponents(bot)
-slash = SlashCommand(bot)
+slash = SlashCommand(bot, sync_commands=True)
 
 
 @bot.event
