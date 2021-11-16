@@ -54,7 +54,7 @@ class Polling(commands.Cog):
 
     async def player_polling(self, ctx, poll_config, server, old_state):
         channel = self.bot.get_channel(poll_config.get("polling_channel"))
-        logging.info(f"Starting poll with state: {old_state}")
+        logging.info(f"Starting poll on {server} with state: {old_state}")
         data, ctx = await exec_server_command(ctx, server, "RefreshList", True)
         amt = len(data.get("PlayerList"))
         p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
@@ -69,6 +69,7 @@ class Polling(commands.Cog):
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has high population! {amt} players are on!")
             if old_state == new_state:
+                logging.info(f"State has not changed.")
                 return new_state, ctx
             else:
                 if poll_config.get("show_scoreboard"):
@@ -82,6 +83,7 @@ class Polling(commands.Cog):
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has medium population! {amt} players are on!")
             if old_state == new_state:
+                logging.info(f"State has not changed.")
                 return new_state, ctx
             else:
                 if poll_config.get("show_scoreboard"):
@@ -95,6 +97,7 @@ class Polling(commands.Cog):
             logging.info(f"New state is {new_state}")
             embed = discord.Embed(title=f"`{server}` has low population! {amt} players are on!")
             if old_state == new_state:
+                logging.info(f"State has not changed.")
                 return new_state, ctx
             else:
                 if poll_config.get("show_scoreboard"):
