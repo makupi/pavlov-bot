@@ -80,3 +80,33 @@ async def parse_player_command_results(ctx, data, embed, server_name):
             embed.add_field(name=i.get("UniqueID"), value=result, inline=False)
         embed.description = f"{success} out of {success + failure} players affected"
     return embed
+
+
+async def get_stats(ctx: str = "noctx", server: str = ""):
+    if server == "":
+        return "NoServerSpecified"
+    else:
+        teamblue = []
+        teamred = []
+        alivelist = {}
+        kdalist = {}
+        scorelist = {}
+        data = await exec_server_command(ctx, server, "RefreshList")
+        player_list = data.get("PlayerList")
+        for player in player_list:
+            await asyncio.sleep(0.1)
+            data2 = await exec_server_command(
+                ctx, server, f"InspectPlayer {player.get('UniqueId')}"
+            )
+            dead = data2.get("PlayerInfo").get("Dead")
+            alivelist.update({player.get("UniqueId"): dead})
+            kda = data2.get("PlayerInfo").get("KDA")
+            kdalist.update({player.get("UniqueId"): kda})
+            score = data2.get("PlayerInfo").get("Score")
+            scorelist.update({player.get("UniqueId"): score})
+            team_id = data2.get("PlayerInfo").get("TeamId")
+            if team_id == "0":
+                teamblue.append(player.get("UniqueId"))
+            elif team_id == "1":
+                teamred.append(player.get("UniqueId"))
+        return teamblue, teamred, kdalist, alivelist, scorelist

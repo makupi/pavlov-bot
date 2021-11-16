@@ -36,8 +36,8 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg == "all" or player_arg.startswith("team"):
-            if player_arg == "all":
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
                 data = await exec_command_all_players(ctx, server_name, f"GiveItem all {item_id}")
             elif player_arg.startswith("team"):
                 data = await exec_command_all_players_on_team(
@@ -50,6 +50,8 @@ class PavlovAdmin(commands.Cog):
             )
         embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -73,6 +75,8 @@ class PavlovAdmin(commands.Cog):
         )
         embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -90,7 +94,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg == "all":
+        if player_arg.casefold() == "all":
             data = await exec_command_all_players(ctx, server_name, f"GiveCash all {cash_amount}")
         else:
             player = SteamPlayer.convert(player_arg)
@@ -99,6 +103,8 @@ class PavlovAdmin(commands.Cog):
             )
         embed = discord.Embed(title=f"**GiveCash {player_arg} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -124,6 +130,8 @@ class PavlovAdmin(commands.Cog):
         data = await exec_server_command(ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}")
         embed = discord.Embed(title=f"**GiveTeamCash {team_id} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -141,8 +149,8 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        if player_arg == "all" or player_arg.startswith("team"):
-            if player_arg == "all":
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
                 data = await exec_command_all_players(
                     ctx, server_name, f"SetPlayerSkin all {skin_id}"
                 )
@@ -157,6 +165,8 @@ class PavlovAdmin(commands.Cog):
             )
         embed = discord.Embed(title=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
         await ctx.send(embed=embed)
 
     @commands.command()

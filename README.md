@@ -63,6 +63,9 @@ If you only have one server, if you name it `default` in servers.json and you ca
 
 *Optional advanced feature*: Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, all commands require Admin permission unless the "permission" field contains "All", "Captain" or "Mod" which grants execution rights to that level and higher.  Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
 
+
+*Optional advanced feature*: Copy polling.json.default file from Examples directory to `/home/steam/pavlov-bot/polling.json` and edit as required. This new feature allows for continuous monitoring of servers for player count and sending messages to discord at customizable low, medium and high player counts
+
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
 Obtain the bot token and install in config.json

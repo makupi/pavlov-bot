@@ -13,6 +13,7 @@ from discord.ext import commands
 
 from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
+from bot.utils.players import get_stats
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 from bs4 import BeautifulSoup
@@ -217,7 +218,19 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}players rush`
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
+        data2 = await exec_server_command(ctx, server_name, "ServerInfo")
         player_list = data.get("PlayerList")
+        blue_score = data2.get("ServerInfo").get("Team0Score")
+        red_score = data2.get("ServerInfo").get("Team1Score")
+        gameround = data2.get("ServerInfo").get("Round")
+        gamemode = data2.get("ServerInfo").get("GameMode")
+        map_label = data2.get("ServerInfo").get("MapLabel")
+        map_alias = aliases.find_map_alias(map_label)
+        if map_alias == None:
+            map_name = map_label
+        else:
+            map_name = map_alias
+
         if len(player_list) == 0:
             embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
         else:
@@ -225,26 +238,51 @@ class Pavlov(commands.Cog):
                 embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
             else:
                 embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-            embed.description = "\n"
-            for player in player_list:
-                await asyncio.sleep(0.1)
-                data2 = await exec_server_command(
-                    ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
-                )
-                team_id = data2.get("PlayerInfo").get("TeamId")
-                dead = data2.get("PlayerInfo").get("Dead")
-                if team_id == "0":
-                    team_name = ":blue_square:"
-                elif team_id == "1":
-                    team_name = ":red_square:"
-                if dead == True:
+        if gamemode == "SND":
+            embed.description = f"Round {gameround} on map {map_name}:\n"
+        else:
+            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n"
+        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
+        if len(teamred) == 0:
+            for i in player_list:
+                if alivelist.get(i.get("UniqueId")):
                     dead = ":skull:"
-                elif dead == False:
+                elif not alivelist.get(i.get("UniqueId")):
                     dead = ":slight_smile:"
-                embed.description += f"\n - {dead} {team_name} {player.get('Username', '')} <{player.get('UniqueId')}>"
-        if ctx.batch_exec:
+                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
+        else:
+            embed.description += f"\n **Team Blue Score: {blue_score}**"
+            for i in teamblue:
+                team_name = ":blue_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
+            embed.description += f"\n **Team Red Score: {red_score}**"
+            for i in teamred:
+                team_name = ":red_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
+        if hasattr(ctx, "batch_exec"):
+            if ctx.batch_exec:
+                return embed.description
+            await ctx.send(embed=embed)
+        else:
             return embed.description
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
@@ -330,7 +368,10 @@ class Pavlov(commands.Cog):
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")
                 map_label = server_info.get("MapLabel")
-                map_name, _ = await self.get_map_alias(map_label)
+                if map_label.startswith("SVR"):
+                    map_name = map_label
+                else:
+                    map_name, _ = await self.get_map_alias(map_label)
                 map_alias = aliases.find_map_alias(map_label)
                 if not map_name:
                     map_name = ""

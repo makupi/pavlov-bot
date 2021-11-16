@@ -5,7 +5,7 @@ import discord
 from bot.utils import servers, user_action_log
 from pavlov import PavlovRCON
 
-RCON_TIMEOUT = 5
+RCON_TIMEOUT = 60
 
 
 MODERATOR_ROLE = "Mod-{}"
@@ -22,7 +22,7 @@ async def check_banned(ctx):
 async def check_perm_admin(
     ctx, server_name: str = None, sub_check: bool = False, global_check: bool = False
 ):
-    """ Admin permissions are stored per server in the servers.json """
+    """Admin permissions are stored per server in the servers.json"""
     if not server_name and not global_check:
         return False
     _servers = list()
@@ -109,21 +109,36 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
     return True
 
 
-async def exec_server_command(ctx, server_name: str, command: str):
+async def exec_server_command(ctx, server_name: str, command: str, polling=False):
     pavlov = None
-    if hasattr(ctx, "pavlov"):
-        pavlov = ctx.pavlov.get(server_name)
-    if not hasattr(ctx, "pavlov") or pavlov is None:
-        server = servers.get(server_name)
-        pavlov = PavlovRCON(
-            server.get("ip"),
-            server.get("port"),
-            server.get("password"),
-            timeout=RCON_TIMEOUT,
-        )
-        if not hasattr(ctx, "pavlov"):
-            ctx.pavlov = {server_name: pavlov}
-        else:
-            ctx.pavlov[server_name] = pavlov
-    data = await pavlov.send(command)
-    return data
+    if not polling:
+        if hasattr(ctx, "pavlov"):
+            pavlov = ctx.pavlov.get(server_name)
+        if not hasattr(ctx, "pavlov") or pavlov is None:
+            server = servers.get(server_name)
+            pavlov = PavlovRCON(
+                server.get("ip"),
+                server.get("port"),
+                server.get("password"),
+                timeout=RCON_TIMEOUT,
+            )
+            if not hasattr(ctx, "pavlov"):
+                ctx.pavlov = {server_name: pavlov}
+            else:
+                ctx.pavlov[server_name] = pavlov
+        data = await pavlov.send(command)
+        return data
+    else:
+        if ctx is not None:
+            pavlov = ctx
+        elif ctx is None:
+            server = servers.get(server_name)
+            pavlov = PavlovRCON(
+                server.get("ip"),
+                server.get("port"),
+                server.get("password"),
+                timeout=RCON_TIMEOUT,
+            )
+        ctx = pavlov
+        data = await pavlov.send(command)
+        return data, ctx

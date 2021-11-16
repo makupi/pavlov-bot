@@ -15,7 +15,7 @@ from bot.utils.players import (
 )
 
 
-MATCH_DELAY_RESETSND = 10
+MATCH_DELAY_RESETSND = 5
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
 
 
