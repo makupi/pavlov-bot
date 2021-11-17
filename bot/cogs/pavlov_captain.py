@@ -195,12 +195,7 @@ class PavlovCaptain(commands.Cog):
             ]
         else:
             ctx.interaction_exec = True
-            components = [
-                self.bot.components_manager.add_callback(
-                    Button(label=f"Match Menu", custom_id="button1"),
-                    lambda interaction: gamesetup(ctx, interaction),
-                )
-            ]
+            components = [ ]
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
