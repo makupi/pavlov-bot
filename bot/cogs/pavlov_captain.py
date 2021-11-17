@@ -32,6 +32,7 @@ class PavlovCaptain(commands.Cog):
     @commands.command()
     async def gamesetup(self, ctx, interaction: str = ""):
         async def actions(i1, msg, server_name: str = ""):
+            gamesetup = self.bot.all_commands.get("gamesetup")
             await msg.edit(content="")
             if server_name == "":
                 server_name = i1.values[0]
@@ -126,7 +127,7 @@ class PavlovCaptain(commands.Cog):
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(label=f"Change Settings", custom_id="button4"),
-                                lambda interaction: actions(interaction, msg, server_name),
+                                lambda interaction: gamesetup(ctx, interaction),
                             ),
                         ],
                     )
