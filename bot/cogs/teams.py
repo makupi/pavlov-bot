@@ -34,17 +34,17 @@ class Teams(commands.Cog):
         for player in players:
             player = SteamPlayer.convert(player)
             team.ringer_add(player)
-        await ctx.send(
-            embed=discord.Embed(
-                description=f"Player list {players_arg} added to team {team.name}."
-            ),
-            components=[
-                self.bot.components_manager.add_callback(
-                    Button(label=f"Go to gamesetup?", custom_id="button1"),
-                    lambda interaction: gamesetup(ctx),
-                )
-            ],
+        ctx.interaction_exec = True
+        components = [
+            self.bot.components_manager.add_callback(
+                Button(label=f"Go to gamesetup", custom_id="button1"),
+                lambda interaction: gamesetup(ctx, interaction),
+            )
+        ]
+        embed = discord.Embed(
+            description=f"Player list {players_arg} added to team {team.name}."
         )
+        await ctx.send(embed=embed, components=components)
 
     @ringers.command()
     async def add(self, ctx, player_arg: str, team_name: str):
