@@ -13,7 +13,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect, spawn_vselect
 
 
 class PavlovAdmin(commands.Cog):
@@ -41,6 +41,7 @@ class PavlovAdmin(commands.Cog):
                 giveitem = self.bot.all_commands.get("giveitem")
                 kill = self.bot.all_commands.get("kill")
                 kick = self.bot.all_commands.get("kick")
+                givevehicle = self.bot.all_commands.get("givevehicle")
                 components = [
                     self.bot.components_manager.add_callback(
                         Button(label="Godmode", custom_id="godmode"),
@@ -60,6 +61,10 @@ class PavlovAdmin(commands.Cog):
                         Button(label="Kick", custom_id="kick"),
                         lambda interaction: kick(ctx, "", server_name, interaction),
                     ),
+                    self.bot.components_manager.add_callback(
+                        Button(label="Give Vehicle", custom_id="Give Vehicle"),
+                        lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
+                    )
                 ]
                 await i1.send(
                     embed=embed,
@@ -180,6 +185,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         vehicle_id: str,
         server_name: str = config.default_server,
+        interaction: str = None
     ):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
         **Description**: Spawns a vehicle near a player.
@@ -188,10 +194,60 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
-            ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
-        )
+        if ctx.interaction_exec:
+            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await interaction.send(embed=embed)
+                return
+            vehicle_id, interaction, iteml = await spawn_vselect(self, ctx, server_name, interaction)
+            if vehicle_id == "ListTooLong":
+                embed = discord.Embed(
+                    title=f"**Your item list `{iteml}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await interaction.send(embed=embed)
+                return
+        if player_arg.casefold() == "all" or player_arg.startswith("team"):
+            if player_arg.casefold() == "all":
+                if type(vehicle_id) == dict:
+                    for i in vehicle_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_command_all_players(
+                            ctx, server_name, f"GiveVehicle all {vehicle_id.get(i)}"
+                        )
+                else:
+                    data = await exec_command_all_players(
+                        ctx, server_name, f"GiveVehicle all {vehicle_id}"
+                    )
+            elif player_arg.startswith("team"):
+                if type(vehicle_id) == dict:
+                    for i in vehicle_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_command_all_players_on_team(
+                            ctx, server_name, player_arg, f"GiveVehicle team {vehicle_id.get(i)}"
+                        )
+                else:
+                    data = await exec_command_all_players_on_team(
+                        ctx, server_name, player_arg, f"GiveVehicle team {vehicle_id}"
+                    )
+        else:
+            if ctx.interaction_exec:
+                if type(vehicle_id) == dict:
+                    for i in vehicle_id:
+                        await asyncio.sleep(0.1)
+                        data = await exec_server_command(
+                            ctx, server_name, f"GiveVehicle {player_arg} {vehicle_id.get(i)}"
+                        )
+                else:
+                    data = await exec_server_command(
+                        ctx, server_name, f"GiveVehicle {player_arg} {vehicle_id}"
+                    )
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data = await exec_server_command(
+                    ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
+                )
         embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
