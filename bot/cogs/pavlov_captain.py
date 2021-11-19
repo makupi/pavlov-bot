@@ -66,11 +66,11 @@ class PavlovCaptain(commands.Cog):
                         embed=embed,
                         components=[
                             self.bot.components_manager.add_callback(
-                                Button(label=f"ResetSND", custom_id="button_reset_dup"),
+                                Button(label=f"ResetSND", custom_id="button_reset_dup_{ctx.author.name}"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
-                                Button(label=f"Change Settings", custom_id="button_change_dup"),
+                                Button(label=f"Change Settings", custom_id="button_change_dup_{ctx.author.name}"),
                                 lambda interaction: actions(interaction, msg, server_name),
                             ),
                         ],
@@ -111,7 +111,7 @@ class PavlovCaptain(commands.Cog):
                        components=[
                             self.bot.components_manager.add_callback(
                                 Button(
-                                    label=f"CT: {team_one} vs T: {team_two}", custom_id="button_c_t"
+                                    label=f"CT: {team_one} vs T: {team_two}", custom_id="button_c_t_{ctx.author.name}"
                                 ),
                                 lambda interaction: matchsetup(
                                     ctx, team_one, team_two, server_name, interaction
@@ -119,18 +119,18 @@ class PavlovCaptain(commands.Cog):
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(
-                                    label=f"CT: {team_two} vs T: {team_one}", custom_id="button_t_c"
+                                    label=f"CT: {team_two} vs T: {team_one}", custom_id="button_t_c_{ctx.author.name}"
                                 ),
                                 lambda interaction: matchsetup(
                                     ctx, team_two, team_one, server_name, interaction
                                 ),
                             ),
                             self.bot.components_manager.add_callback(
-                                Button(label=f"ResetSND", custom_id="button_game_reset"),
+                                Button(label=f"ResetSND", custom_id="button_game_reset_{ctx.author.name}"),
                                 lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
-                                Button(label=f"Change Settings", custom_id="button_game_change"),
+                                Button(label=f"Change Settings", custom_id="button_game_change_{ctx.author.name}"),
                                 lambda interaction: gamesetup(ctx, interaction),
                             ),
                         ],
