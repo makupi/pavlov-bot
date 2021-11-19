@@ -15,7 +15,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect, spawn_serselect
 
 MATCH_DELAY_RESETSND = 5
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
@@ -36,6 +36,10 @@ class PavlovCaptain(commands.Cog):
             await msg.edit(content="")
             if server_name == "":
                 server_name = i1.values[0]
+            elif server_name == "OFFLINE":
+                embed = discord.Embed(title='Server is offline.')
+                await interaction.send(embed=embed)
+                return
             if await check_perm_captain(ctx, server_name):
                 ctx.interaction_exec = True
                 matchsetup = self.bot.all_commands.get("matchsetup")
@@ -133,9 +137,7 @@ class PavlovCaptain(commands.Cog):
                     )
             else:
                 return
-        for i in servers.get_names():
-            options.append(SelectOption(label=str(i), value=str(i)))
-        embed = discord.Embed(title="**Select a server below:**")
+        options, embed = await spawn_serselect(self, ctx)
         if ctx.interaction_exec == True:
             message = await interaction.send(
                 embed=embed,

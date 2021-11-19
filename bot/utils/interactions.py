@@ -140,16 +140,13 @@ async def spawn_serselect(self, ctx: str):
     options = []
     for i in servers.get_names():
         ctx.batch_exec = True
-        if await check_perm_admin(ctx, i):
-            try:
-                data = await exec_server_command(ctx, i, "RefreshList")
-                plist = data.get("PlayerList")
-                options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
-            except:
-                options.append(SelectOption(label=f"{i} (OFFLINE)", value='OFFLINE'))
+        try:
+            data = await exec_server_command(ctx, i, "RefreshList")
+            plist = data.get("PlayerList")
+            options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+        except:
+            options.append(SelectOption(label=f"{i} (OFFLINE)", value='OFFLINE'))
     embed = discord.Embed(title="**Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
-    if len(options) == 0:
-        embed.title = "You do not have access to this menu."
     return options, embed
             
