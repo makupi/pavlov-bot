@@ -1,8 +1,8 @@
-from bot.utils.pavlov import exec_server_command
+from bot.utils.pavlov import exec_server_command, check_perm_admin
 import asyncio
 import logging
 import discord
-from bot.utils import lists, aliases
+from bot.utils import lists, aliases, servers
 from discord_components import Button, Select, SelectOption
 
 
@@ -135,3 +135,21 @@ async def spawn_mselect(self, ctx: str, server: str, interaction):
         )
         interaction1 = await self.bot.wait_for("select_option")
         return interaction1.values[0], interaction1
+
+async def spawn_serselect(self, ctx: str):
+    options = []
+    for i in servers.get_names():
+        ctx.batch_exec = True
+        if await check_perm_admin(ctx, i):
+            try:
+                data = await exec_server_command(ctx, i, "RefreshList")
+                plist = data.get("PlayerList")
+                options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+            except:
+                options.append(SelectOption(label=f"{i} (OFFLINE)", value='OFFLINE'))
+    embed = discord.Embed(title="**Select a server below:**")
+    embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
+    if len(options) == 0:
+        embed.title = "You do not have access to this menu."
+    return options, embed
+            

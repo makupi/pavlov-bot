@@ -132,12 +132,6 @@ class PavlovCaptain(commands.Cog):
                     )
             else:
                 return
-
-        team_options = []
-        teams = aliases.get_teams_list()
-        for team in teams:
-            team_options.append(SelectOption(label=str(team.name), value=str(team.name)))
-        options = []
         for i in servers.get_names():
             options.append(SelectOption(label=str(i), value=str(i)))
         embed = discord.Embed(title="**Select a server below:**")

@@ -13,7 +13,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect, spawn_vselect
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_serselect, spawn_tselect, spawn_vselect
 
 
 class PavlovAdmin(commands.Cog):
@@ -72,31 +72,15 @@ class PavlovAdmin(commands.Cog):
                 )
             else:
                 return
-
-        options = []
-        for i in servers.get_names():
-            ctx.batch_exec = True
-            if await check_perm_admin(ctx, i):
-                try:
-                    data = await exec_server_command(ctx, i, "RefreshList")
-                    plist = data.get("PlayerList")
-                    options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
-                except:
-                    options.append(SelectOption(label=f"{i} (OFFLINE)", value='OFFLINE'))
-        embed = discord.Embed(title="**Select a server below:**")
-        embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
-        if len(options) == 0:
-            embed.title = "You do not have access to this menu."
-            message = await ctx.send(embed=embed)
-        else:    
-            message = await ctx.send(
-                embed=embed,
-                components=[
-                    self.bot.components_manager.add_callback(
-                        Select(placeholder="Server", options=options), actions
-                    )
-                ],
-            )
+        options, embed = await spawn_serselect(self, ctx)
+        message = await ctx.send(
+                    embed=embed,
+                    components=[
+                        self.bot.components_manager.add_callback(
+                            Select(placeholder="Server", options=options), actions
+                        )
+                    ],
+                )
 
     @commands.command()
     async def giveitem(
