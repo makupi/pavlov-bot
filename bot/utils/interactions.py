@@ -135,7 +135,7 @@ async def spawn_mselect(self, ctx: str, server: str, interaction):
         itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
     if len(itemsilist) > 25:
         return "ListTooLong", interaction1, interaction1.values[0]
-    await interaction1.send(k
+    await interaction1.send(
         "Select map below:",
         components=[Select(placeholder="Map", options=itemsilist)],
     )
