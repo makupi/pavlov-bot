@@ -117,24 +117,30 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
 
 async def spawn_mselect(self, ctx: str, server: str, interaction):
     logging.info(f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!")
-    map_options = []
-    maps = aliases.get_teams_list()
-    for alias, label in maps.items():
-        map_options.append(SelectOption(label=alias, value=label))
-    if len(maps) == 0:
-        return "empty", interaction
-    else:
-        await interaction.send(
-            f"Select a map below:",
-            components=[
-                Select(placeholder="Maps", options=map_options)
-                # self.bot.components_manager.add_callback(
-                #    Button(label="Next", custom_id="next"), switchlist
-                # ),
-            ],
-        )
-        interaction1 = await self.bot.wait_for("select_option")
-        return interaction1.values[0], interaction1
+    i_list = []
+    itemlists = lists.get_names()
+    for item in itemlists:
+        alist = lists.get(item)
+        if alist.get("type") == "map":
+            i_list.append(SelectOption(label=str(item), value=str(item)))
+    await interaction.send(
+        "Select a map list below:",
+        components=[Select(placeholder="Map Lists", options=i_list)],
+    )
+    interaction1 = await self.bot.wait_for("select_option")
+    slist = lists.get(interaction1.values[0])
+    items = slist.get("list")
+    itemsilist = []
+    for i in items:
+        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
+    if len(itemsilist) > 25:
+        return "ListTooLong", interaction1, interaction1.values[0]
+    await interaction1.send(k
+        "Select map below:",
+        components=[Select(placeholder="Map", options=itemsilist)],
+    )
+    interaction1 = await self.bot.wait_for("select_option")
+    return interaction1.values[0], interaction1
 
 async def spawn_serselect(self, ctx: str):
     options = []

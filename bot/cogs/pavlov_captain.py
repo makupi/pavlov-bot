@@ -15,7 +15,7 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect, spawn_serselect
+from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect, spawn_mselect, spawn_serselect
 
 MATCH_DELAY_RESETSND = 5
 RCON_COMMAND_PAUSE = 100 / 1000  # milliseconds
@@ -44,6 +44,7 @@ class PavlovCaptain(commands.Cog):
                 ctx.interaction_exec = True
                 matchsetup = self.bot.all_commands.get("matchsetup")
                 resetsnd = self.bot.all_commands.get("resetsnd")
+                switchmap = self.bot.all_commands.get("switchmap")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
                 team_one, i1 = await spawn_tselect(self, ctx, server_name, i1, "1")
                 team_two, i1 = await spawn_tselect(self, ctx, server_name, i1, "2")
@@ -133,6 +134,10 @@ class PavlovCaptain(commands.Cog):
                                 Button(label=f"Change Settings", custom_id="button_game_change_{ctx.author.name}"),
                                 lambda interaction: gamesetup(ctx, interaction),
                             ),
+                           self.bot.components_manager.add_callback(
+                               Button(label=f"Switch Map", custom_id="button_map_change_{ctx.author.name}"),
+                               lambda interaction: switchmap(ctx, "", "", server_name, interaction),
+                           ),
                         ],
                     )
             else:
@@ -166,6 +171,7 @@ class PavlovCaptain(commands.Cog):
         map_name: str,
         game_mode: str,
         server_name: str = config.default_server,
+        interaction: str = ""
     ):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
@@ -173,8 +179,15 @@ class PavlovCaptain(commands.Cog):
         **Example**: `{prefix}switchmap 89374583439127 servername`
         **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
-        if not await check_perm_captain(ctx, server_name):
-            return
+        if ctx.interaction_exec == True:
+            if not await check_perm_captain(interaction, server_name):
+                return
+        else:
+            if not await check_perm_captain(ctx, server_name):
+                return
+        if ctx.interaction_exec:
+            map_name, interaction = await spawn_mselect(self, ctx, server_name, interaction)
+            game_mode = "snd"
         gamesetup = self.bot.all_commands.get("gamesetup")
         resetsnd = self.bot.all_commands.get("resetsnd")
         map_label = aliases.get_map(map_name)
@@ -209,6 +222,9 @@ class PavlovCaptain(commands.Cog):
                 title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
             )
             await ctx.send(embed=embed, components=components)
+        if ctx.interaction_exec == True:
+            await interaction.send(embed=embed)
+            return
 
     @commands.command()
     async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ""):
