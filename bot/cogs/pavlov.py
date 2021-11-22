@@ -251,7 +251,10 @@ class Pavlov(commands.Cog):
                     dead = ":slight_smile:"
                 embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
         else:
-            embed.description += f"\n **Team Blue Score: {blue_score}**"
+            if gamemode == "PUSH":
+                embed.description += f"\n **Team Blue Tickets: {blue_score}**"
+            else:
+                embed.description += f"\n **Team Blue Score: {blue_score}**"
             for i in teamblue:
                 team_name = ":blue_circle:"
                 if alivelist.get(i):
@@ -264,7 +267,10 @@ class Pavlov(commands.Cog):
                 embed.description += (
                     f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
                 )
-            embed.description += f"\n **Team Red Score: {red_score}**"
+            if gamemode == "PUSH":
+                embed.description += f"\n **Team Red Tickets: {blue_score}**"
+            else:
+                embed.description += f"\n **Team Red Score: {blue_score}**"
             for i in teamred:
                 team_name = ":red_circle:"
                 if alivelist.get(i):
