@@ -4,24 +4,23 @@ import random
 from datetime import datetime
 
 import discord
-from discord.ext import commands
-
-from discord_components import Button, Select
 import discord_components
+from discord.ext import commands
+from discord_components import Button, Select
 
 from bot.utils import SteamPlayer, aliases, config, servers
+from bot.utils.interactions import (
+    spawn_iselect,
+    spawn_mselect,
+    spawn_pselect,
+    spawn_serselect,
+    spawn_tselect,
+)
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
     exec_command_all_players_on_team,
     parse_player_command_results,
-)
-from bot.utils.interactions import (
-    spawn_pselect,
-    spawn_iselect,
-    spawn_tselect,
-    spawn_mselect,
-    spawn_serselect,
 )
 
 MATCH_DELAY_RESETSND = 5

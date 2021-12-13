@@ -5,9 +5,9 @@ from pathlib import Path
 import aiohttp
 import discord
 from discord.ext import commands
+from discord_components import Button, ComponentsBot, DiscordComponents
 
 from bot.utils import aliases, config, servers, user_action_log
-from discord_components import DiscordComponents, ComponentsBot, Button
 
 logger = logging.getLogger()
 handler = logging.StreamHandler(sys.stdout)

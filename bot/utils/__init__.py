@@ -3,10 +3,10 @@ from datetime import datetime
 
 from .aliases import Aliases
 from .config import Config
-from .paginator import Paginator
-from .servers import Servers
-from .polling import Polling
 from .lists import Lists
+from .paginator import Paginator
+from .polling import Polling
+from .servers import Servers
 from .steamplayer import SteamPlayer
 
 config = Config()

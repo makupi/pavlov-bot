@@ -3,17 +3,17 @@ import logging
 from datetime import datetime
 
 import discord
-from discord.ext import commands
 import discord_components
+from discord.ext import commands
 
 from bot.utils import SteamPlayer, config
+from bot.utils.interactions import spawn_iselect, spawn_pselect, spawn_tselect
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_tselect
 
 
 class PavlovMod(commands.Cog):

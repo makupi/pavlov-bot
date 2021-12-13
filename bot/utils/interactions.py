@@ -1,9 +1,11 @@
-from bot.utils.pavlov import exec_server_command, check_perm_admin
 import asyncio
 import logging
+
 import discord
-from bot.utils import lists, aliases, servers
 from discord_components import Button, Select, SelectOption
+
+from bot.utils import aliases, lists, servers
+from bot.utils.pavlov import check_perm_admin, exec_server_command
 
 
 async def spawn_pselect(self, ctx: str, server: str, interaction):

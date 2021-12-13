@@ -1,9 +1,9 @@
 import logging
 
 import discord
+from pavlov import PavlovRCON
 
 from bot.utils import servers, user_action_log
-from pavlov import PavlovRCON
 
 RCON_TIMEOUT = 60
 

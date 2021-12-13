@@ -2,10 +2,10 @@ import logging
 
 import discord
 from discord.ext import commands
+from discord_components import Button
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain
-from discord_components import Button
 
 
 class Teams(commands.Cog):

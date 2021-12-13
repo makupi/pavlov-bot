@@ -1,25 +1,25 @@
-import logging
 import asyncio
+import logging
 from os import kill
 
 import discord
+import discord_components
 from discord.ext import commands
 from discord_components import Button, Select
-import discord_components
 
 from bot.utils import SteamPlayer, config, servers
+from bot.utils.interactions import (
+    spawn_iselect,
+    spawn_pselect,
+    spawn_serselect,
+    spawn_tselect,
+    spawn_vselect,
+)
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
     exec_command_all_players_on_team,
     parse_player_command_results,
-)
-from bot.utils.interactions import (
-    spawn_pselect,
-    spawn_iselect,
-    spawn_serselect,
-    spawn_tselect,
-    spawn_vselect,
 )
 
 

@@ -1,22 +1,26 @@
+import asyncio
 import logging
 import random
 import re
 import sys
 import traceback
-import asyncio
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
 import aiohttp
 import discord
+from bs4 import BeautifulSoup
 from discord.ext import commands
 
-from bot.utils import Paginator, aliases, servers, config
-from bot.utils.pavlov import exec_server_command, check_perm_admin
-from bot.utils.players import get_stats, exec_command_all_players, parse_player_command_results
+from bot.utils import Paginator, aliases, config, servers
+from bot.utils.pavlov import check_perm_admin, exec_server_command
+from bot.utils.players import (
+    exec_command_all_players,
+    get_stats,
+    parse_player_command_results,
+)
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
-from bs4 import BeautifulSoup
 
 # Admin – GiveItem, GiveCash, GiveTeamCash, SetPlayerSkin
 # Mod – Ban, Kick, Unban, RotateMap, SwitchTeam

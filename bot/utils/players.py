@@ -1,9 +1,11 @@
-from bot.utils.pavlov import exec_server_command
 import asyncio
 import logging
+
 import discord
-from bot.utils import lists, aliases
 from discord_components import Button, Select, SelectOption
+
+from bot.utils import aliases, lists
+from bot.utils.pavlov import exec_server_command
 
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
