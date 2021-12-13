@@ -41,9 +41,7 @@ class Teams(commands.Cog):
                 lambda interaction: gamesetup(ctx, interaction),
             )
         ]
-        embed = discord.Embed(
-            description=f"Player list {players_arg} added to team {team.name}."
-        )
+        embed = discord.Embed(description=f"Player list {players_arg} added to team {team.name}.")
         await ctx.send(embed=embed, components=components)
 
     @ringers.command()

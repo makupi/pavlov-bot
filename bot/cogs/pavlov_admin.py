@@ -14,7 +14,13 @@ from bot.utils.players import (
     exec_command_all_players_on_team,
     parse_player_command_results,
 )
-from bot.utils.interactions import spawn_pselect, spawn_iselect, spawn_serselect, spawn_tselect, spawn_vselect
+from bot.utils.interactions import (
+    spawn_pselect,
+    spawn_iselect,
+    spawn_serselect,
+    spawn_tselect,
+    spawn_vselect,
+)
 
 
 class PavlovAdmin(commands.Cog):
@@ -30,7 +36,7 @@ class PavlovAdmin(commands.Cog):
         async def actions(interact):
             await message.edit(content="")
             server_name = interact.values[0]
-            if server_name == 'OFFLINE':
+            if server_name == "OFFLINE":
                 embed = discord.Embed(title="Server is offline.")
                 await interact.send(embed=embed)
                 return
@@ -65,7 +71,7 @@ class PavlovAdmin(commands.Cog):
                     self.bot.components_manager.add_callback(
                         Button(label="Give Vehicle", custom_id="Give Vehicle"),
                         lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
-                    )
+                    ),
                 ]
                 await interact.send(
                     embed=embed,
@@ -73,15 +79,16 @@ class PavlovAdmin(commands.Cog):
                 )
             else:
                 return
+
         options, embed = await spawn_serselect(self, ctx)
         message = await ctx.send(
-                    embed=embed,
-                    components=[
-                        self.bot.components_manager.add_callback(
-                            Select(placeholder="Server", options=options), actions
-                        )
-                    ],
+            embed=embed,
+            components=[
+                self.bot.components_manager.add_callback(
+                    Select(placeholder="Server", options=options), actions
                 )
+            ],
+        )
 
     @commands.command()
     async def giveitem(
@@ -105,7 +112,9 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            item_id, __interaction, iteml = await spawn_iselect(self, ctx, server_name, __interaction)
+            item_id, __interaction, iteml = await spawn_iselect(
+                self, ctx, server_name, __interaction
+            )
             if item_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
@@ -185,7 +194,9 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            vehicle_id, __interaction, iteml = await spawn_vselect(self, ctx, server_name, __interaction)
+            vehicle_id, __interaction, iteml = await spawn_vselect(
+                self, ctx, server_name, __interaction
+            )
             if vehicle_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",

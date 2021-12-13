@@ -41,7 +41,11 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def kill(
-        self, ctx, player_arg: str, server_name: str = config.default_server, __interaction: discord_components.Interaction = None,
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
         **Description**: Kills a player.
@@ -80,7 +84,11 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def kick(
-        self, ctx, player_arg: str, server_name: str = config.default_server, __interaction: discord_components.Interaction = None,
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kick <player_id> <server_name>`
         **Description**: Kicks a player from the specified server.
