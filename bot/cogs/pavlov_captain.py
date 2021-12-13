@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
+import discord_components
 
 from bot.utils import SteamPlayer, aliases, config, servers
 from bot.utils.pavlov import check_perm_captain, exec_server_command
@@ -30,15 +31,15 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def gamesetup(self, ctx, interaction: str = ""):
-        async def actions(i1, msg, server_name: str = ""):
+    async def gamesetup(self, ctx, __interaction: discord_components.Interaction = None):
+        async def actions(interact, msg, server_name: str = ""):
             gamesetup = self.bot.all_commands.get("gamesetup")
             await msg.edit(content="")
             if server_name == "":
-                server_name = i1.values[0]
+                server_name = interact.values[0]
             elif server_name == "OFFLINE":
                 embed = discord.Embed(title='Server is offline.')
-                await interaction.send(embed=embed)
+                await interact.send(embed=embed)
                 return
             if await check_perm_captain(ctx, server_name):
                 ctx.interaction_exec = True
@@ -46,8 +47,8 @@ class PavlovCaptain(commands.Cog):
                 resetsnd = self.bot.all_commands.get("resetsnd")
                 switchmap = self.bot.all_commands.get("switchmap")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
-                team_one, i1 = await spawn_tselect(self, ctx, server_name, i1, "1")
-                team_two, i1 = await spawn_tselect(self, ctx, server_name, i1, "2")
+                team_one, interact = await spawn_tselect(self, ctx, server_name, interact, "1")
+                team_two, interact = await spawn_tselect(self, ctx, server_name, interact, "2")
 #               if team_one == "empty" and team_two == "empty":
 #                 embed.description = (
 #                        "**No teams defined in aliases.json! Team buttons disabled.**"
@@ -63,7 +64,7 @@ class PavlovCaptain(commands.Cog):
 #                    )
                 if team_one == team_two:
                     embed.description = "**Duplicate teams detected! Team buttons disabled.**"
-                    await i1.send(
+                    await interact.send(
                         embed=embed,
                         components=[
                             self.bot.components_manager.add_callback(
@@ -107,7 +108,7 @@ class PavlovCaptain(commands.Cog):
  #                      ],
  #                   )
                 else:
-                    await i1.send(
+                    await interact.send(
                         embed=embed,
                        components=[
                             self.bot.components_manager.add_callback(
@@ -144,7 +145,7 @@ class PavlovCaptain(commands.Cog):
                 return
         options, embed = await spawn_serselect(self, ctx)
         if ctx.interaction_exec == True:
-            message = await interaction.send(
+            message = await __interaction.send(
                 embed=embed,
                 components=[
                     self.bot.components_manager.add_callback(
@@ -171,7 +172,7 @@ class PavlovCaptain(commands.Cog):
         map_name: str,
         game_mode: str,
         server_name: str = config.default_server,
-        interaction: str = ""
+        __interaction: discord_components.Interaction = None
     ):
         """`{prefix}switchmap <map_name> <game_mode> <server_name>`
 
@@ -179,14 +180,14 @@ class PavlovCaptain(commands.Cog):
         **Example**: `{prefix}switchmap 89374583439127 servername`
         **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
-        if ctx.interaction_exec == True:
-            if not await check_perm_captain(interaction, server_name):
+        if ctx.interaction_exec:
+            if not await check_perm_captain(__interaction, server_name):
                 return
         else:
             if not await check_perm_captain(ctx, server_name):
                 return
         if ctx.interaction_exec:
-            map_name, interaction = await spawn_mselect(self, ctx, server_name, interaction)
+            map_name, __interaction = await spawn_mselect(self, ctx, server_name, __interaction)
             game_mode = "snd"
         gamesetup = self.bot.all_commands.get("gamesetup")
         resetsnd = self.bot.all_commands.get("resetsnd")
@@ -222,20 +223,20 @@ class PavlovCaptain(commands.Cog):
                 title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
             )
             await ctx.send(embed=embed, components=components)
-        if ctx.interaction_exec == True:
-            await interaction.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
             return
 
     @commands.command()
-    async def resetsnd(self, ctx, server_name: str = config.default_server, interaction: str = ""):
+    async def resetsnd(self, ctx, server_name: str = config.default_server, __interaction: str = ""):
         """`{prefix}resetsnd <server_name>`
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
 
-        if ctx.interaction_exec == True:
-            if not await check_perm_captain(interaction, server_name):
+        if ctx.interaction_exec:
+            if not await check_perm_captain(__interaction, server_name):
                 return
         else:
             if not await check_perm_captain(ctx, server_name):
@@ -246,8 +247,8 @@ class PavlovCaptain(commands.Cog):
             embed = discord.Embed(title=f"**Failed** to reset SND on {server_name}.")
         else:
             embed = discord.Embed(title=f"SND has been successfully reset on {server_name}.")
-        if ctx.interaction_exec == True:
-            await interaction.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
             return
         if ctx.batch_exec:
             return reset_snd
@@ -303,15 +304,15 @@ class PavlovCaptain(commands.Cog):
         team_a_name: str,
         team_b_name: str,
         server_name: str = config.default_server,
-        interaction: str = "",
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}matchsetup <CT team name> <T team name> <server name>`
 
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
-        if ctx.interaction_exec == True:
-            if not await check_perm_captain(interaction, server_name):
+        if ctx.interaction_exec:
+            if not await check_perm_captain(__interaction, server_name):
                 return
         else:
             if not await check_perm_captain(ctx, server_name):
@@ -321,8 +322,8 @@ class PavlovCaptain(commands.Cog):
         embed = discord.Embed()
         for team in teams:
             embed.add_field(name=f"{team.name} members", value=team.member_repr(), inline=False)
-        if ctx.interaction_exec == True:
-            await interaction.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
         else:
             await ctx.send(embed=embed)
 
@@ -335,16 +336,16 @@ class PavlovCaptain(commands.Cog):
         embed = discord.Embed(
             title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds on {server_name}."
         )
-        if ctx.interaction_exec == True:
-            await interaction.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
         else:
             await ctx.send(embed=embed)
         await asyncio.sleep(MATCH_DELAY_RESETSND)
         await exec_server_command(ctx, server_name, "ResetSND")
         embed = discord.Embed(title=f"SND has been reset on {server_name}. Good luck!")
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
-        if ctx.interaction_exec == True:
-            await interaction.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
         else:
             await ctx.send(embed=embed)
 
