@@ -4,7 +4,8 @@ from os import kill
 
 import discord
 from discord.ext import commands
-from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
+from discord_components import Button, Select
+import discord_components
 
 from bot.utils import SteamPlayer, config, servers
 from bot.utils.pavlov import check_perm_admin, exec_server_command
@@ -26,16 +27,16 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def menu(self, ctx):
-        async def actions(i1):
+        async def actions(interact):
             await message.edit(content="")
-            server_name = i1.values[0]
+            server_name = interact.values[0]
             if server_name == 'OFFLINE':
                 embed = discord.Embed(title="Server is offline.")
-                await i1.send(embed=embed)
+                await interact.send(embed=embed)
                 return
-            if i1.author.id == ctx.author.id:
+            if interact.author.id == ctx.author.id:
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
-                ctx.interaction_exec = True
+                ctx.interaction_exec
                 ctx.batch_exec = False
                 slap = self.bot.all_commands.get("slap")
                 giveitem = self.bot.all_commands.get("giveitem")
@@ -66,7 +67,7 @@ class PavlovAdmin(commands.Cog):
                         lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
                     )
                 ]
-                await i1.send(
+                await interact.send(
                     embed=embed,
                     components=components,
                 )
@@ -89,7 +90,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         item_id: str,
         server_name: str = config.default_server,
-        interaction: str = "",
+        __interaction: discord_components = None,
     ):
         """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
         **Description**: Spawns a item for a player.
@@ -99,18 +100,18 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
-            item_id, interaction, iteml = await spawn_iselect(self, ctx, server_name, interaction)
+            item_id, __interaction, iteml = await spawn_iselect(self, ctx, server_name, __interaction)
             if item_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
                 )
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
 
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
@@ -156,7 +157,7 @@ class PavlovAdmin(commands.Cog):
         embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
-            await interaction.send(embed=embed)
+            await __interaction.send(embed=embed)
             return
         if ctx.batch_exec:
             return embed.description
@@ -169,7 +170,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         vehicle_id: str,
         server_name: str = config.default_server,
-        interaction: str = None
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
         **Description**: Spawns a vehicle near a player.
@@ -179,18 +180,18 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
-            vehicle_id, interaction, iteml = await spawn_vselect(self, ctx, server_name, interaction)
+            vehicle_id, __interaction, iteml = await spawn_vselect(self, ctx, server_name, __interaction)
             if vehicle_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
                 )
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":

@@ -6,7 +6,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from discord_components import Button, Select, SelectOption, ComponentsBot, ActionRow
+from discord_components import Button, Select
 import discord_components
 
 from bot.utils import SteamPlayer, aliases, config, servers

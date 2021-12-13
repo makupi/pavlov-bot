@@ -4,6 +4,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+import discord_components
 
 from bot.utils import SteamPlayer, config
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
@@ -40,7 +41,7 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def kill(
-        self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ""
+        self, ctx, player_arg: str, server_name: str = config.default_server, __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
         **Description**: Kills a player.
@@ -50,10 +51,10 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
@@ -71,7 +72,7 @@ class PavlovMod(commands.Cog):
         embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
-            await interaction.send(embed=embed)
+            await __interaction.send(embed=embed)
             return
         if ctx.batch_exec:
             return embed.description
@@ -79,7 +80,7 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def kick(
-        self, ctx, player_arg: str, server_name: str = config.default_server, interaction: str = ""
+        self, ctx, player_arg: str, server_name: str = config.default_server, __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kick <player_id> <server_name>`
         **Description**: Kicks a player from the specified server.
@@ -89,10 +90,10 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
             data = await exec_server_command(ctx, server_name, f"Kick {player_arg}")
         else:
@@ -101,7 +102,7 @@ class PavlovMod(commands.Cog):
         embed = discord.Embed(title=f"**Kick {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
-            await interaction.send(embed=embed)
+            await __interaction.send(embed=embed)
             return
         await ctx.send(embed=embed)
 
@@ -157,7 +158,7 @@ class PavlovMod(commands.Cog):
         player_arg: str,
         dmg: str,
         server_name: str = config.default_server,
-        interaction: str = "",
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}slap <player_id/all/team> <damage_amount> <server_name>`
         **Description**: Slaps a player for a specified damage amount.
@@ -167,10 +168,10 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, interaction = await spawn_pselect(self, ctx, server_name, interaction)
+            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await interaction.send(embed=embed)
+                await __interaction.send(embed=embed)
                 return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
@@ -190,7 +191,7 @@ class PavlovMod(commands.Cog):
         if ctx.batch_exec:
             return embed.description
         elif ctx.interaction_exec:
-            await interaction.send(embed=embed)
+            await __interaction.send(embed=embed)
             return
         await ctx.send(embed=embed)
 
