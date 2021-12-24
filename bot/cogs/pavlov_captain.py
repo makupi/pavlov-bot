@@ -62,7 +62,7 @@ class PavlovCaptain(commands.Cog):
                 #                        embed=embed,
                 #                        components=[
                 #                            self.bot.components_manager.add_callback(
-                #                                Button(label=f"ResetSND", custom_id="button3"),
+                #                                Button(label=f"ResetSND"),
                 #                                lambda interaction: resetsnd(ctx, server_name, interaction),
                 #                            )
                 #                        ],
@@ -75,14 +75,12 @@ class PavlovCaptain(commands.Cog):
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"ResetSND",
-                                    custom_id="button_reset_dup_{ctx.author.name}",
                                 ),
                                 lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"Change Settings",
-                                    custom_id="button_change_dup_{ctx.author.name}",
                                 ),
                                 lambda interaction: actions(interaction, msg, server_name),
                             ),
@@ -94,11 +92,11 @@ class PavlovCaptain(commands.Cog):
                 #                       embed=embed,
                 #                       components=[
                 #                           self.bot.components_manager.add_callback(
-                #                               Button(label=f"ResetSND", custom_id="button3"),
+                #                               Button(label=f"ResetSND"),
                 #                               lambda interaction: resetsnd(ctx, server_name, interaction),
                 #                           ),
                 #                           self.bot.components_manager.add_callback(
-                #                               Button(label=f"Change Settings", custom_id="button4"),
+                #                               Button(label=f"Change Settings"),
                 #                               lambda interaction: actions(interaction, msg, server_name),
                 #                           ),
                 #                       ],
@@ -109,11 +107,11 @@ class PavlovCaptain(commands.Cog):
                 #                       embed=embed,
                 #                       components=[
                 #                           self.bot.components_manager.add_callback(
-                #                               Button(label=f"ResetSND", custom_id="button3"),
+                #                               Button(label=f"ResetSND"),
                 #                               lambda interaction: resetsnd(ctx, server_name, interaction),
                 #                           ),
                 #                           self.bot.components_manager.add_callback(
-                #                               Button(label=f"Change Settings", custom_id="button4"),
+                #                               Button(label=f"Change Settings"),
                 #                               lambda interaction: actions(interaction, msg, server_name),
                 #                           ),
                 #                      ],
@@ -125,7 +123,6 @@ class PavlovCaptain(commands.Cog):
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"CT: {team_one} vs T: {team_two}",
-                                    custom_id="button_c_t_{ctx.author.name}",
                                 ),
                                 lambda interaction: matchsetup(
                                     ctx, team_one, team_two, server_name, interaction
@@ -134,7 +131,6 @@ class PavlovCaptain(commands.Cog):
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"CT: {team_two} vs T: {team_one}",
-                                    custom_id="button_t_c_{ctx.author.name}",
                                 ),
                                 lambda interaction: matchsetup(
                                     ctx, team_two, team_one, server_name, interaction
@@ -143,21 +139,18 @@ class PavlovCaptain(commands.Cog):
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"ResetSND",
-                                    custom_id="button_game_reset_{ctx.author.name}",
                                 ),
                                 lambda interaction: resetsnd(ctx, server_name, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"Change Settings",
-                                    custom_id="button_game_change_{ctx.author.name}",
                                 ),
                                 lambda interaction: gamesetup(ctx, interaction),
                             ),
                             self.bot.components_manager.add_callback(
                                 Button(
                                     label=f"Switch Map",
-                                    custom_id="button_map_change_{ctx.author.name}",
                                 ),
                                 lambda interaction: switchmap(
                                     ctx, "", "", server_name, interaction
@@ -167,7 +160,6 @@ class PavlovCaptain(commands.Cog):
                     )
             else:
                 return
-
         options, embed = await spawn_serselect(self, ctx)
         if ctx.interaction_exec == True:
             message = await __interaction.send(
@@ -189,6 +181,7 @@ class PavlovCaptain(commands.Cog):
                     )
                 ],
             )
+
 
     @commands.command(aliases=["map"])
     async def switchmap(
@@ -221,11 +214,11 @@ class PavlovCaptain(commands.Cog):
             ctx.interaction_exec = True
             components = [
                 self.bot.components_manager.add_callback(
-                    Button(label=f"Match Menu", custom_id="button_match_switch"),
+                    Button(label=f"Match Menu"),
                     lambda interaction: gamesetup(ctx, interaction),
                 ),
                 self.bot.components_manager.add_callback(
-                    Button(label=f"ResetSND", custom_id="button_match_reset"),
+                    Button(label=f"ResetSND"),
                     lambda interaction: resetsnd(ctx, server_name, interaction),
                 ),
             ]
@@ -338,6 +331,7 @@ class PavlovCaptain(commands.Cog):
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
+        print(team_a_name, team_b_name)
         if ctx.interaction_exec:
             if not await check_perm_captain(__interaction, server_name):
                 return

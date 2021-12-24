@@ -37,7 +37,7 @@ class Teams(commands.Cog):
         ctx.interaction_exec = True
         components = [
             self.bot.components_manager.add_callback(
-                Button(label=f"Go to gamesetup", custom_id="button1"),
+                Button(label=f"Go to gamesetup"),
                 lambda interaction: gamesetup(ctx, interaction),
             )
         ]

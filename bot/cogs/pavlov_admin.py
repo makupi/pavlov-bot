@@ -51,25 +51,25 @@ class PavlovAdmin(commands.Cog):
                 givevehicle = self.bot.all_commands.get("givevehicle")
                 components = [
                     self.bot.components_manager.add_callback(
-                        Button(label="Godmode", custom_id="godmode"),
+                        Button(label="Godmode"),
                         lambda interaction: slap(
                             ctx, "", "-99999999999999999", server_name, interaction
                         ),
                     ),
                     self.bot.components_manager.add_callback(
-                        Button(label="Give Item", custom_id="giveitem"),
+                        Button(label="Give Item"),
                         lambda interaction: giveitem(ctx, "", "", server_name, interaction),
                     ),
                     self.bot.components_manager.add_callback(
-                        Button(label="Kill", custom_id="kill"),
+                        Button(label="Kill"),
                         lambda interaction: kill(ctx, "", server_name, interaction),
                     ),
                     self.bot.components_manager.add_callback(
-                        Button(label="Kick", custom_id="kick"),
+                        Button(label="Kick"),
                         lambda interaction: kick(ctx, "", server_name, interaction),
                     ),
                     self.bot.components_manager.add_callback(
-                        Button(label="Give Vehicle", custom_id="Give Vehicle"),
+                        Button(label="Give Vehicle"),
                         lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
                     ),
                 ]
