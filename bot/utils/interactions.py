@@ -118,7 +118,7 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
             components=[
                 Select(placeholder="Teams", options=team_options)
                 # self.bot.components_manager.add_callback(
-                #    Button(label="Next", custom_id="next"), switchlist
+                #    Button(label="Next"), switchlist
                 # ),
             ],
         )
@@ -158,14 +158,14 @@ async def spawn_mselect(self, ctx: str, server: str, interaction):
 
 async def spawn_serselect(self, ctx: str):
     options = []
-    for i in servers.get_names():
+    for server in servers.get_names():
         ctx.batch_exec = True
         try:
-            data = await exec_server_command(ctx, i, "RefreshList")
-            plist = data.get("PlayerList")
-            options.append(SelectOption(label=f"{i} ({len(plist)})", value=str(i)))
+            data = await exec_server_command(ctx, server, "RefreshList")
+            players = data.get("PlayerList")
+            options.append(SelectOption(label=f"{server} ({len(players)})", value=str(server)))
         except:
-            options.append(SelectOption(label=f"{i} (OFFLINE)", value="OFFLINE"))
+            options.append(SelectOption(label=f"{server} (OFFLINE)", value="OFFLINE"))
     embed = discord.Embed(title="**Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
     return options, embed

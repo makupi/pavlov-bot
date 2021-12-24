@@ -331,7 +331,6 @@ class PavlovCaptain(commands.Cog):
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
-        print(team_a_name, team_b_name)
         if ctx.interaction_exec:
             if not await check_perm_captain(__interaction, server_name):
                 return
