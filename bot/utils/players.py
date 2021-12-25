@@ -1,24 +1,25 @@
 import asyncio
 
 import discord
+from discord.ext import commands
 
 from bot.utils.pavlov import exec_server_command
 
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    player_list = players.get("PlayerList")
-    dataresults = []
-    if len(player_list) == 0:
+    players = players.get("PlayerList")
+    result = list()
+    if len(result) == 0:
         return "NoPlayers"
     else:
-        for player in player_list:
+        for player in players:
             await asyncio.sleep(0.1)
             data = await exec_server_command(
                 ctx, server_name, command.replace(" all ", " " + player.get("UniqueId") + " ")
             )
-            dataresults.append(data)
-    return dataresults
+            result.append(data)
+    return result
 
 
 async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, command: str):
@@ -84,7 +85,7 @@ async def parse_player_command_results(ctx, data, embed, server_name):
     return embed
 
 
-async def get_stats(ctx: str = "noctx", server: str = ""):
+async def get_stats(ctx: commands.Context = None, server: str = ""):
     if server == "":
         return "NoServerSpecified"
     else:

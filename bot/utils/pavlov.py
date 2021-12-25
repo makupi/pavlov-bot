@@ -1,6 +1,7 @@
 import logging
 
 import discord
+from discord.ext import commands
 from pavlov import PavlovRCON
 
 from bot.utils import servers, user_action_log
@@ -112,7 +113,7 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
     return True
 
 
-async def exec_server_command(ctx, server_name: str, command: str, polling=False):
+async def exec_server_command(ctx: commands.Context, server_name: str, command: str, polling=False):
     pavlov = None
     if not polling:
         if hasattr(ctx, "pavlov"):

@@ -219,69 +219,64 @@ class Pavlov(commands.Cog):
         """
         data = await exec_server_command(ctx, server_name, "RefreshList")
         data2 = await exec_server_command(ctx, server_name, "ServerInfo")
-        player_list = data.get("PlayerList")
+        players = data.get("PlayerList")
         blue_score = data2.get("ServerInfo").get("Team0Score")
         red_score = data2.get("ServerInfo").get("Team1Score")
-        gameround = data2.get("ServerInfo").get("Round")
-        gamemode = data2.get("ServerInfo").get("GameMode")
+        game_round = data2.get("ServerInfo").get("Round")
+        game_mode = data2.get("ServerInfo").get("GameMode")
         map_label = data2.get("ServerInfo").get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
-        if map_alias is None:
-            map_name = map_label
-        else:
+        map_name = map_label
+        if map_alias is not None:
             map_name = map_alias
 
-        if len(player_list) == 0:
-            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
+        embed = discord.Embed(
+            title=f"{len(players)} player{'s' if len(players)!=0 else ''} on `{server_name}`:\n"
+        )
+        if game_mode == "SND":
+            embed.description = f"Round {game_round} on map {map_name}:\n"
         else:
-            if len(player_list) == 1:
-                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
-            else:
-                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
-        if gamemode == "SND":
-            embed.description = f"Round {gameround} on map {map_name}:\n"
-        else:
-            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n"
-        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
-        if len(teamred) == 0:
-            for i in player_list:
-                if alivelist.get(i.get("UniqueId")):
+            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`:\n"
+        team_blue, team_red, kda_list, alive_list, scores = await get_stats(ctx, server_name)
+        if len(team_red) == 0:
+            for player in players:
+                if alive_list.get(player.get("UniqueId")):
                     dead = ":skull:"
-                elif not alivelist.get(i.get("UniqueId")):
+                elif not alive_list.get(player.get("UniqueId")):
                     dead = ":slight_smile:"
-                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
+                embed.description += f"\n - {dead} {player.get('Username')} <{player.get('UniqueId')}> KDA: {kda_list.get(player.get('UniqueId'))}"
         else:
-            if gamemode == "PUSH":
+            if game_mode == "PUSH":
                 embed.description += f"\n **Team Blue Tickets: {blue_score}**"
             else:
                 embed.description += f"\n **Team Blue Score: {blue_score}**"
-            for i in teamblue:
+            for player in team_blue:
                 team_name = ":blue_circle:"
-                if alivelist.get(i):
+                if alive_list.get(player):
                     dead = ":skull:"
-                elif not alivelist.get(i):
+                elif not alive_list.get(player):
                     dead = ":slight_smile:"
-                for ir in player_list:
-                    if i == ir.get("UniqueId"):
+                for ir in players:
+                    if player == ir.get("UniqueId"):
                         user_name = ir.get("Username")
                 embed.description += (
-                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                    f"\n - {dead} {team_name} {user_name} <{player}> KDA: {kda_list.get(player)}"
                 )
-            if gamemode == "PUSH":
+            if game_mode == "PUSH":
                 embed.description += f"\n **Team Red Tickets: {blue_score}**"
             else:
                 embed.description += f"\n **Team Red Score: {blue_score}**"
-            for i in teamred:
+            for player in team_red:
                 team_name = ":red_circle:"
-                if alivelist.get(i):
+                if alive_list.get(player):
                     dead = ":skull:"
-                elif not alivelist.get(i):
+                elif not alive_list.get(player):
                     dead = ":slight_smile:"
-                for ir in player_list:
-                    if i == ir.get("UniqueId"):
+                for ir in players:
+                    if player == ir.get("UniqueId"):
                         user_name = ir.get("Username")
                 embed.description += (
-                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                    f"\n - {dead} {team_name} {user_name} <{player}> KDA: {kda_list.get(player)}"
                 )
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
