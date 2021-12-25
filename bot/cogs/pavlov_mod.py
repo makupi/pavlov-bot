@@ -34,7 +34,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
+        data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
         embed = discord.Embed(title=f"**Ban {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
@@ -69,10 +69,10 @@ class PavlovMod(commands.Cog):
                 )
         else:
             if ctx.interaction_exec:
-                data = await exec_server_command(ctx, server_name, f"Kill {player_arg}")
+                data, _ = await exec_server_command(ctx, server_name, f"Kill {player_arg}")
             else:
                 player = SteamPlayer.convert(player_arg)
-                data = await exec_server_command(ctx, server_name, f"Kill {player.unique_id} ")
+                data, _ = await exec_server_command(ctx, server_name, f"Kill {player.unique_id} ")
         embed = discord.Embed(title=f"**Kill {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
@@ -103,10 +103,10 @@ class PavlovMod(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            data = await exec_server_command(ctx, server_name, f"Kick {player_arg}")
+            data, _ = await exec_server_command(ctx, server_name, f"Kick {player_arg}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
+            data, _ = await exec_server_command(ctx, server_name, f"Kick {player.unique_id}")
         embed = discord.Embed(title=f"**Kick {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
@@ -124,7 +124,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
+        data, _ = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
         embed = discord.Embed(title=f"**Unban {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
@@ -139,7 +139,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"AddMod {player.unique_id}")
+        data, _ = await exec_server_command(ctx, server_name, f"AddMod {player.unique_id}")
         embed = discord.Embed(title=f"**AddMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
@@ -154,7 +154,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(ctx, server_name, f"RemoveMod {player.unique_id}")
+        data, _ = await exec_server_command(ctx, server_name, f"RemoveMod {player.unique_id}")
         embed = discord.Embed(title=f"**RemoveMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
@@ -190,10 +190,12 @@ class PavlovMod(commands.Cog):
                 )
         else:
             if ctx.interaction_exec:
-                data = await exec_server_command(ctx, server_name, f"Slap {player_arg} {dmg}")
+                data, _ = await exec_server_command(ctx, server_name, f"Slap {player_arg} {dmg}")
             else:
                 player = SteamPlayer.convert(player_arg)
-                data = await exec_server_command(ctx, server_name, f"Slap {player.unique_id} {dmg}")
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"Slap {player.unique_id} {dmg}"
+                )
         embed = discord.Embed(title=f"**Slap {player_arg} {dmg}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
@@ -213,9 +215,9 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if len(pin) == 4 and pin.isdigit():
-            data = await exec_server_command(ctx, server_name, f"SetPin {pin}")
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin {pin}")
         elif pin.lower() == "remove":
-            data = await exec_server_command(ctx, server_name, f"SetPin")
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin")
         else:
             embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
             await ctx.send(embed=embed)

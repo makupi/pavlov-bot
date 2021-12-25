@@ -16,7 +16,7 @@ async def spawn_player_select(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
     options = list()
-    data = await exec_server_command(ctx, server, "RefreshList")
+    data, _ = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     extras = {
         "all": "all",
@@ -165,7 +165,7 @@ async def spawn_server_select(ctx: commands.Context):
     for server in servers.get_names():
         ctx.batch_exec = True
         try:
-            data = await exec_server_command(ctx, server, "RefreshList")
+            data, _ = await exec_server_command(ctx, server, "RefreshList")
             players = data.get("PlayerList")
             options.append(SelectOption(label=f"{server} ({len(players)})", value=str(server)))
         except ConnectionRefusedError:

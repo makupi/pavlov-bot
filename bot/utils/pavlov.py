@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, Union
 
 import discord
 from discord.ext import commands
@@ -115,13 +115,13 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
 
 
 async def exec_server_command(
-    ctx: Optional[commands.Context], server_name: str, command: str, polling=False
-):
+    ctx: Optional[Union[commands.Context, PavlovRCON]], server_name: str, command: str
+) -> [dict, Optional[PavlovRCON]]:
     pavlov = None
-    if not polling:
+    if ctx is not None and isinstance(ctx, commands.Context):
         if hasattr(ctx, "pavlov"):
             pavlov = ctx.pavlov.get(server_name)
-        if not hasattr(ctx, "pavlov") or pavlov is None:
+        if pavlov is None:
             server = servers.get(server_name)
             pavlov = PavlovRCON(
                 server.get("ip"),
@@ -134,18 +134,16 @@ async def exec_server_command(
             else:
                 ctx.pavlov[server_name] = pavlov
         data = await pavlov.send(command)
-        return data
-    else:
-        if ctx is not None:
-            pavlov = ctx
-        elif ctx is None:
-            server = servers.get(server_name)
-            pavlov = PavlovRCON(
-                server.get("ip"),
-                server.get("port"),
-                server.get("password"),
-                timeout=RCON_TIMEOUT,
-            )
-        ctx = pavlov
-        data = await pavlov.send(command)
-        return data, ctx
+        return data, None
+    if ctx is None:
+        server = servers.get(server_name)
+        pavlov = PavlovRCON(
+            server.get("ip"),
+            server.get("port"),
+            server.get("password"),
+            timeout=RCON_TIMEOUT,
+        )
+    elif isinstance(ctx, PavlovRCON):
+        pavlov = ctx
+    data = await pavlov.send(command)
+    return data, pavlov

@@ -15,7 +15,7 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
     else:
         for player in players:
             await asyncio.sleep(0.1)
-            data = await exec_server_command(
+            data, _ = await exec_server_command(
                 ctx, server_name, command.replace(" all ", " " + player.get("UniqueId") + " ")
             )
             result.append(data)
@@ -37,7 +37,7 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
         if team_id.isnumeric():
             return "NotValidTeam"
         for player in player_list:
-            data = await exec_server_command(
+            data, _ = await exec_server_command(
                 ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
             )
             player_team = data.get("PlayerInfo").get("TeamId")
@@ -94,11 +94,11 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
         alivelist = {}
         kdalist = {}
         scorelist = {}
-        data = await exec_server_command(ctx, server, "RefreshList")
+        data, ctx = await exec_server_command(ctx, server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
             await asyncio.sleep(0.1)
-            data2 = await exec_server_command(
+            data2, ctx = await exec_server_command(
                 ctx, server, f"InspectPlayer {player.get('UniqueId')}"
             )
             dead = data2.get("PlayerInfo").get("Dead")

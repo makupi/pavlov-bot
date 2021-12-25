@@ -149,16 +149,16 @@ class PavlovAdmin(commands.Cog):
                 if type(item_id) == dict:
                     for i in item_id:
                         await asyncio.sleep(0.1)
-                        data = await exec_server_command(
+                        data, _ = await exec_server_command(
                             ctx, server_name, f"GiveItem {player_arg} {item_id.get(i)}"
                         )
                 else:
-                    data = await exec_server_command(
+                    data, _ = await exec_server_command(
                         ctx, server_name, f"GiveItem {player_arg} {item_id}"
                     )
             else:
                 player = SteamPlayer.convert(player_arg)
-                data = await exec_server_command(
+                data, _ = await exec_server_command(
                     ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
                 )
         embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
@@ -228,16 +228,16 @@ class PavlovAdmin(commands.Cog):
                 if type(vehicle_id) == dict:
                     for i in vehicle_id:
                         await asyncio.sleep(0.1)
-                        data = await exec_server_command(
+                        data, _ = await exec_server_command(
                             ctx, server_name, f"GiveVehicle {player_arg} {vehicle_id.get(i)}"
                         )
                 else:
-                    data = await exec_server_command(
+                    data, _ = await exec_server_command(
                         ctx, server_name, f"GiveVehicle {player_arg} {vehicle_id}"
                     )
             else:
                 player = SteamPlayer.convert(player_arg)
-                data = await exec_server_command(
+                data, _ = await exec_server_command(
                     ctx, server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
                 )
         embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
@@ -265,7 +265,7 @@ class PavlovAdmin(commands.Cog):
             data = await exec_command_all_players(ctx, server_name, f"GiveCash all {cash_amount}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(
+            data, _ = await exec_server_command(
                 ctx, server_name, f"GiveCash {player.unique_id} {cash_amount}"
             )
         embed = discord.Embed(title=f"**GiveCash {player_arg} {cash_amount}** \n")
@@ -294,7 +294,9 @@ class PavlovAdmin(commands.Cog):
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        data = await exec_server_command(ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}")
+        data, _ = await exec_server_command(
+            ctx, server_name, f"GiveTeamCash {team_id} {cash_amount}"
+        )
         embed = discord.Embed(title=f"**GiveTeamCash {team_id} {cash_amount}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
@@ -327,7 +329,7 @@ class PavlovAdmin(commands.Cog):
                 )
         else:
             player = SteamPlayer.convert(player_arg)
-            data = await exec_server_command(
+            data, _ = await exec_server_command(
                 ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
             )
         embed = discord.Embed(title=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
@@ -345,7 +347,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, rcon_command)
+        data, _ = await exec_server_command(ctx, server_name, rcon_command)
         if not data:
             data = "No response"
         if ctx.batch_exec:

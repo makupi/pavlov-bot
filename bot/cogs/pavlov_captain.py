@@ -225,7 +225,7 @@ class PavlovCaptain(commands.Cog):
 
         map_label = aliases.get_map(map_name)
 
-        data = await exec_server_command(
+        data, _ = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
         switch_map = data.get("SwitchMap")
@@ -265,7 +265,7 @@ class PavlovCaptain(commands.Cog):
         else:
             if not await check_perm_captain(ctx, server_name):
                 return
-        data = await exec_server_command(ctx, server_name, "ResetSND")
+        data, _ = await exec_server_command(ctx, server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
         if not reset_snd:
             embed = discord.Embed(title=f"**Failed** to reset SND on {server_name}.")
@@ -294,7 +294,7 @@ class PavlovCaptain(commands.Cog):
         if not await check_perm_captain(ctx, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data = await exec_server_command(
+        data, _ = await exec_server_command(
             ctx, server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
         embed = discord.Embed(title=f"**SwitchTeam {player_arg} {team_id}** \n")
@@ -311,7 +311,7 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, f"RotateMap")
+        data, _ = await exec_server_command(ctx, server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
         if ctx.batch_exec:
             return rotate_map
@@ -382,7 +382,7 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(ctx, server_name):
             return
-        data = await exec_server_command(ctx, server_name, "RefreshList")
+        data, _ = await exec_server_command(ctx, server_name, "RefreshList")
         player_list = data.get("PlayerList")
         non_alias_player_ids = list()
         for player in player_list:
@@ -393,7 +393,7 @@ class PavlovCaptain(commands.Cog):
             await ctx.send(embed=discord.Embed(title=f"No players to flush on `{server_name}`"))
             return
         to_kick_id = random.choice(non_alias_player_ids)
-        data = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
+        data, _ = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
         kick = data.get("Kick")
         if not kick:
             await ctx.send(
