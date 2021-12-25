@@ -26,4 +26,13 @@ def user_action_log(ctx, message, log_level=logging.INFO):
     file_object.close()
 
 
-__all__ = ["config", "servers", "aliases", "SteamPlayer", "Paginator", "user_action_log", "Polling"]
+__all__ = [
+    "config",
+    "servers",
+    "aliases",
+    "SteamPlayer",
+    "Paginator",
+    "user_action_log",
+    "polling",
+    "lists",
+]
