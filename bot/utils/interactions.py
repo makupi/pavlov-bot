@@ -1,13 +1,12 @@
-import asyncio
 import logging
 
 import discord
 import discord_components
 from discord.ext import commands
-from discord_components import Button, Select, SelectOption
+from discord_components import Select, SelectOption
 
 from bot.utils import aliases, lists, servers
-from bot.utils.pavlov import check_perm_admin, exec_server_command
+from bot.utils.pavlov import exec_server_command
 
 
 async def spawn_player_select(
