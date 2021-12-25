@@ -15,7 +15,7 @@ async def spawn_player_select(
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
-    plist = []
+    options = list()
     data = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
     extras = {
@@ -27,13 +27,13 @@ async def spawn_player_select(
         return "NoPlayers", interaction
     else:
         for player in player_list:
-            plist.append(
+            options.append(
                 SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
             )
         for k, v in extras.items():
-            plist.append(SelectOption(label=k, value=v))
+            options.append(SelectOption(label=k, value=v))
         await interaction.send(
-            "Select a player below:", components=[Select(placeholder="Players", options=plist)]
+            "Select a player below:", components=[Select(placeholder="Players", options=options)]
         )
         interaction = await ctx.bot.wait_for("select_option")
         return interaction.values[0], interaction
@@ -43,15 +43,15 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
     logging.info(
         f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
-    i_list = []
+    options = list()
     itemlists = lists.get_names()
     for item in itemlists:
         alist = lists.get(item)
         if alist.get("type") == "item":
-            i_list.append(SelectOption(label=str(item), value=str(item)))
+            options.append(SelectOption(label=str(item), value=str(item)))
     await interaction.send(
         "Select a item list below:",
-        components=[Select(placeholder="Item Lists", options=i_list)],
+        components=[Select(placeholder="Item Lists", options=options)],
     )
     interaction1 = await ctx.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
@@ -76,15 +76,15 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
     logging.info(
         f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
-    i_list = []
+    options = list()
     itemlists = lists.get_names()
     for item in itemlists:
         alist = lists.get(item)
         if alist.get("type") == "vehicle":
-            i_list.append(SelectOption(label=str(item), value=str(item)))
+            options.append(SelectOption(label=str(item), value=str(item)))
     await interaction.send(
         "Select a vehicle list below:",
-        components=[Select(placeholder="Vehicle Lists", options=i_list)],
+        components=[Select(placeholder="Vehicle Lists", options=options)],
     )
     interaction1 = await ctx.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
@@ -161,14 +161,14 @@ async def spawn_map_select(ctx: commands.Context, interaction: discord_component
 
 
 async def spawn_server_select(ctx: commands.Context):
-    options = []
+    options = list()
     for server in servers.get_names():
         ctx.batch_exec = True
         try:
             data = await exec_server_command(ctx, server, "RefreshList")
             players = data.get("PlayerList")
             options.append(SelectOption(label=f"{server} ({len(players)})", value=str(server)))
-        except:
+        except ConnectionRefusedError:
             options.append(SelectOption(label=f"{server} (OFFLINE)", value="OFFLINE"))
     embed = discord.Embed(title="**Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
