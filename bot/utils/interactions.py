@@ -134,7 +134,7 @@ async def spawn_mselect(self, ctx: commands.Context, server: str, interaction):
     options = list()
     map_lists = lists.get_by_type("map")
     for list_name, _ in map_lists.items():
-            options.append(SelectOption(label=str(list_name), value=str(list_name)))
+        options.append(SelectOption(label=str(list_name), value=str(list_name)))
     await interaction.send(
         "Select a map list below:",
         components=[Select(placeholder="Map Lists", options=options)],

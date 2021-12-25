@@ -160,6 +160,7 @@ class PavlovCaptain(commands.Cog):
                     )
             else:
                 return
+
         options, embed = await spawn_serselect(self, ctx)
         if ctx.interaction_exec == True:
             message = await __interaction.send(
@@ -181,7 +182,6 @@ class PavlovCaptain(commands.Cog):
                     )
                 ],
             )
-
 
     @commands.command(aliases=["map"])
     async def switchmap(
@@ -207,7 +207,6 @@ class PavlovCaptain(commands.Cog):
         if ctx.interaction_exec:
             map_name, __interaction = await spawn_mselect(self, ctx, server_name, __interaction)
             game_mode = "snd"
-
 
         components = list()
         if game_mode.upper() == "SND":
@@ -243,8 +242,8 @@ class PavlovCaptain(commands.Cog):
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                    title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
-                )
+                title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+            )
             if ctx.interaction_exec:
                 await __interaction.send(embed=embed)
                 return
