@@ -80,7 +80,7 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(self, ctx)
+        options, embed = await spawn_server_select(ctx)
         message = await ctx.send(
             embed=embed,
             components=[
@@ -107,16 +107,12 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(
-                self, ctx, server_name, __interaction
-            )
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            item_id, __interaction, iteml = await spawn_item_select(
-                self, ctx, server_name, __interaction
-            )
+            item_id, __interaction, iteml = await spawn_item_select(ctx, __interaction)
             if item_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
@@ -191,16 +187,12 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(
-                self, ctx, server_name, __interaction
-            )
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            vehicle_id, __interaction, iteml = await spawn_vehicle_select(
-                self, ctx, server_name, __interaction
-            )
+            vehicle_id, __interaction, iteml = await spawn_vehicle_select(ctx, __interaction)
             if vehicle_id == "ListTooLong":
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",

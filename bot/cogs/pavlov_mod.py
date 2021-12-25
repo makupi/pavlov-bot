@@ -55,9 +55,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(
-                self, ctx, server_name, __interaction
-            )
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
@@ -100,9 +98,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(
-                self, ctx, server_name, __interaction
-            )
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
@@ -180,9 +176,7 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(
-                self, ctx, server_name, __interaction
-            )
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)

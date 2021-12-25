@@ -52,8 +52,8 @@ class PavlovCaptain(commands.Cog):
                 resetsnd = self.bot.all_commands.get("resetsnd")
                 switchmap = self.bot.all_commands.get("switchmap")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
-                team_one, interact = await spawn_team_select(self, ctx, server_name, interact, "1")
-                team_two, interact = await spawn_team_select(self, ctx, server_name, interact, "2")
+                team_one, interact = await spawn_team_select(ctx, interact, "1")
+                team_two, interact = await spawn_team_select(ctx, interact, "2")
                 #               if team_one == "empty" and team_two == "empty":
                 #                 embed.description = (
                 #                        "**No teams defined in aliases.json! Team buttons disabled.**"
@@ -161,7 +161,7 @@ class PavlovCaptain(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(self, ctx)
+        options, embed = await spawn_server_select(ctx)
         if ctx.interaction_exec == True:
             message = await __interaction.send(
                 embed=embed,
@@ -205,7 +205,7 @@ class PavlovCaptain(commands.Cog):
             if not await check_perm_captain(ctx, server_name):
                 return
         if ctx.interaction_exec:
-            map_name, __interaction = await spawn_map_select(self, ctx, server_name, __interaction)
+            map_name, __interaction = await spawn_map_select(ctx, __interaction)
             game_mode = "snd"
 
         components = list()

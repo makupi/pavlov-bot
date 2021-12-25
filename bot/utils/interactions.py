@@ -11,7 +11,7 @@ from bot.utils.pavlov import check_perm_admin, exec_server_command
 
 
 async def spawn_player_select(
-    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
+    ctx: commands.Context, server: str, interaction: discord_components.Interaction
 ):
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
@@ -36,13 +36,11 @@ async def spawn_player_select(
         await interaction.send(
             "Select a player below:", components=[Select(placeholder="Players", options=plist)]
         )
-        interaction = await self.bot.wait_for("select_option")
+        interaction = await ctx.bot.wait_for("select_option")
         return interaction.values[0], interaction
 
 
-async def spawn_item_select(
-    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
-):
+async def spawn_item_select(ctx: commands.Context, interaction: discord_components.Interaction):
     logging.info(
         f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -56,7 +54,7 @@ async def spawn_item_select(
         "Select a item list below:",
         components=[Select(placeholder="Item Lists", options=i_list)],
     )
-    interaction1 = await self.bot.wait_for("select_option")
+    interaction1 = await ctx.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
     items = slist.get("list")
     itemsilist = []
@@ -69,15 +67,13 @@ async def spawn_item_select(
         "Select a item below:",
         components=[Select(placeholder="Items", options=itemsilist)],
     )
-    interaction2 = await self.bot.wait_for("select_option")
+    interaction2 = await ctx.bot.wait_for("select_option")
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
-async def spawn_vehicle_select(
-    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
-):
+async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
     logging.info(
         f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -91,7 +87,7 @@ async def spawn_vehicle_select(
         "Select a vehicle list below:",
         components=[Select(placeholder="Vehicle Lists", options=i_list)],
     )
-    interaction1 = await self.bot.wait_for("select_option")
+    interaction1 = await ctx.bot.wait_for("select_option")
     slist = lists.get(interaction1.values[0])
     items = slist.get("list")
     itemsilist = []
@@ -104,18 +100,14 @@ async def spawn_vehicle_select(
         "Select a vehicle below:",
         components=[Select(placeholder="Vehicles", options=itemsilist)],
     )
-    interaction2 = await self.bot.wait_for("select_option")
+    interaction2 = await ctx.bot.wait_for("select_option")
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
 async def spawn_team_select(
-    self,
-    ctx: commands.Context,
-    server: str,
-    interaction: discord_components.Interaction,
-    team_index: int,
+    ctx: commands.Context, interaction: discord_components.Interaction, team_index: int
 ):
     logging.info(
         f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
@@ -136,13 +128,11 @@ async def spawn_team_select(
                 # ),
             ],
         )
-        interaction1 = await self.bot.wait_for("select_option")
+        interaction1 = await ctx.bot.wait_for("select_option")
         return interaction1.values[0], interaction1
 
 
-async def spawn_map_select(
-    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
-):
+async def spawn_map_select(ctx: commands.Context, interaction: discord_components.Interaction):
     logging.info(
         f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -154,7 +144,7 @@ async def spawn_map_select(
         "Select a map list below:",
         components=[Select(placeholder="Map Lists", options=options)],
     )
-    interaction = await self.bot.wait_for("select_option")
+    interaction = await ctx.bot.wait_for("select_option")
     map_list = map_lists.get(interaction.values[0])
     print(interaction.values)
     items = map_list.get("list")
@@ -167,11 +157,11 @@ async def spawn_map_select(
         "Select map below:",
         components=[Select(placeholder="Map", options=options)],
     )
-    interaction = await self.bot.wait_for("select_option")
+    interaction = await ctx.bot.wait_for("select_option")
     return interaction.values[0], interaction
 
 
-async def spawn_server_select(self, ctx: commands.Context):
+async def spawn_server_select(ctx: commands.Context):
     options = []
     for server in servers.get_names():
         ctx.batch_exec = True
