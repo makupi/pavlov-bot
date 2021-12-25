@@ -42,7 +42,7 @@ class PavlovAdmin(commands.Cog):
                 return
             if interact.author.id == ctx.author.id:
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
-                ctx.interaction_exec
+                ctx.interaction_exec = True
                 ctx.batch_exec = False
                 slap = self.bot.all_commands.get("slap")
                 giveitem = self.bot.all_commands.get("giveitem")
