@@ -29,5 +29,12 @@ class Lists:
                 raise ListsSettingsNotFoundError(name)
         return Listssettings
 
+    def get_by_type(self, _type: str):
+        result = dict()
+        for name, list_setting in self._Listssettings.items():
+            if list_setting.get("type").lower() == _type.lower():
+                result[name] = list_setting
+        return result
+
     def get_names(self, poll_group: str = None):
         return list(self._Listssettings.keys())

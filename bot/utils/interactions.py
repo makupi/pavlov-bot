@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 import discord
+from discord.ext import commands
 from discord_components import Button, Select, SelectOption
 
 from bot.utils import aliases, lists, servers
@@ -126,34 +127,33 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
         return interaction1.values[0], interaction1
 
 
-async def spawn_mselect(self, ctx: str, server: str, interaction):
+async def spawn_mselect(self, ctx: commands.Context, server: str, interaction):
     logging.info(
         f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
-    i_list = []
-    itemlists = lists.get_names()
-    for item in itemlists:
-        alist = lists.get(item)
-        if alist.get("type") == "map":
-            i_list.append(SelectOption(label=str(item), value=str(item)))
+    options = list()
+    map_lists = lists.get_by_type("map")
+    for list_name, _ in map_lists.items():
+            options.append(SelectOption(label=str(list_name), value=str(list_name)))
     await interaction.send(
         "Select a map list below:",
-        components=[Select(placeholder="Map Lists", options=i_list)],
+        components=[Select(placeholder="Map Lists", options=options)],
     )
-    interaction1 = await self.bot.wait_for("select_option")
-    slist = lists.get(interaction1.values[0])
-    items = slist.get("list")
-    itemsilist = []
-    for i in items:
-        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
-    if len(itemsilist) > 25:
-        return "ListTooLong", interaction1, interaction1.values[0]
-    await interaction1.send(
+    interaction = await self.bot.wait_for("select_option")
+    map_list = map_lists.get(interaction.values[0])
+    print(interaction.values)
+    items = map_list.get("list")
+    options = list()
+    for item in items:
+        options.append(SelectOption(label=str(items.get(item)), value=str(items.get(item))))
+    if len(options) > 25:
+        return "ListTooLong", interaction, interaction.values[0]
+    await interaction.send(
         "Select map below:",
-        components=[Select(placeholder="Map", options=itemsilist)],
+        components=[Select(placeholder="Map", options=options)],
     )
-    interaction1 = await self.bot.wait_for("select_option")
-    return interaction1.values[0], interaction1
+    interaction = await self.bot.wait_for("select_option")
+    return interaction.values[0], interaction
 
 
 async def spawn_serselect(self, ctx: str):

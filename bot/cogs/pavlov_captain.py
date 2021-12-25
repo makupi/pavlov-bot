@@ -207,43 +207,52 @@ class PavlovCaptain(commands.Cog):
         if ctx.interaction_exec:
             map_name, __interaction = await spawn_mselect(self, ctx, server_name, __interaction)
             game_mode = "snd"
-        gamesetup = self.bot.all_commands.get("gamesetup")
-        resetsnd = self.bot.all_commands.get("resetsnd")
-        map_label = aliases.get_map(map_name)
+
+
+        components = list()
         if game_mode.upper() == "SND":
-            ctx.interaction_exec = True
-            components = [
+
+            gamesetup = self.bot.all_commands.get("gamesetup")
+            resetsnd = self.bot.all_commands.get("resetsnd")
+
+            components.append(
                 self.bot.components_manager.add_callback(
                     Button(label=f"Match Menu"),
                     lambda interaction: gamesetup(ctx, interaction),
-                ),
+                )
+            )
+            components.append(
                 self.bot.components_manager.add_callback(
                     Button(label=f"ResetSND"),
                     lambda interaction: resetsnd(ctx, server_name, interaction),
-                ),
-            ]
-        else:
-            ctx.interaction_exec = True
-            components = []
+                )
+            )
+
+        map_label = aliases.get_map(map_name)
+
         data = await exec_server_command(
             ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
         switch_map = data.get("SwitchMap")
-        if ctx.batch_exec:
-            return switch_map
         if not switch_map:
+            if ctx.batch_exec:
+                return switch_map
             embed = discord.Embed(
                 title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()} on {server_name}."
             )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
-            )
-            await ctx.send(embed=embed, components=components)
-        if ctx.interaction_exec:
-            await __interaction.send(embed=embed)
-            return
+                    title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+                )
+            if ctx.interaction_exec:
+                await __interaction.send(embed=embed)
+                return
+            else:
+                if ctx.batch_exec:
+                    return switch_map
+                ctx.interaction_exec = True
+                await ctx.send(embed=embed, components=components)
 
     @commands.command()
     async def resetsnd(
@@ -331,6 +340,7 @@ class PavlovCaptain(commands.Cog):
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
+        print(team_a_name, team_b_name, server_name)
         if ctx.interaction_exec:
             if not await check_perm_captain(__interaction, server_name):
                 return
