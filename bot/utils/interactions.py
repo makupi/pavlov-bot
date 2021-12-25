@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 import discord
+import discord_components
 from discord.ext import commands
 from discord_components import Button, Select, SelectOption
 
@@ -9,7 +10,9 @@ from bot.utils import aliases, lists, servers
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 
 
-async def spawn_player_select(self, ctx: str, server: str, interaction):
+async def spawn_player_select(
+    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
+):
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -37,7 +40,9 @@ async def spawn_player_select(self, ctx: str, server: str, interaction):
         return interaction.values[0], interaction
 
 
-async def spawn_item_select(self, ctx: str, server: str, interaction):
+async def spawn_item_select(
+    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
+):
     logging.info(
         f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -70,7 +75,9 @@ async def spawn_item_select(self, ctx: str, server: str, interaction):
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
-async def spawn_vehicle_select(self, ctx: str, server: str, interaction):
+async def spawn_vehicle_select(
+    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
+):
     logging.info(
         f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -103,7 +110,13 @@ async def spawn_vehicle_select(self, ctx: str, server: str, interaction):
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
-async def spawn_team_select(self, ctx: str, server: str, interaction, team_num):
+async def spawn_team_select(
+    self,
+    ctx: commands.Context,
+    server: str,
+    interaction: discord_components.Interaction,
+    team_index: int,
+):
     logging.info(
         f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -115,7 +128,7 @@ async def spawn_team_select(self, ctx: str, server: str, interaction, team_num):
         return "empty", interaction
     else:
         await interaction.send(
-            f"Select Team {team_num} below:",
+            f"Select Team {team_index} below:",
             components=[
                 Select(placeholder="Teams", options=team_options)
                 # self.bot.components_manager.add_callback(
@@ -127,7 +140,9 @@ async def spawn_team_select(self, ctx: str, server: str, interaction, team_num):
         return interaction1.values[0], interaction1
 
 
-async def spawn_map_select(self, ctx: commands.Context, server: str, interaction):
+async def spawn_map_select(
+    self, ctx: commands.Context, server: str, interaction: discord_components.Interaction
+):
     logging.info(
         f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -156,7 +171,7 @@ async def spawn_map_select(self, ctx: commands.Context, server: str, interaction
     return interaction.values[0], interaction
 
 
-async def spawn_server_select(self, ctx: str):
+async def spawn_server_select(self, ctx: commands.Context):
     options = []
     for server in servers.get_names():
         ctx.batch_exec = True
