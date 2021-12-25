@@ -1,11 +1,12 @@
 import asyncio
 import logging
+import random
 from typing import Optional
 
 import discord
 from discord.ext import commands
 
-from bot.utils import polling
+from bot.utils import polling, players
 from bot.utils.pavlov import exec_server_command
 
 CHECK_INTERVAL = 15
@@ -35,8 +36,8 @@ class Polling(commands.Cog):
                 self._tasks[poll] = task
 
     async def new_poll(self, poll_config: dict, server: str, name: str):
+        interval = poll_config.get("polling_interval") * 60
         if poll_config.get("type").lower() == "player":
-            interval = poll_config.get("polling_interval") * 60
             state = None
             ctx = None
 
@@ -44,12 +45,20 @@ class Polling(commands.Cog):
                 try:
                     await asyncio.sleep(interval)
                     logging.info(f"Executing Task {name} on server {server}")
-                    state, ctx = await self.player_polling(ctx, poll_config, server, state)
-                    # if poll_config.get("type") == "autobalance":
-                    #    interval = float(poll_config.get("polling_interval")) * 60
-                    #    await asyncio.sleep(interval)
-                    #    logging.info(f"Executing Task {poll} on server {server}")
-                    #    await self.autobalance_polling(poll_config, server, poll)
+                    state = await self.player_polling(poll_config, server, state)
+                except Exception as e:
+                    await asyncio.sleep(1)
+                    logging.info(
+                        f"Exception occurred while trying to execute {name} on server {server}! Exception: {e}"
+                    )
+                    pass
+        if poll_config.get("type") == "autobalance":
+            interval = float(poll_config.get("polling_interval")) * 60
+            while True:
+                try:
+                    await asyncio.sleep(interval)
+                    logging.info(f"Executing Task {name} on server {server}")
+                    await self.autobalance_polling(poll_config, server, name)
                 except Exception as e:
                     await asyncio.sleep(1)
                     logging.info(
@@ -59,14 +68,13 @@ class Polling(commands.Cog):
 
     async def player_polling(
         self,
-        ctx: Optional[commands.Context],
         poll_config: dict,
         server: str,
         old_state: Optional[str],
     ):
         channel = self.bot.get_channel(poll_config.get("polling_channel"))
         logging.info(f"Starting poll on {server} with state: {old_state}")
-        data, ctx = await exec_server_command(ctx, server, "RefreshList", True)
+        data, ctx = await exec_server_command(None, server, "RefreshList", True)
         player_count = len(data.get("PlayerList"))
         p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
         logging.info(f"{server} has {player_count} players")
@@ -97,68 +105,77 @@ class Polling(commands.Cog):
         await channel.send(p_role, embed=embed)
         return new_state, ctx
 
-    # async def autobalance_polling(self, poll_config, server, poll: str):
-    #    channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
-    #    ctx = 'noctx'
-    #    teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
-    #    for k, v in scorelist.items():
-    #        if v is None:
-    #            score = 0
-    #        score = int(v)
-    #        if score < int(poll_config.get("tk_threshold")):
-    #            logging.info(f"Task {poll}: TK threshold triggered for {k}")
-    #            logging.info(f"Task {poll}: Peforming tk action {poll_config.get('tk_action')}")
-    #            if poll_config.get("tk_action").casefold() == "kick":
-    #                await exec_server_command(ctx, server, f"Kick {k}")
-    #                logging.info(f"Player {k} kicked for TK from server {server} at score {score}")
-    #            elif poll_config.get("tk_action").casefold() == "ban":
-    #                await exec_server_command(ctx, server, f"Ban {k}")
-    #                logging.info(f"Player {k} banned for TK from server {server} at score {score}")
-    #            elif poll_config.get("tk_action").casefold() == "test":
-    #                logging.info(f"Player {k} would have been actioned for TK from server {server} at score {score}")
-    #                pass
-    #    logging.info(f"Starting autobalance at {len(teamblue)}/{len(teamred)}")
-    #    if len(teamblue) == len(teamred):
-    #        logging.info(f"Exiting autobalance on equal teams")
-    #        pass
-    #    elif len(teamred) - 1 == len(teamblue) or len(teamred) + 1 == len(teamblue):
-    #        logging.info(f"Exiting autobalance on odd number equal teams")
-    #        pass
-    #    elif int(poll_config.get("autobalance_min_players")) > len(teamblue) + len(teamred):
-    #        logging.info(f"Exiting autobalance on min players")
-    #        pass
-    #    elif int(poll_config.get("autobalance_tolerance")) < abs(len(teamblue) - len(teamred)):
-    #        try:
-    #            while True:
-    #                teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server)
-    #                logging.info(f"Blue:{len(teamblue)} Red: {len(teamred)}")
-    #                if len(teamred) == len(teamblue):
-    #                    raise Exception
-    #                elif len(teamred) - 1 == len(teamblue) or len(teamred) + 1 == len(teamblue):
-    #                    raise Exception
-    #                elif len(teamblue) > len(teamred):
-    #                    switcher = random.choice(teamblue)
-    #                    logging.info(f"Player {switcher} moved from blue to red on {server} at playercount {len(teamblue) + len(teamred)} ratio {len(teamblue)}/{len(teamred)} ")
-    #                    if poll_config.get("autobalance_testing"):
-    #                        logging.info(f"Just testing")
-    #                        pass
-    #                    else:
-    #                        await exec_server_command(ctx, server, f"SwitchTeam {switcher} 1")
-    #                elif len(teamred) > len(teamblue):
-    #                    switcher = random.choice(teamred)
-    #                    logging.info(f"Player {switcher} moved from red to blue on {server} at playercount {len(teamblue) + len(teamred)} ratio {len(teamblue)}/{len(teamred)} ")
-    #                    if poll_config.get("autobalance_testing"):
-    #                        logging.info(f"Just testing")
-    #                        pass
-    #                    else:
-    #                        data = await exec_server_command(ctx, server, f"SwitchTeam {switcher} 0")
-    #        except:
-    #            logging.info(f"exiting autobalance")
-    #            pass
-    #        embed = discord.Embed(title=f"Autobalanced `{server}`")
-    #        await channel.send(embed=embed)
-    #    else:
-    #        logging.info(f"Exiting autobalance on tolerence players")
+    async def autobalance_polling(self, poll_config: dict, server: str, poll_name: str):
+        channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
+        ctx = None
+        teamblue, teamred, kdalist, alivelist, scorelist = await players.get_stats(ctx, server)
+        for player, score in scorelist.items():
+            try:
+                score = int(score)
+            except ValueError:
+                score = 0
+            if score < int(poll_config.get("tk_threshold")):
+                logging.info(f"Task {poll_name}: TK threshold triggered for {player}")
+
+                tk_action = poll_config.get("tk_action")
+                logging.info(f"Task {poll_name}: Performing tk action {tk_action}")
+
+                if tk_action.casefold() == "kick":
+                    await exec_server_command(ctx, server, f"Kick {player}")
+                    logging.info(
+                        f"Player {player} kicked for TK from server {server} at score {score}"
+                    )
+                elif tk_action.casefold() == "ban":
+                    await exec_server_command(ctx, server, f"Ban {player}")
+                    logging.info(
+                        f"Player {player} banned for TK from server {server} at score {score}"
+                    )
+                elif tk_action.casefold() == "test":
+                    logging.info(
+                        f"Player {player} would have been actioned for TK from server {server} at score {score}"
+                    )
+        blue_count = len(teamblue)
+        red_count = len(teamred)
+        tolerance = int(poll_config.get("autobalance_tolerance"))
+        if tolerance is None or tolerance == 0:
+            tolerance = 1
+        min_players = int(poll_config.get("autobalance_min_players"))
+        logging.info(f"Starting autobalance at {blue_count}/{red_count}")
+        while True:
+            try:
+                teamblue, teamred, _, _, _ = await players.get_stats(ctx, server)
+                blue_count = len(teamblue)
+                red_count = len(teamred)
+                if blue_count == red_count:
+                    logging.info(f"Exiting autobalance on equal teams")
+                    return
+                elif (blue_count + red_count) < min_players:
+                    logging.info(f"Exiting autobalance, not enough players")
+                    return
+                elif abs(blue_count - red_count) > tolerance:
+                    logging.info(f"Blue:{len(teamblue)} Red: {len(teamred)}")
+                    if len(teamblue) > len(teamred):
+                        to_switch = random.choice(teamblue)
+                        command = f"SwitchTeam {to_switch} 1"
+                        logging.info(
+                            f"Player {to_switch} moved from blue to red on {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count} "
+                        )
+                    else:
+                        to_switch = random.choice(teamred)
+                        command = f"SwitchTeam {to_switch} 0"
+                        logging.info(
+                            f"Player {to_switch} moved from red to blue on {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count} "
+                        )
+                    if poll_config.get("autobalance_testing"):
+                        logging.info(f"Just testing")
+                        return
+                    else:
+                        _ = await exec_server_command(ctx, server, command)
+            except Exception as ex:
+                logging.info(f"Exception occurred, exiting autobalance. ex: {ex}")
+                return
+            embed = discord.Embed(title=f"Autobalanced `{server}`")
+            await channel.send(embed=embed)
 
 
 def setup(bot):

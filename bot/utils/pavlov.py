@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -113,7 +114,9 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
     return True
 
 
-async def exec_server_command(ctx: commands.Context, server_name: str, command: str, polling=False):
+async def exec_server_command(
+    ctx: Optional[commands.Context], server_name: str, command: str, polling=False
+):
     pavlov = None
     if not polling:
         if hasattr(ctx, "pavlov"):
