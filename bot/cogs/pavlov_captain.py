@@ -8,18 +8,14 @@ import discord_components
 from discord.ext import commands
 from discord_components import Button, Select
 
-from bot.utils import SteamPlayer, aliases, config, servers
+from bot.utils import SteamPlayer, aliases, config
 from bot.utils.interactions import (
-    spawn_item_select,
     spawn_map_select,
-    spawn_player_select,
     spawn_server_select,
     spawn_team_select,
 )
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
-    exec_command_all_players,
-    exec_command_all_players_on_team,
     parse_player_command_results,
 )
 
@@ -52,8 +48,8 @@ class PavlovCaptain(commands.Cog):
                 resetsnd = self.bot.all_commands.get("resetsnd")
                 switchmap = self.bot.all_commands.get("switchmap")
                 embed = discord.Embed(title=f"**{server_name} Match Menu**")
-                team_one, interact = await spawn_team_select(ctx, interact, "1")
-                team_two, interact = await spawn_team_select(ctx, interact, "2")
+                team_one, interact = await spawn_team_select(ctx, interact, 1)
+                team_two, interact = await spawn_team_select(ctx, interact, 2)
                 #               if team_one == "empty" and team_two == "empty":
                 #                 embed.description = (
                 #                        "**No teams defined in aliases.json! Team buttons disabled.**"
@@ -162,7 +158,7 @@ class PavlovCaptain(commands.Cog):
                 return
 
         options, embed = await spawn_server_select(ctx)
-        if ctx.interaction_exec == True:
+        if ctx.interaction_exec:
             message = await __interaction.send(
                 embed=embed,
                 components=[

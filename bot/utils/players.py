@@ -1,10 +1,7 @@
 import asyncio
-import logging
 
 import discord
-from discord_components import Button, Select, SelectOption
 
-from bot.utils import aliases, lists
 from bot.utils.pavlov import exec_server_command
 
 
@@ -36,7 +33,7 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        if (team_id.isnumeric()) == False:
+        if team_id.isnumeric():
             return "NotValidTeam"
         for player in player_list:
             data = await exec_server_command(
@@ -65,10 +62,10 @@ async def parse_player_command_results(ctx, data, embed, server_name):
         return embed
     elif type(data) == dict:
         result = data.get("Successful")
-        if result == True:
+        if result:
             result = "✅"
             success += 1
-        elif result == False:
+        else:
             result = "❎"
             failure += 1
         embed.add_field(name=data.get("UniqueID"), value=result, inline=False)
@@ -76,10 +73,10 @@ async def parse_player_command_results(ctx, data, embed, server_name):
     else:
         for i in data:
             result = i.get("Successful")
-            if result == True:
+            if result:
                 result = "✅"
                 success += 1
-            elif result == False:
+            else:
                 result = "❎"
                 failure += 1
             embed.add_field(name=i.get("UniqueID"), value=result, inline=False)

@@ -1,6 +1,4 @@
-import asyncio
 import logging
-import random
 import re
 import sys
 import traceback
@@ -13,11 +11,9 @@ from bs4 import BeautifulSoup
 from discord.ext import commands
 
 from bot.utils import Paginator, aliases, config, servers
-from bot.utils.pavlov import check_perm_admin, exec_server_command
+from bot.utils.pavlov import exec_server_command
 from bot.utils.players import (
-    exec_command_all_players,
     get_stats,
-    parse_player_command_results,
 )
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
@@ -230,7 +226,7 @@ class Pavlov(commands.Cog):
         gamemode = data2.get("ServerInfo").get("GameMode")
         map_label = data2.get("ServerInfo").get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
-        if map_alias == None:
+        if map_alias is None:
             map_name = map_label
         else:
             map_name = map_alias
