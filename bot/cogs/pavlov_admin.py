@@ -9,11 +9,11 @@ from discord_components import Button, Select
 
 from bot.utils import SteamPlayer, config, servers
 from bot.utils.interactions import (
-    spawn_iselect,
-    spawn_pselect,
-    spawn_serselect,
-    spawn_tselect,
-    spawn_vselect,
+    spawn_item_select,
+    spawn_player_select,
+    spawn_server_select,
+    spawn_team_select,
+    spawn_vehicle_select,
 )
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
@@ -80,7 +80,7 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_serselect(self, ctx)
+        options, embed = await spawn_server_select(self, ctx)
         message = await ctx.send(
             embed=embed,
             components=[
@@ -107,12 +107,14 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
+            player_arg, __interaction = await spawn_player_select(
+                self, ctx, server_name, __interaction
+            )
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            item_id, __interaction, iteml = await spawn_iselect(
+            item_id, __interaction, iteml = await spawn_item_select(
                 self, ctx, server_name, __interaction
             )
             if item_id == "ListTooLong":
@@ -189,12 +191,14 @@ class PavlovAdmin(commands.Cog):
         if not await check_perm_admin(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
+            player_arg, __interaction = await spawn_player_select(
+                self, ctx, server_name, __interaction
+            )
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            vehicle_id, __interaction, iteml = await spawn_vselect(
+            vehicle_id, __interaction, iteml = await spawn_vehicle_select(
                 self, ctx, server_name, __interaction
             )
             if vehicle_id == "ListTooLong":

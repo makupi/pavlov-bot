@@ -7,7 +7,7 @@ import discord_components
 from discord.ext import commands
 
 from bot.utils import SteamPlayer, config
-from bot.utils.interactions import spawn_iselect, spawn_pselect, spawn_tselect
+from bot.utils.interactions import spawn_item_select, spawn_player_select, spawn_team_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -55,7 +55,9 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
+            player_arg, __interaction = await spawn_player_select(
+                self, ctx, server_name, __interaction
+            )
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
@@ -98,7 +100,9 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
+            player_arg, __interaction = await spawn_player_select(
+                self, ctx, server_name, __interaction
+            )
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
@@ -176,7 +180,9 @@ class PavlovMod(commands.Cog):
         if not await check_perm_moderator(ctx, server_name):
             return
         if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_pselect(self, ctx, server_name, __interaction)
+            player_arg, __interaction = await spawn_player_select(
+                self, ctx, server_name, __interaction
+            )
             if player_arg == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)

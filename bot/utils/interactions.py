@@ -9,7 +9,7 @@ from bot.utils import aliases, lists, servers
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 
 
-async def spawn_pselect(self, ctx: str, server: str, interaction):
+async def spawn_player_select(self, ctx: str, server: str, interaction):
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -37,7 +37,7 @@ async def spawn_pselect(self, ctx: str, server: str, interaction):
         return interaction.values[0], interaction
 
 
-async def spawn_iselect(self, ctx: str, server: str, interaction):
+async def spawn_item_select(self, ctx: str, server: str, interaction):
     logging.info(
         f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -70,7 +70,7 @@ async def spawn_iselect(self, ctx: str, server: str, interaction):
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
-async def spawn_vselect(self, ctx: str, server: str, interaction):
+async def spawn_vehicle_select(self, ctx: str, server: str, interaction):
     logging.info(
         f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -103,7 +103,7 @@ async def spawn_vselect(self, ctx: str, server: str, interaction):
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
-async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
+async def spawn_team_select(self, ctx: str, server: str, interaction, team_num):
     logging.info(
         f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -127,7 +127,7 @@ async def spawn_tselect(self, ctx: str, server: str, interaction, team_num):
         return interaction1.values[0], interaction1
 
 
-async def spawn_mselect(self, ctx: commands.Context, server: str, interaction):
+async def spawn_map_select(self, ctx: commands.Context, server: str, interaction):
     logging.info(
         f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
     )
@@ -156,7 +156,7 @@ async def spawn_mselect(self, ctx: commands.Context, server: str, interaction):
     return interaction.values[0], interaction
 
 
-async def spawn_serselect(self, ctx: str):
+async def spawn_server_select(self, ctx: str):
     options = []
     for server in servers.get_names():
         ctx.batch_exec = True
