@@ -9,8 +9,6 @@ from discord.ext import commands
 from bot.utils import polling, players
 from bot.utils.pavlov import exec_server_command
 
-CHECK_INTERVAL = 15
-
 
 class Polling(commands.Cog):
     def __init__(self, bot):
@@ -96,7 +94,7 @@ class Polling(commands.Cog):
     async def autobalance_polling(self, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
         ctx = None
-        teamblue, teamred, kdalist, alivelist, scorelist = await players.get_stats(ctx, server)
+        teamblue, teamred, _, _, scorelist = await players.get_stats(ctx, server)
         for player, score in scorelist.items():
             try:
                 score = int(score)
