@@ -98,6 +98,7 @@ class Polling(commands.Cog):
         for player, score in scorelist.items():
             try:
                 score = int(score)
+
             except ValueError:
                 score = 0
             if score < int(poll_config.get("tk_threshold")):
@@ -123,8 +124,6 @@ class Polling(commands.Cog):
         blue_count = len(teamblue)
         red_count = len(teamred)
         tolerance = int(poll_config.get("autobalance_tolerance"))
-        if tolerance is None or tolerance == 0:
-            tolerance = 1
         min_players = int(poll_config.get("autobalance_min_players"))
         logging.info(f"Starting autobalance at {blue_count}/{red_count}")
         while True:
@@ -135,36 +134,38 @@ class Polling(commands.Cog):
                 elif (blue_count + red_count) < min_players:
                     logging.info(f"Exiting autobalance, not enough players")
                     return
-                elif abs(blue_count - red_count) > tolerance:
-                    logging.info(f"Blue:{len(teamblue)} Red: {len(teamred)}")
-                    if len(teamblue) > len(teamred):
+                elif abs(blue_count - red_count) <= tolerance:
+                    logging.info(f"Exiting autobalance Blue:{blue_count} Red: {red_count} within tolerance")
+                    return
+                else:
+                    logging.info(f"Blue:{blue_count} Red: {red_count}")
+                    if blue_count > red_count:
                         to_switch = random.choice(teamblue)
-                        command = f"SwitchTeam {to_switch} 1"
+                        sw_command = f"SwitchTeam {to_switch} 1"
                         logging.info(
                             f"Player {to_switch} moved from blue to red on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
                         )
                     else:
                         to_switch = random.choice(teamred)
-                        command = f"SwitchTeam {to_switch} 0"
+                        sw_command = f"SwitchTeam {to_switch} 0"
                         logging.info(
                             f"Player {to_switch} moved from red to blue on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
                         )
-                    if poll_config.get("autobalance_testing"):
-                        logging.info(f"Just testing")
-                        return
-                    else:
-                        _, ctx = await exec_server_command(ctx, server, command)
-
-                    teamblue, teamred, _, _, _ = await players.get_stats(ctx, server)
-                    blue_count = len(teamblue)
-                    red_count = len(teamred)
+                if poll_config.get("autobalance_testing"):
+                    logging.info(f"Just testing {sw_command}")
+                    return
+                else:
+                    logging.info(f"Executed {sw_command}")
+                    _, ctx = await exec_server_command(ctx, server, sw_command)
+                    embed = discord.Embed(
+                        title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}`"
+                    )
+                    await channel.send(p_role, embed=embed)
             except Exception as ex:
                 logging.info(f"Exception occurred, exiting autobalance. ex: {ex}")
                 return
-            embed = discord.Embed(title=f"Autobalanced `{server}`")
-            await channel.send(embed=embed)
 
 
 def setup(bot):
