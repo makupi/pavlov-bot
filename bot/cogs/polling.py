@@ -102,10 +102,10 @@ class Polling(commands.Cog):
             except ValueError:
                 score = 0
             if score < int(poll_config.get("tk_threshold")):
-                logging.info(f"Task {poll_name}: TK threshold triggered for {player}")
+                logging.info(f"Task {poll_name}: TK threshold triggered for {player} on {server}")
 
                 tk_action = poll_config.get("tk_action")
-                logging.info(f"Task {poll_name}: Performing tk action {tk_action}")
+                logging.info(f"Task {poll_name}: Performing tk action {tk_action} on {server}")
 
                 if tk_action.casefold() == "kick":
                     _, ctx = await exec_server_command(ctx, server, f"Kick {player}")
@@ -129,16 +129,16 @@ class Polling(commands.Cog):
         while True:
             try:
                 if blue_count == red_count:
-                    logging.info(f"Exiting autobalance on equal teams")
+                    logging.info(f"Exiting autobalance on {server} on equal teams")
                     return
                 elif (blue_count + red_count) < min_players:
-                    logging.info(f"Exiting autobalance, not enough players")
+                    logging.info(f"Exiting autobalance on {server}, not enough players")
                     return
                 elif abs(blue_count - red_count) <= tolerance:
-                    logging.info(f"Exiting autobalance Blue:{blue_count} Red: {red_count} within tolerance")
+                    logging.info(f"Exiting autobalance on {server} Blue:{blue_count} Red: {red_count} within tolerance")
                     return
                 else:
-                    logging.info(f"Blue:{blue_count} Red: {red_count}")
+                    logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
                     if blue_count > red_count:
                         to_switch = random.choice(teamblue)
                         sw_command = f"SwitchTeam {to_switch} 1"
