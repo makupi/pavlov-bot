@@ -8,7 +8,7 @@ from bot.utils.pavlov import exec_server_command
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    players = players.get("PlayerList")
+    players = players[0].get("PlayerList")
     result = list()
     if len(result) == 0:
         return "NoPlayers"
@@ -24,7 +24,7 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
 
 async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    player_list = players.get("PlayerList")
+    player_list = players[0].get("PlayerList")
     dataresults = []
     if len(player_list) == 0:
         return "NoPlayers"

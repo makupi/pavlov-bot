@@ -220,11 +220,11 @@ class Pavlov(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, "RefreshList")
         data2 = await exec_server_command(ctx, server_name, "ServerInfo")
         players = data.get("PlayerList")
-        blue_score = data2.get("ServerInfo").get("Team0Score")
-        red_score = data2.get("ServerInfo").get("Team1Score")
-        game_round = data2.get("ServerInfo").get("Round")
-        game_mode = data2.get("ServerInfo").get("GameMode")
-        map_label = data2.get("ServerInfo").get("MapLabel")
+        blue_score = data2[0].get("ServerInfo").get("Team0Score")
+        red_score = data2[0].get("ServerInfo").get("Team1Score")
+        game_round = data2[0].get("ServerInfo").get("Round")
+        game_mode = data2[0].get("ServerInfo").get("GameMode")
+        map_label = data2[0].get("ServerInfo").get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
         map_name = map_label
         if map_alias is not None:
