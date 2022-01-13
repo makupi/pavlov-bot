@@ -1,5 +1,5 @@
 {
-    "playerpoll": {
+    "playerpoll1": {
         "type": "player",
         "servers": ["server_alias1", "server_alias2"],
         "polling_interval": 5,
@@ -10,7 +10,7 @@
         "high_threshold": 9,
         "show_scoreboard": true
     },
-    "playerpoll": {
+    "playerpoll2": {
         "type": "player",
         "servers": ["server_alias3"],
         "polling_interval": 10,
@@ -20,5 +20,17 @@
         "medium_threshold": 18,
         "high_threshold": 25,
         "show_scoreboard": false
-    }
+    },
+    "autobalance": {
+        "type": "autobalance",
+        "servers": ["serveralias4"],
+        "polling_interval": 1,
+        "polling_channel": 721148700868608142,
+        "polling_role": 900500899166842911,
+        "tk_threshold": "-5",
+        "tk_action": kick,
+        "autobalance_min_players": 1,
+        "autobalance_tolerance": 1,
+        "autobalance_testing": false
+        }
 }
