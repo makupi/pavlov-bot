@@ -28,7 +28,7 @@
         "polling_channel": 721148700868608142,
         "polling_role": 900500899166842911,
         "tk_threshold": "-5",
-        "tk_action": kick,
+        "tk_action": "kick",
         "autobalance_min_players": 1,
         "autobalance_tolerance": 1,
         "autobalance_testing": false
