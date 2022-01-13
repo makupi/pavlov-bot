@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.1 - 2021-01-15
+- Autobalance: Designed primarly for PUSH servers, this feature monitors the scoreboard for team killers and kicks or bans at your tolerance limit. Watches player count for the two teams and when enough players are present and the teams are unbalanced, forces players from high count team to low to keep games numerically balanced.
+- Added `;gamesetup` command that will spawn menu buttons in discord allowing control of an SND match using Discord buttons from within VR.
+- Added `;menu` command to spawn admin menu with Discord buttons for use with virtual desktop in VR 
+- Improved formatting of `;players` command scoreboard
+- Lengthened pause before ResetSND on `;matchsetup` to 10 seconds from 5 seconds
+
 ## v0.6.1 - 2020-11-?
 - Improved performance of `;players` command
 - Improved output of `;players` command to give player stats and game score
