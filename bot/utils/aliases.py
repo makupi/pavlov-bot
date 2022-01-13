@@ -1,8 +1,9 @@
 import json
 import os
 import re
-import urllib.parse as urlparse
 from typing import List, Tuple
+
+import urllib.parse as urlparse
 from urllib.parse import parse_qs
 
 from bot.utils.steamplayer import SteamPlayer

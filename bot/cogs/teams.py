@@ -2,7 +2,6 @@ import logging
 
 import discord
 from discord.ext import commands
-from discord_components import Button
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.pavlov import check_perm_captain
@@ -27,22 +26,15 @@ class Teams(commands.Cog):
         **Examples**: `{prefix}teamsetup maku,invicta team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
-        gamesetup = self.bot.all_commands.get("gamesetup")
         team = aliases.get_team(team_name)
         team.ringers_reset()
         players = players_arg.split(",")
         for player in players:
             player = SteamPlayer.convert(player)
             team.ringer_add(player)
-        ctx.interaction_exec = True
-        components = [
-            self.bot.components_manager.add_callback(
-                Button(label=f"Go to gamesetup"),
-                lambda interaction: gamesetup(ctx, interaction),
-            )
-        ]
-        embed = discord.Embed(description=f"Player list {players_arg} added to team {team.name}.")
-        await ctx.send(embed=embed, components=components)
+        await ctx.send(
+            embed=discord.Embed(description=f"Player list {players_arg} added to team {team.name}.")
+        )
 
     @ringers.command()
     async def add(self, ctx, player_arg: str, team_name: str):

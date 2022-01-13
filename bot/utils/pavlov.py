@@ -1,11 +1,9 @@
 import logging
-from typing import Optional, Union
 
 import discord
-from discord.ext import commands
-from pavlov import PavlovRCON
 
 from bot.utils import servers, user_action_log
+from pavlov import PavlovRCON
 
 RCON_TIMEOUT = 60
 
@@ -41,9 +39,8 @@ async def check_perm_admin(
             f"ADMIN CHECK FAILED server={server_name}, global_check={global_check}",
             log_level=logging.WARNING,
         )
-        if hasattr(ctx, "batch_exec"):
-            if not ctx.batch_exec:
-                await ctx.send(embed=discord.Embed(description=f"This command is only for Admins."))
+        if not ctx.batch_exec:
+            await ctx.send(embed=discord.Embed(description=f"This command is only for Admins."))
     return False
 
 
@@ -85,13 +82,12 @@ async def check_perm_moderator(
                 f"MOD CHECK FAILED server={server_name}, global_check={global_check}",
                 log_level=logging.WARNING,
             )
-            if hasattr(ctx, "batch_exec"):
-                if not ctx.batch_exec:
-                    await ctx.send(
-                        embed=discord.Embed(
-                            description=f"This command is only for Moderators and above."
-                        )
+            if not ctx.batch_exec:
+                await ctx.send(
+                    embed=discord.Embed(
+                        description=f"This command is only for Moderators and above."
                     )
+                )
         return False
     return True
 
@@ -105,23 +101,20 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
             f"CAPTAIN CHECK FAILED server={server_name} global_check={global_check}",
             log_level=logging.WARNING,
         )
-        if hasattr(ctx, "batch_exec"):
-            if not ctx.batch_exec:
-                await ctx.send(
-                    embed=discord.Embed(description=f"This command is only for Captains and above.")
-                )
+        if not ctx.batch_exec:
+            await ctx.send(
+                embed=discord.Embed(description=f"This command is only for Captains and above.")
+            )
         return False
     return True
 
 
-async def exec_server_command(
-    ctx: Optional[Union[commands.Context, PavlovRCON]], server_name: str, command: str
-) -> [dict, Optional[PavlovRCON]]:
+async def exec_server_command(ctx, server_name: str, command: str, polling=False):
     pavlov = None
-    if ctx is not None and isinstance(ctx, commands.Context):
+    if not polling:
         if hasattr(ctx, "pavlov"):
             pavlov = ctx.pavlov.get(server_name)
-        if pavlov is None:
+        if not hasattr(ctx, "pavlov") or pavlov is None:
             server = servers.get(server_name)
             pavlov = PavlovRCON(
                 server.get("ip"),
@@ -134,16 +127,18 @@ async def exec_server_command(
             else:
                 ctx.pavlov[server_name] = pavlov
         data = await pavlov.send(command)
-        return data, None
-    if ctx is None:
-        server = servers.get(server_name)
-        pavlov = PavlovRCON(
-            server.get("ip"),
-            server.get("port"),
-            server.get("password"),
-            timeout=RCON_TIMEOUT,
-        )
-    elif isinstance(ctx, PavlovRCON):
-        pavlov = ctx
-    data = await pavlov.send(command)
-    return data, pavlov
+        return data
+    else:
+        if ctx is not None:
+            pavlov = ctx
+        elif ctx is None:
+            server = servers.get(server_name)
+            pavlov = PavlovRCON(
+                server.get("ip"),
+                server.get("port"),
+                server.get("password"),
+                timeout=RCON_TIMEOUT,
+            )
+        ctx = pavlov
+        data = await pavlov.send(command)
+        return data, ctx

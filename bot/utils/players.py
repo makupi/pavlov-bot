@@ -1,30 +1,27 @@
-import asyncio
-
-import discord
-from discord.ext import commands
-
 from bot.utils.pavlov import exec_server_command
+import asyncio
+import discord
 
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    players = players[0].get("PlayerList")
-    result = list()
-    if len(result) == 0:
+    player_list = players.get("PlayerList")
+    dataresults = []
+    if len(player_list) == 0:
         return "NoPlayers"
     else:
-        for player in players:
+        for player in player_list:
             await asyncio.sleep(0.1)
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 ctx, server_name, command.replace(" all ", " " + player.get("UniqueId") + " ")
             )
-            result.append(data)
-    return result
+            dataresults.append(data)
+    return dataresults
 
 
 async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    player_list = players[0].get("PlayerList")
+    player_list = players.get("PlayerList")
     dataresults = []
     if len(player_list) == 0:
         return "NoPlayers"
@@ -34,10 +31,10 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        if team_id.isnumeric():
+        if (team_id.isnumeric()) == False:
             return "NotValidTeam"
         for player in player_list:
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
             )
             player_team = data.get("PlayerInfo").get("TeamId")
@@ -58,15 +55,15 @@ async def parse_player_command_results(ctx, data, embed, server_name):
         return embed
     elif data == "NotValidTeam":
         embed = discord.Embed(
-            title="**Invalid team. Must be number team0/team1 or teamblue/teamred**\n"
+            title=f"**Invalid team. Must be number team0/team1 or teamblue/teamred**\n"
         )
         return embed
     elif type(data) == dict:
         result = data.get("Successful")
-        if result:
+        if result == True:
             result = "✅"
             success += 1
-        else:
+        elif result == False:
             result = "❎"
             failure += 1
         embed.add_field(name=data.get("UniqueID"), value=result, inline=False)
@@ -74,10 +71,10 @@ async def parse_player_command_results(ctx, data, embed, server_name):
     else:
         for i in data:
             result = i.get("Successful")
-            if result:
+            if result == True:
                 result = "✅"
                 success += 1
-            else:
+            elif result == False:
                 result = "❎"
                 failure += 1
             embed.add_field(name=i.get("UniqueID"), value=result, inline=False)
@@ -85,7 +82,7 @@ async def parse_player_command_results(ctx, data, embed, server_name):
     return embed
 
 
-async def get_stats(ctx: commands.Context = None, server: str = ""):
+async def get_stats(ctx: str = "noctx", server: str = ""):
     if server == "":
         return "NoServerSpecified"
     else:
@@ -94,11 +91,11 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
         alivelist = {}
         kdalist = {}
         scorelist = {}
-        data, ctx = await exec_server_command(ctx, server, "RefreshList")
+        data = await exec_server_command(ctx, server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
             await asyncio.sleep(0.1)
-            data2, ctx = await exec_server_command(
+            data2 = await exec_server_command(
                 ctx, server, f"InspectPlayer {player.get('UniqueId')}"
             )
             dead = data2.get("PlayerInfo").get("Dead")

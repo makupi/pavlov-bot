@@ -1,22 +1,22 @@
 import logging
+import random
 import re
 import sys
 import traceback
+import asyncio
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
 import aiohttp
 import discord
-from bs4 import BeautifulSoup
 from discord.ext import commands
 
-from bot.utils import Paginator, aliases, config, servers
+from bot.utils import Paginator, aliases, servers, config
 from bot.utils.pavlov import exec_server_command
-from bot.utils.players import (
-    get_stats,
-)
+from bot.utils.players import get_stats
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
+from bs4 import BeautifulSoup
 
 # Admin – GiveItem, GiveCash, GiveTeamCash, SetPlayerSkin
 # Mod – Ban, Kick, Unban, RotateMap, SwitchTeam
@@ -124,7 +124,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}serverinfo rush`
         """
-        data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
+        data = await exec_server_command(ctx, server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
@@ -163,7 +163,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}banlist rush`
         """
-        data, _ = await exec_server_command(ctx, server_name, "Banlist")
+        data = await exec_server_command(ctx, server_name, "Banlist")
         black_list = data.get("BanList")
         embed = discord.Embed(title=f"Banned players on `{server_name}`:")
         paginator = Paginator(max_lines=50)
@@ -181,7 +181,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}itemlist snd1`
         """
-        data, _ = await exec_server_command(ctx, server_name, "ItemList")
+        data = await exec_server_command(ctx, server_name, "ItemList")
         item_list = data.get("ItemList")
         embed = discord.Embed(title=f"Items available:")
         embed.description = "\n"
@@ -199,7 +199,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}maplist rush`
         """
-        data, _ = await exec_server_command(ctx, server_name, "MapList")
+        data = await exec_server_command(ctx, server_name, "MapList")
         map_list = data.get("MapList")
         embed = discord.Embed(title=f"**Active maps** on `{server_name}`:")
         embed.description = "\n"
@@ -217,64 +217,66 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}players rush`
         """
-        data, _ = await exec_server_command(ctx, server_name, "RefreshList")
-        server_data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
-        players = data.get("PlayerList")
-        blue_score = server_data.get("ServerInfo").get("Team0Score")
-        red_score = server_data.get("ServerInfo").get("Team1Score")
-        game_round = server_data.get("ServerInfo").get("Round")
-        game_mode = server_data.get("ServerInfo").get("GameMode")
-        map_label = server_data.get("ServerInfo").get("MapLabel")
+        data = await exec_server_command(ctx, server_name, "RefreshList")
+        data2 = await exec_server_command(ctx, server_name, "ServerInfo")
+        player_list = data.get("PlayerList")
+        blue_score = data2.get("ServerInfo").get("Team0Score")
+        red_score = data2.get("ServerInfo").get("Team1Score")
+        gameround = data2.get("ServerInfo").get("Round")
+        gamemode = data2.get("ServerInfo").get("GameMode")
+        map_label = data2.get("ServerInfo").get("MapLabel")
         map_alias = aliases.find_map_alias(map_label)
-        map_name = map_label
-        if map_alias is not None:
+        if map_alias == None:
+            map_name = map_label
+        else:
             map_name = map_alias
 
-        embed = discord.Embed(
-            title=f"{len(players)} player{'s' if len(players)!=0 else ''} on `{server_name}`\n"
-        )
-        if game_mode == "SND":
-            embed.description = f"Round {game_round} on map {map_name}\n"
+        if len(player_list) == 0:
+            embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`\n")
         else:
-            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n"
-        team_blue, team_red, kda_list, alive_list, scores = await get_stats(ctx, server_name)
-        if len(team_red) == 0:
-            for player in players:
-                dead = ""
-                if alive_list.get(player.get("UniqueId")):
+            if len(player_list) == 1:
+                embed = discord.Embed(title=f"{len(player_list)} player on `{server_name}`:\n")
+            else:
+                embed = discord.Embed(title=f"{len(player_list)} players on `{server_name}`:\n")
+        if gamemode == "SND":
+            embed.description = f"Round {gameround} on map {map_name}:\n"
+        else:
+            embed.description = f"Playing {gamemode.upper()} on map `{map_name}`:\n"
+        teamblue, teamred, kdalist, alivelist, scorelist = await get_stats(ctx, server_name)
+        if len(teamred) == 0:
+            for i in player_list:
+                if alivelist.get(i.get("UniqueId")):
                     dead = ":skull:"
-                elif not alive_list.get(player.get("UniqueId")):
+                elif not alivelist.get(i.get("UniqueId")):
                     dead = ":slight_smile:"
-                embed.description += (
-                    f"\n - {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>` "
-                    f"**KDA**: {kda_list.get(player.get('UniqueId'))}"
-                )
+                embed.description += f"\n - {dead} {i.get('Username')} <{i.get('UniqueId')}> KDA: {kdalist.get(i.get('UniqueId'))}"
         else:
-            score_name = "Score"
-            if game_mode.upper() == "PUSH":
-                score_name = "Tickets"
-
-            teams = ["blue", "red"]
-            for team in teams:
-                embed.description += f"\n **Team {team.capitalize()} {score_name}:"
-                if team == "blue":
-                    embed.description += f"{blue_score}**"
-                if team == "red":
-                    embed.description += f"{red_score}**"
-                team_name = f":{team}_circle:"
-                team_list = team_blue if team == "blue" else team_red
-                dead = ""
-                user_name = "N/A"
-                for player in team_list:
-                    if alive_list.get(player):
-                        dead = ":skull:"
-                    elif not alive_list.get(player):
-                        dead = ":slight_smile:"
-                    for p in players:
-                        if player == p.get("UniqueId"):
-                            user_name = p.get("Username")
-                    embed.description += f"\n - {dead} {team_name} **{user_name}** `<{player}>` **KDA**: {kda_list.get(player)}"
-
+            embed.description += f"\n **Team Blue Score: {blue_score}**"
+            for i in teamblue:
+                team_name = ":blue_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
+            embed.description += f"\n **Team Red Score: {red_score}**"
+            for i in teamred:
+                team_name = ":red_circle:"
+                if alivelist.get(i):
+                    dead = ":skull:"
+                elif not alivelist.get(i):
+                    dead = ":slight_smile:"
+                for ir in player_list:
+                    if i == ir.get("UniqueId"):
+                        user_name = ir.get("Username")
+                embed.description += (
+                    f"\n - {dead} {team_name} {user_name} <{i}> KDA: {kdalist.get(i)}"
+                )
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
                 return embed.description
@@ -289,7 +291,7 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
         player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(ctx, server_name, f"InspectPlayer {player.unique_id}")
+        data = await exec_server_command(ctx, server_name, f"InspectPlayer {player.unique_id}")
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
@@ -361,7 +363,7 @@ class Pavlov(commands.Cog):
         desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
         for server_alias in servers.get_names(server_group):
             try:
-                data, _ = await exec_server_command(ctx, server_alias, "ServerInfo")
+                data = await exec_server_command(ctx, server_alias, "ServerInfo")
                 server_info = data.get("ServerInfo", {})
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")
