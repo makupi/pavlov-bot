@@ -9,6 +9,7 @@ import aiohttp
 import discord
 from bs4 import BeautifulSoup
 from discord.ext import commands
+import discord_components
 
 from bot.utils import Paginator, aliases, config, servers
 from bot.utils.pavlov import exec_server_command
@@ -212,7 +213,7 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def players(self, ctx, server_name: str = config.default_server):
+    async def players(self, ctx, server_name: str = config.default_server, __interaction: discord_components = None,):
         """`{prefix}players <server_name>`
 
         **Example**: `{prefix}players rush`
@@ -278,6 +279,9 @@ class Pavlov(commands.Cog):
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
                 return embed.description
+            if ctx.interaction_exec:
+                await __interaction.send(embed=embed)
+                return
             await ctx.send(embed=embed)
         else:
             return embed.description

@@ -5,7 +5,7 @@ from os import kill
 import discord
 import discord_components
 from discord.ext import commands
-from discord_components import Button, Select
+from discord_components import Button, Select, ActionRow
 
 from bot.utils import SteamPlayer, config, servers
 from bot.utils.interactions import (
@@ -49,29 +49,38 @@ class PavlovAdmin(commands.Cog):
                 kill = self.bot.all_commands.get("kill")
                 kick = self.bot.all_commands.get("kick")
                 givevehicle = self.bot.all_commands.get("givevehicle")
+                players = self.bot.all_commands.get("players")
                 components = [
-                    self.bot.components_manager.add_callback(
-                        Button(label="Godmode"),
-                        lambda interaction: slap(
-                            ctx, "", "-99999999999999999", server_name, interaction
+                    ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="Godmode"),
+                            lambda interaction: slap(
+                                ctx, "", "-99999999999999999", server_name, interaction
+                            ),
                         ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give Item"),
+                            lambda interaction: giveitem(ctx, "", "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kill"),
+                            lambda interaction: kill(ctx, "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kick"),
+                            lambda interaction: kick(ctx, "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give Vehicle"),
+                            lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
+                        )
                     ),
+                    ActionRow(
                     self.bot.components_manager.add_callback(
-                        Button(label="Give Item"),
-                        lambda interaction: giveitem(ctx, "", "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Kill"),
-                        lambda interaction: kill(ctx, "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Kick"),
-                        lambda interaction: kick(ctx, "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Give Vehicle"),
-                        lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
-                    ),
+                        Button(label="Players"),
+                        lambda interaction: players(ctx, server_name, interaction),
+                    )
+                    )
                 ]
                 await interact.send(
                     embed=embed,
