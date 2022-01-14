@@ -5,7 +5,7 @@ from pathlib import Path
 import aiohttp
 import discord
 from discord.ext import commands
-from discord_components import Button, ComponentsBot, DiscordComponents
+from discord_components import DiscordComponents
 
 from bot.utils import aliases, config, servers, user_action_log
 
@@ -16,7 +16,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.7.0"
+__version__ = "0.7.1"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
