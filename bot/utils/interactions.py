@@ -71,6 +71,38 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
+async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
+    logging.info(
+        f"Spawning skin selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    )
+    options = list()
+    itemlists = lists.get_names()
+    for item in itemlists:
+        alist = lists.get(item)
+        if alist.get("type") == "skin":
+            options.append(SelectOption(label=str(item), value=str(item)))
+    await interaction.send(
+        "Select a skin list below:",
+        components=[Select(placeholder="Skin Lists", options=options)],
+    )
+    interaction1 = await ctx.bot.wait_for("select_option")
+    slist = lists.get(interaction1.values[0])
+    items = slist.get("list")
+    itemsilist = []
+    for i in items:
+        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
+    itemsilist.append(SelectOption(label="all", value="all"))
+    if len(itemsilist) > 25:
+        return "ListTooLong", interaction1, interaction1.values[0]
+    await interaction1.send(
+        "Select a skin below:",
+        components=[Select(placeholder="Skins", options=itemsilist)],
+    )
+    interaction2 = await ctx.bot.wait_for("select_option")
+    if interaction2.values[0] == "all":
+        return items, interaction2, interaction1.values[0]
+    return interaction2.values[0], interaction2, interaction1.values[0]
+
 
 async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
     logging.info(

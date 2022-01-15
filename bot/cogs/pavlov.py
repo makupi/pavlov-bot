@@ -232,7 +232,7 @@ class Pavlov(commands.Cog):
             map_name = map_alias
 
         embed = discord.Embed(
-            title=f"{len(players)} player{'s' if len(players)!=0 else ''} on `{server_name}`\n"
+            title=f"{len(players)} player{'s' if len(players)!=1 else ''} on `{server_name}`\n"
         )
         if game_mode == "SND":
             embed.description = f"Round {game_round} on map {map_name}\n"

@@ -215,5 +215,22 @@
 		"9": "stahl",
 		"10": "stockpile"
    	}
+    },
+    "Default Skins": {
+        "type": "skin",
+        "list": {
+            "1": "clown",
+            "2": "cop",
+            "3": "farmer",
+            "4": "german",
+            "5": "naked",
+            "6": "nato",
+            "7": "prisoner",
+            "8": "russian",
+            "9": "soviet",
+            "10": "us",
+            "11": "aurora",
+            "12": "hidden"
+        }
     }
 }
