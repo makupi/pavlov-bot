@@ -8,15 +8,17 @@ from bot.utils.pavlov import exec_server_command
 
 async def exec_command_all_players(ctx, server_name: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
-    players = players[0].get("PlayerList")
+    player_list = players[0].get("PlayerList")
     result = list()
-    if len(result) == 0:
+    if len(player_list) == 0:
         return "NoPlayers"
     else:
         for player in players:
             await asyncio.sleep(0.1)
             data, _ = await exec_server_command(
-                ctx, server_name, command.replace(" all ", " " + player.get("UniqueId") + " ")
+                ctx,
+                server_name,
+                command.replace(" all ", " " + player.get("UniqueId") + " "),
             )
             result.append(data)
     return result
@@ -25,7 +27,7 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
 async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, command: str):
     players = await exec_server_command(ctx, server_name, "RefreshList")
     player_list = players[0].get("PlayerList")
-    dataresults = []
+    result = list()
     if len(player_list) == 0:
         return "NoPlayers"
     else:
@@ -44,10 +46,12 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             await asyncio.sleep(0.1)
             if player_team == team_id:
                 data2 = await exec_server_command(
-                    ctx, server_name, command.replace(" team ", " " + player.get("UniqueId") + " ")
+                    ctx,
+                    server_name,
+                    command.replace(" team ", " " + player.get("UniqueId") + " "),
                 )
-                dataresults.append(data2)
-    return dataresults
+                result.append(data2)
+    return result
 
 
 async def parse_player_command_results(ctx, data, embed, server_name):
