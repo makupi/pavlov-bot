@@ -375,7 +375,12 @@ class PavlovCaptain(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def flush(self, ctx: commands.Context, server_name: str = config.default_server):
+    async def flush(
+        self,
+        ctx: commands.Context,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
+    ):
         """`{prefix}flush <servername>`
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}flush snd1`
@@ -390,17 +395,27 @@ class PavlovCaptain(commands.Cog):
             if check is None:
                 non_alias_player_ids.append(player.get("UniqueId"))
         if len(non_alias_player_ids) == 0:
-            await ctx.send(embed=discord.Embed(title=f"No players to flush on `{server_name}`"))
+            embed = discord.Embed(title=f"No players to flush on `{server_name}`")
+            if ctx.interaction_exec:
+                await __interaction.send(embed=embed)
+            else:
+                await ctx.send(embed=embed)
             return
         to_kick_id = random.choice(non_alias_player_ids)
         data, _ = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
         kick = data.get("Kick")
         if not kick:
-            await ctx.send(
-                embed=discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
-            )
+            embed = discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
+            if ctx.interaction_exec:
+                await __interaction.send(embed=embed)
+            else:
+                await ctx.send(embed=embed)
         else:
-            await ctx.send(embed=discord.Embed(title=f"Successfully flushed `{server_name}`"))
+            embed = discord.Embed(title=f"Successfully flushed `{server_name}`")
+            if ctx.interaction_exec:
+                await __interaction.send(embed=embed)
+            else:
+                await ctx.send(embed=embed)
 
 
 def setup(bot):

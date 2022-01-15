@@ -13,7 +13,7 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
     if len(player_list) == 0:
         return "NoPlayers"
     else:
-        for player in players:
+        for player in player_list:
             await asyncio.sleep(0.1)
             data, _ = await exec_server_command(
                 ctx,
