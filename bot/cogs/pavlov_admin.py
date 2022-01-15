@@ -75,18 +75,18 @@ class PavlovAdmin(commands.Cog):
                         self.bot.components_manager.add_callback(
                             Button(label="Give Vehicle"),
                             lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
-                        )
+                        ),
                     ),
                     ActionRow(
-                    self.bot.components_manager.add_callback(
-                        Button(label="Players"),
-                        lambda interaction: players(ctx, server_name, interaction),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Players"),
+                            lambda interaction: players(ctx, server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Set Player Skin"),
+                            lambda interaction: skinset(ctx, "", "", server_name, interaction),
+                        ),
                     ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Set Player Skin"),
-                        lambda interaction: skinset(ctx, "", "", server_name, interaction),
-                    )
-                    )
                 ]
                 await interact.send(
                     embed=embed,
@@ -363,8 +363,8 @@ class PavlovAdmin(commands.Cog):
         else:
             if ctx.interaction_exec:
                 data, _ = await exec_server_command(
-                        ctx, server_name, f"SetPlayerSkin {player_arg} {skin_id}"
-                    )
+                    ctx, server_name, f"SetPlayerSkin {player_arg} {skin_id}"
+                )
             else:
                 player = SteamPlayer.convert(player_arg)
                 data, _ = await exec_server_command(

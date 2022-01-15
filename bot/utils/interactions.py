@@ -71,6 +71,7 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
+
 async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
     logging.info(
         f"Spawning skin selection menu for {interaction.author.name}#{interaction.author.discriminator}!"

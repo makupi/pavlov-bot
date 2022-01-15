@@ -213,7 +213,12 @@ class Pavlov(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def players(self, ctx, server_name: str = config.default_server, __interaction: discord_components = None,):
+    async def players(
+        self,
+        ctx,
+        server_name: str = config.default_server,
+        __interaction: discord_components = None,
+    ):
         """`{prefix}players <server_name>`
 
         **Example**: `{prefix}players rush`

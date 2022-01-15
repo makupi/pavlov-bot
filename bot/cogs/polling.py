@@ -135,7 +135,9 @@ class Polling(commands.Cog):
                     logging.info(f"Exiting autobalance on {server}, not enough players")
                     return
                 elif abs(blue_count - red_count) <= tolerance:
-                    logging.info(f"Exiting autobalance on {server} Blue:{blue_count} Red: {red_count} within tolerance")
+                    logging.info(
+                        f"Exiting autobalance on {server} Blue:{blue_count} Red: {red_count} within tolerance"
+                    )
                     return
                 else:
                     logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
