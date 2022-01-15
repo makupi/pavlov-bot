@@ -5,7 +5,7 @@ from os import kill
 import discord
 import discord_components
 from discord.ext import commands
-from discord_components import Button, Select
+from discord_components import Button, Select, ActionRow
 
 from bot.utils import SteamPlayer, config, servers
 from bot.utils.interactions import (
@@ -14,6 +14,7 @@ from bot.utils.interactions import (
     spawn_server_select,
     spawn_team_select,
     spawn_vehicle_select,
+    spawn_skin_select,
 )
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
@@ -49,28 +50,42 @@ class PavlovAdmin(commands.Cog):
                 kill = self.bot.all_commands.get("kill")
                 kick = self.bot.all_commands.get("kick")
                 givevehicle = self.bot.all_commands.get("givevehicle")
+                players = self.bot.all_commands.get("players")
+                skinset = self.bot.all_commands.get("setplayerskin")
                 components = [
-                    self.bot.components_manager.add_callback(
-                        Button(label="Godmode"),
-                        lambda interaction: slap(
-                            ctx, "", "-99999999999999999", server_name, interaction
+                    ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="Godmode"),
+                            lambda interaction: slap(
+                                ctx, "", "-99999999999999999", server_name, interaction
+                            ),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give Item"),
+                            lambda interaction: giveitem(ctx, "", "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kill"),
+                            lambda interaction: kill(ctx, "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Kick"),
+                            lambda interaction: kick(ctx, "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Give Vehicle"),
+                            lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
                         ),
                     ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Give Item"),
-                        lambda interaction: giveitem(ctx, "", "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Kill"),
-                        lambda interaction: kill(ctx, "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Kick"),
-                        lambda interaction: kick(ctx, "", server_name, interaction),
-                    ),
-                    self.bot.components_manager.add_callback(
-                        Button(label="Give Vehicle"),
-                        lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
+                    ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="Players"),
+                            lambda interaction: players(ctx, server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Set Player Skin"),
+                            lambda interaction: skinset(ctx, "", "", server_name, interaction),
+                        ),
                     ),
                 ]
                 await interact.send(
@@ -242,6 +257,9 @@ class PavlovAdmin(commands.Cog):
                 )
         embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+            return
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
@@ -310,6 +328,7 @@ class PavlovAdmin(commands.Cog):
         player_arg: str,
         skin_id: str,
         server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}setplayerskin <player_id/all/team> <skin_id> <server_name>`
         **Description**: Sets a player's skin to a specified skin.
@@ -318,6 +337,20 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(ctx, server_name):
             return
+        if ctx.interaction_exec:
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await __interaction.send(embed=embed)
+                return
+            skin_id, __interaction, skinl = await spawn_skin_select(ctx, __interaction)
+            if skin_id == "ListTooLong":
+                embed = discord.Embed(
+                    title=f"**Your skin list `{skinl}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await __interaction.send(embed=embed)
+                return
         if player_arg.casefold() == "all" or player_arg.startswith("team"):
             if player_arg.casefold() == "all":
                 data = await exec_command_all_players(
@@ -328,12 +361,20 @@ class PavlovAdmin(commands.Cog):
                     ctx, server_name, player_arg, f"SetPlayerSkin team {skin_id}"
                 )
         else:
-            player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(
-                ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
-            )
+            if ctx.interaction_exec:
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"SetPlayerSkin {player_arg} {skin_id}"
+                )
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
+                )
         embed = discord.Embed(title=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+            return
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
