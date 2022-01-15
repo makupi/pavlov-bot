@@ -45,13 +45,17 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
                 ctx.batch_exec = False
-                slap = self.bot.all_commands.get("slap")
-                giveitem = self.bot.all_commands.get("giveitem")
-                kill = self.bot.all_commands.get("kill")
-                kick = self.bot.all_commands.get("kick")
-                givevehicle = self.bot.all_commands.get("givevehicle")
-                players = self.bot.all_commands.get("players")
-                skinset = self.bot.all_commands.get("setplayerskin")
+                slap, giveitem, kill, kick, givevehicle, players, skinset, flush, ban = [
+                    self.bot.all_commands.get("slap"),
+                    self.bot.all_commands.get("giveitem"),
+                    self.bot.all_commands.get("kill"),
+                    self.bot.all_commands.get("kick"),
+                    self.bot.all_commands.get("givevehicle"),
+                    self.bot.all_commands.get("players"),
+                    self.bot.all_commands.get("setplayerskin"),
+                    self.bot.all_commands.get("flush"),
+                    self.bot.all_commands.get("ban"),
+                ]
                 components = [
                     ActionRow(
                         self.bot.components_manager.add_callback(
@@ -85,6 +89,14 @@ class PavlovAdmin(commands.Cog):
                         self.bot.components_manager.add_callback(
                             Button(label="Set Player Skin"),
                             lambda interaction: skinset(ctx, "", "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Flush"),
+                            lambda interaction: flush(ctx, server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Ban"),
+                            lambda interaction: ban(ctx, "", server_name, interaction),
                         ),
                     ),
                 ]
