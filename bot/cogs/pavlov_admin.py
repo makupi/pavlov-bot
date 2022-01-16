@@ -434,7 +434,7 @@ class PavlovAdmin(commands.Cog):
         embed = discord.Embed()
         embed.add_field(name=rcon_command, value=str(data))
         await ctx.send(embed=embed)
-        
+
     @commands.command()
     async def nametags(self, ctx, boolean, server_name: str = config.default_server):
         """`{prefix}nametags enable/disable/true/false server_name`
@@ -442,18 +442,18 @@ class PavlovAdmin(commands.Cog):
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}nametags enable servername`
         """
-        if boolean.casefold() == 'enable':
-            boolean = 'true'
-        elif boolean.casefold() == 'disable':
-            boolean = 'false'
+        if boolean.casefold() == "enable":
+            boolean = "true"
+        elif boolean.casefold() == "disable":
+            boolean = "false"
         if not await check_perm_admin(ctx, server_name):
             return
-        data, _ = await exec_server_command(ctx, server_name, f'ShowNameTags {boolean}')
+        data, _ = await exec_server_command(ctx, server_name, f"ShowNameTags {boolean}")
         if not data:
             data = "No response"
         if ctx.batch_exec:
             return data
-        if data.get('NametagsEnabled'):
+        if data.get("NametagsEnabled"):
             embed = discord.Embed(title=f"**Nametags enabled!** \n")
         else:
             embed = discord.Embed(title=f"**Nametags disabled!** \n")
