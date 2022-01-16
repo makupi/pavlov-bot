@@ -310,7 +310,7 @@ class Pavlov(commands.Cog):
             player, __interaction = await spawn_player_select(
                 ctx, server_name, __interaction, False
             )
-            if player_arg == "NoPlayers":
+            if player == "NoPlayers":
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
