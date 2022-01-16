@@ -37,6 +37,8 @@ class PavlovAdmin(commands.Cog):
         async def actions(interact):
             await message.edit(content="")
             server_name = interact.values[0]
+            data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
+            server_info = data.get("ServerInfo")
             if server_name == "OFFLINE":
                 embed = discord.Embed(title="Server is offline.")
                 await interact.send(embed=embed)
@@ -45,7 +47,18 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
                 ctx.batch_exec = False
-                slap, giveitem, kill, kick, givevehicle, players, skinset, flush, ban = [
+                (
+                    slap,
+                    giveitem,
+                    kill,
+                    kick,
+                    givevehicle,
+                    players,
+                    skinset,
+                    flush,
+                    ban,
+                    inspectplayer,
+                ) = [
                     self.bot.all_commands.get("slap"),
                     self.bot.all_commands.get("giveitem"),
                     self.bot.all_commands.get("kill"),
@@ -55,7 +68,14 @@ class PavlovAdmin(commands.Cog):
                     self.bot.all_commands.get("setplayerskin"),
                     self.bot.all_commands.get("flush"),
                     self.bot.all_commands.get("ban"),
+                    self.bot.all_commands.get("playerinfo"),
                 ]
+                if server_info.get("GameMode").casefold() == "ttt":
+                    flushkarma, endround, pausetimer = [
+                        self.bot.all_commands.get("tttflushkarma"),
+                        self.bot.all_commands.get("tttendround"),
+                        self.bot.all_commands.get("tttpausetimer"),
+                    ]
                 components = [
                     ActionRow(
                         self.bot.components_manager.add_callback(
@@ -97,6 +117,10 @@ class PavlovAdmin(commands.Cog):
                         self.bot.components_manager.add_callback(
                             Button(label="Ban"),
                             lambda interaction: ban(ctx, "", server_name, interaction),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="Inspect Player"),
+                            lambda interaction: inspectplayer(ctx, "", server_name, interaction),
                         ),
                     ),
                 ]
@@ -188,6 +212,8 @@ class PavlovAdmin(commands.Cog):
                 data, _ = await exec_server_command(
                     ctx, server_name, f"GiveItem {player.unique_id} {item_id}"
                 )
+        if type(item_id) == dict:
+            item_id = " ".join(item_id.values())
         embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
@@ -407,6 +433,30 @@ class PavlovAdmin(commands.Cog):
             return data
         embed = discord.Embed()
         embed.add_field(name=rcon_command, value=str(data))
+        await ctx.send(embed=embed)
+        
+    @commands.command()
+    async def nametags(self, ctx, boolean, server_name: str = config.default_server):
+        """`{prefix}nametags enable/disable/true/false server_name`
+        **Description**: Enables/disables nametags.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}nametags enable servername`
+        """
+        if boolean.casefold() == 'enable':
+            boolean = 'true'
+        elif boolean.casefold() == 'disable':
+            boolean = 'false'
+        if not await check_perm_admin(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f'ShowNameTags {boolean}')
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        if data.get('NametagsEnabled'):
+            embed = discord.Embed(title=f"**Nametags enabled!** \n")
+        else:
+            embed = discord.Embed(title=f"**Nametags disabled!** \n")
         await ctx.send(embed=embed)
 
     @commands.command()

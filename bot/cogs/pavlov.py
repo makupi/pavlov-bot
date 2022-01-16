@@ -16,6 +16,9 @@ from bot.utils.pavlov import exec_server_command
 from bot.utils.players import (
     get_stats,
 )
+from bot.utils.interactions import (
+    spawn_player_select,
+)
 from bot.utils.steamplayer import SteamPlayer
 from bot.utils.text_to_image import text_to_image
 
@@ -292,30 +295,58 @@ class Pavlov(commands.Cog):
             return embed.description
 
     @commands.command()
-    async def playerinfo(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def playerinfo(
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components = None,
+    ):
         """`{prefix}playerinfo <player_id> <server_name>`
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
-        player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(ctx, server_name, f"InspectPlayer {player.unique_id}")
+        if ctx.interaction_exec:
+            player, __interaction = await spawn_player_select(
+                ctx, server_name, __interaction, False
+            )
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await __interaction.send(embed=embed)
+                return
+            data, _ = await exec_server_command(ctx, server_name, f"InspectPlayer {player}")
+        else:
+            player = SteamPlayer.convert(player_arg)
+            data, _ = await exec_server_command(
+                ctx, server_name, f"InspectPlayer {player.unique_id}"
+            )
         player_info = data.get("PlayerInfo")
         if ctx.batch_exec:
             return player_info
         if not player_info:
-            embed = discord.Embed(
-                title=f"Player <{player.unique_id}> not found on `{server_name}`."
-            )
+            if ctx.interaction_exec:
+                embed = discord.Embed(title=f"Player <{player}> not found on `{server_name}`.")
+            else:
+                embed = discord.Embed(
+                    title=f"Player <{player.unique_id}> not found on `{server_name}`."
+                )
         else:
-            embed = discord.Embed(title=f"**Player info** for `{player.name}`")
+            if ctx.interaction_exec:
+                embed = discord.Embed(title=f"**Player info** for `{player}`")
+            else:
+                embed = discord.Embed(title=f"**Player info** for `{player.name}`")
             embed.add_field(name="Name", value=player_info.get("PlayerName"))
             embed.add_field(name="UniqueId", value=player_info.get("UniqueId"))
             embed.add_field(name="KDA", value=player_info.get("KDA"))
             embed.add_field(name="Cash", value=player_info.get("Cash"))
             embed.add_field(name="TeamId", value=player_info.get("TeamId"))
-            if player.has_alias:
-                embed.add_field(name="Alias", value=player.name)
-        await ctx.send(embed=embed)
+            if hasattr(player, "has_alias"):
+                if player.has_alias:
+                    embed.add_field(name="Alias", value=player.name)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+        else:
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def batch(self, ctx, *batch_commands):

@@ -10,7 +10,10 @@ from bot.utils.pavlov import exec_server_command
 
 
 async def spawn_player_select(
-    ctx: commands.Context, server: str, interaction: discord_components.Interaction
+    ctx: commands.Context,
+    server: str,
+    interaction: discord_components.Interaction,
+    enable_extra_options: bool = True,
 ):
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
@@ -30,8 +33,9 @@ async def spawn_player_select(
             options.append(
                 SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
             )
-        for k, v in extras.items():
-            options.append(SelectOption(label=k, value=v))
+        if enable_extra_options:
+            for k, v in extras.items():
+                options.append(SelectOption(label=k, value=v))
         await interaction.send(
             "Select a player below:", components=[Select(placeholder="Players", options=options)]
         )
