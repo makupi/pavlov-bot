@@ -243,7 +243,7 @@ class Pavlov(commands.Cog):
             embed.description = f"Round {game_round} on map {map_name}\n"
         else:
             embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n"
-        team_blue, team_red, kda_list, alive_list, scores = await get_stats(ctx, server_name)
+        team_blue, team_red, kda_list, alive_list, scores, _ = await get_stats(ctx, server_name)
         if len(team_red) == 0:
             for player in players:
                 dead = ""
