@@ -166,6 +166,7 @@ class Polling(commands.Cog):
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
+                    return ctx
             except Exception as ex:
                 logging.info(f"Exception occurred, exiting autobalance. ex: {ex}")
                 return ctx
