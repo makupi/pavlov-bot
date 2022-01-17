@@ -116,4 +116,4 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
                 teamblue.append(player.get("UniqueId"))
             elif team_id == "1":
                 teamred.append(player.get("UniqueId"))
-        return teamblue, teamred, kdalist, alivelist, scorelist
+        return teamblue, teamred, kdalist, alivelist, scorelist, ctx

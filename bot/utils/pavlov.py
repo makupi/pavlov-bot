@@ -134,7 +134,7 @@ async def exec_server_command(
             else:
                 ctx.pavlov[server_name] = pavlov
         data = await pavlov.send(command)
-        return data, None
+        return data, ctx
     if ctx is None:
         server = servers.get(server_name)
         pavlov = PavlovRCON(
