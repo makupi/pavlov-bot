@@ -5,7 +5,7 @@ from discord.ext import commands
 from discord_components import Button
 
 from bot.utils import SteamPlayer, aliases, config
-from bot.utils.pavlov import check_perm_captain
+from bot.utils.pavlov import check_perm_captain, exec_server_command
 
 
 class Teams(commands.Cog):
@@ -56,6 +56,30 @@ class Teams(commands.Cog):
         team.ringer_add(player)
         await ctx.send(
             embed=discord.Embed(description=f"Ringer {player.name} added to team {team.name}.")
+        )
+
+    @ringers.command()
+    async def populate(self, ctx, server_name: str, team_name: str):
+        """`{prefix}ringers add <unique_id or alias> <team_name>`
+
+        **Examples**: `{prefix}ringers add maku team_a`"""
+        if not await check_perm_captain(ctx, global_check=True):
+            return
+        data, _ = await exec_server_command(ctx, server_name, "RefreshList")
+        player_list = data.get("PlayerList")
+        team = aliases.get_team(team_name)
+        players_added = []
+        for player in player_list:
+            check = aliases.find_player_alias(player.get("UniqueId"))
+            if check is None:
+                if player.get("Username") == player.get("UniqueId"):
+                    playerm = SteamPlayer.convert("q-" + player.get("UniqueId"))
+                else:
+                    playerm = SteamPlayer.convert(player.get("UniqueId"))
+                team.ringer_add(playerm)
+                players_added.append(player.get("Username"))
+        await ctx.send(
+            embed=discord.Embed(description=f"Ringer {' '.join(players_added)} added to team {team.name}.")
         )
 
     @ringers.command()
