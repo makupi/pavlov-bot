@@ -25,7 +25,13 @@ class PavlovMod(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def ban(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def ban(
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
+    ):
         """`{prefix}ban <player_id> <server_name>`
         **Description**: Adds a player to blacklist.txt
         **Requires**: Moderator permissions or higher for the server
@@ -33,10 +39,21 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(ctx, server_name):
             return
-        player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
+        if ctx.interaction_exec:
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await __interaction.send(embed=embed)
+                return
+            data, _ = await exec_server_command(ctx, server_name, f"Ban {player_arg}")
+        else:
+            player = SteamPlayer.convert(player_arg)
+            data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
         embed = discord.Embed(title=f"**Ban {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+            return
         await ctx.send(embed=embed)
 
     @commands.command()

@@ -10,7 +10,10 @@ from bot.utils.pavlov import exec_server_command
 
 
 async def spawn_player_select(
-    ctx: commands.Context, server: str, interaction: discord_components.Interaction
+    ctx: commands.Context,
+    server: str,
+    interaction: discord_components.Interaction,
+    enable_extra_options: bool = True,
 ):
     logging.info(
         f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
@@ -30,8 +33,9 @@ async def spawn_player_select(
             options.append(
                 SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
             )
-        for k, v in extras.items():
-            options.append(SelectOption(label=k, value=v))
+        if enable_extra_options:
+            for k, v in extras.items():
+                options.append(SelectOption(label=k, value=v))
         await interaction.send(
             "Select a player below:", components=[Select(placeholder="Players", options=options)]
         )
@@ -193,7 +197,7 @@ async def spawn_map_select(ctx: commands.Context, interaction: discord_component
     return interaction.values[0], interaction
 
 
-async def spawn_server_select(ctx: commands.Context):
+async def spawn_server_select(ctx: commands.Context, description: str = ""):
     options = list()
     for server in servers.get_names():
         ctx.batch_exec = True
@@ -203,6 +207,6 @@ async def spawn_server_select(ctx: commands.Context):
             options.append(SelectOption(label=f"{server} ({len(players)})", value=str(server)))
         except ConnectionRefusedError:
             options.append(SelectOption(label=f"{server} (OFFLINE)", value="OFFLINE"))
-    embed = discord.Embed(title="**Select a server below:**")
+    embed = discord.Embed(title=f"**({description}) Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
     return options, embed
