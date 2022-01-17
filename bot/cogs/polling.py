@@ -37,27 +37,28 @@ class Polling(commands.Cog):
         polling_type = poll_config.get("type").lower()
         interval = poll_config.get("polling_interval") * 60
         state = None
+        ctx = None
         while True:
             try:
                 await asyncio.sleep(interval)
                 logging.info(f"Executing Task {name} on server {server}")
                 if polling_type == "player":
-                    state = await self.player_polling(poll_config, server, state)
+                    state, ctx = await self.player_polling(ctx, poll_config, server, state)
                 elif polling_type == "autobalance":
-                    await self.autobalance_polling(poll_config, server, name)
+                    ctx = await self.autobalance_polling(ctx, poll_config, server, name)
             except Exception as e:
-                await asyncio.sleep(1)
                 logging.info(
                     f"Exception occurred while trying to execute {name} on server {server}! Exception: {e}"
                 )
+                await asyncio.sleep(1)
 
     async def player_polling(
         self,
+        ctx,
         poll_config: dict,
         server: str,
         old_state: Optional[str],
     ):
-        ctx = None
         channel = self.bot.get_channel(poll_config.get("polling_channel"))
         logging.info(f"Starting poll on {server} with state: {old_state}")
         data, ctx = await exec_server_command(ctx, server, "RefreshList")
@@ -76,10 +77,10 @@ class Polling(commands.Cog):
         elif player_count > lows:
             new_state = "low"
         else:
-            return None
+            return None, ctx
         if old_state == new_state:
             logging.info(f"State has not changed.")
-            return new_state
+            return new_state, ctx
         logging.info(f"New state for server is {new_state}")
         embed = discord.Embed(
             title=f"`{server}` has {new_state} population! {player_count} players are on!"
@@ -89,12 +90,11 @@ class Polling(commands.Cog):
             scoreboard = await players_command(ctx, server)
             embed.description = scoreboard
         await channel.send(p_role, embed=embed)
-        return new_state
+        return new_state, ctx
 
-    async def autobalance_polling(self, poll_config: dict, server: str, poll_name: str):
+    async def autobalance_polling(self, ctx, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
-        ctx = None
-        teamblue, teamred, _, _, scorelist = await players.get_stats(ctx, server)
+        teamblue, teamred, _, _, scorelist, ctx = await players.get_stats(ctx, server)
         for player, score in scorelist.items():
             try:
                 score = int(score)
@@ -130,15 +130,15 @@ class Polling(commands.Cog):
             try:
                 if blue_count == red_count:
                     logging.info(f"Exiting autobalance on {server} on equal teams")
-                    return
+                    return ctx
                 elif (blue_count + red_count) < min_players:
                     logging.info(f"Exiting autobalance on {server}, not enough players")
-                    return
+                    return ctx
                 elif abs(blue_count - red_count) <= tolerance:
                     logging.info(
                         f"Exiting autobalance on {server} Blue:{blue_count} Red: {red_count} within tolerance"
                     )
-                    return
+                    return ctx
                 else:
                     logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
                     if blue_count > red_count:
@@ -157,17 +157,18 @@ class Polling(commands.Cog):
                         )
                 if poll_config.get("autobalance_testing"):
                     logging.info(f"Just testing {sw_command}")
-                    return
+                    return ctx
                 else:
                     logging.info(f"Executed {sw_command}")
                     _, ctx = await exec_server_command(ctx, server, sw_command)
                     embed = discord.Embed(
                         title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}`"
                     )
+                    p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
             except Exception as ex:
                 logging.info(f"Exception occurred, exiting autobalance. ex: {ex}")
-                return
+                return ctx
 
 
 def setup(bot):
