@@ -131,7 +131,7 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(ctx)
+        options, embed = await spawn_server_select(ctx, "Admin Menu")
         message = await ctx.send(
             embed=embed,
             components=[

@@ -157,7 +157,7 @@ class PavlovCaptain(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(ctx)
+        options, embed = await spawn_server_select(ctx, "Game Setup Menu")
         if ctx.interaction_exec:
             message = await __interaction.send(
                 embed=embed,
