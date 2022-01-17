@@ -207,6 +207,6 @@ async def spawn_server_select(ctx: commands.Context, description: str = ""):
             options.append(SelectOption(label=f"{server} ({len(players)})", value=str(server)))
         except ConnectionRefusedError:
             options.append(SelectOption(label=f"{server} (OFFLINE)", value="OFFLINE"))
-    embed = discord.Embed(title="**Select a server below:**", description=description)
+    embed = discord.Embed(title=f"**({description}) Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
     return options, embed
