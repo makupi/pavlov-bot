@@ -59,10 +59,10 @@ class Teams(commands.Cog):
         )
 
     @ringers.command()
-    async def populate(self, ctx, server_name: str, team_name: str):
-        """`{prefix}ringers add <unique_id or alias> <team_name>`
+    async def populate(self, ctx, team_name: str, server_name: str = config.default_server):
+        """`{prefix}ringers populate <team_name> <server_name>`
 
-        **Examples**: `{prefix}ringers add maku team_a`"""
+        **Examples**: `{prefix}ringers populate tdm random`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
         data, _ = await exec_server_command(ctx, server_name, "RefreshList")
