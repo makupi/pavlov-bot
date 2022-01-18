@@ -79,7 +79,9 @@ class Teams(commands.Cog):
                 team.ringer_add(playerm)
                 players_added.append(player.get("Username"))
         await ctx.send(
-            embed=discord.Embed(description=f"Ringer {' '.join(players_added)} added to team {team.name}.")
+            embed=discord.Embed(
+                description=f"Ringer {' '.join(players_added)} added to team {team.name}."
+            )
         )
 
     @ringers.command()
