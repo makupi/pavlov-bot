@@ -21,13 +21,13 @@ class Utility(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         """`{prefix}ping` - *Current ping and latency of the bot*"""
-        embed = discord.Embed()
+        embed = discord.Embed(title="Pong!")
         before_time = time.time()
         msg = await ctx.send(embed=embed)
         latency = round(self.bot.latency * 1000)
         elapsed_ms = round((time.time() - before_time) * 1000) - latency
-        embed.add_field(name="ping", value=f"{elapsed_ms}ms")
-        embed.add_field(name="latency", value=f"{latency}ms")
+        embed.add_field(name="Ping", value=f"{elapsed_ms}ms", inline=False)
+        embed.add_field(name="Latency", value=f"{latency}ms", inline=False)
         await msg.edit(embed=embed)
 
     @commands.command()
