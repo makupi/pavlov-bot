@@ -231,7 +231,7 @@ class PavlovMod(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}tttsetkarma <player_id/all/team> <karma_amount> <server_name>`
+        """`{prefix}tttsetkarma <player_id/all> <karma_amount> <server_name>`
         **Description**: Sets the amount of karma a player has.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}tttsetkarma 89374583439127 1100 servername`
@@ -274,7 +274,7 @@ class PavlovMod(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}tttflushkarma <player_id/all/team> <server_name>`
+        """`{prefix}tttflushkarma <player_id/all> <server_name>`
         **Description**: Resets a player's karma.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}tttflushkarma 89374583439127 servername`
