@@ -1,18 +1,16 @@
 import asyncio
 import logging
-from os import kill
 
 import discord
 import discord_components
 from discord.ext import commands
 from discord_components import Button, Select, ActionRow
 
-from bot.utils import SteamPlayer, config, servers
+from bot.utils import SteamPlayer, config
 from bot.utils.interactions import (
     spawn_item_select,
     spawn_player_select,
     spawn_server_select,
-    spawn_team_select,
     spawn_vehicle_select,
     spawn_skin_select,
 )
@@ -131,9 +129,9 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(ctx, "Admin Menu")
+        options, menu_embed = await spawn_server_select(ctx, "Admin Menu")
         message = await ctx.send(
-            embed=embed,
+            embed=menu_embed,
             components=[
                 self.bot.components_manager.add_callback(
                     Select(placeholder="Server", options=options), actions
@@ -444,7 +442,9 @@ class PavlovAdmin(commands.Cog):
                 data = await exec_command_all_players(ctx, server_name, f"tttsetkarma all {karma}")
         else:
             if ctx.interaction_exec:
-                data, _ = await exec_server_command(ctx, server_name, f"tttsetkarma {player_arg} {karma}")
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"tttsetkarma {player_arg} {karma}"
+                )
             else:
                 player = SteamPlayer.convert(player_arg)
                 data, _ = await exec_server_command(
@@ -585,7 +585,7 @@ class PavlovAdmin(commands.Cog):
         else:
             embed = discord.Embed(title=f"**TTT round timer unpaused!** \n")
         await ctx.send(embed=embed)
-    
+
     @commands.command()
     async def tttalwaysenableskinmenu(self, ctx, boolean, server_name: str = config.default_server):
         """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
