@@ -36,7 +36,7 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        if team_id.isnumeric():
+        if team_id.isnumeric() == False:
             return "NotValidTeam"
         for player in player_list:
             data, _ = await exec_server_command(
@@ -45,7 +45,7 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             player_team = data.get("PlayerInfo").get("TeamId")
             await asyncio.sleep(0.1)
             if player_team == team_id:
-                data2 = await exec_server_command(
+                data2, _ = await exec_server_command(
                     ctx,
                     server_name,
                     command.replace(" team ", " " + player.get("UniqueId") + " "),

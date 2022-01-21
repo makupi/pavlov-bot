@@ -254,9 +254,14 @@ class Pavlov(commands.Cog):
                     dead = ":skull:"
                 elif not alive_list.get(player.get("UniqueId")):
                     dead = ":slight_smile:"
+                if player.get('UniqueId') == player.get('Username'):
+                    steamprofile = ""
+                else:
+                    steamprofile = f"http://steamcommunity.com/profiles/{player.get('UniqueId')}"
                 embed.description += (
                     f"\n - {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>` "
                     f"**KDA**: {kda_list.get(player.get('UniqueId'))}"
+                    f"{steamprofile}"
                 )
         else:
             score_name = "Score"
