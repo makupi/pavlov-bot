@@ -287,7 +287,11 @@ class Pavlov(commands.Cog):
                     for p in players:
                         if player == p.get("UniqueId"):
                             user_name = p.get("Username")
-                    embed.description += f"\n - {dead} {team_name} **{user_name}** `<{player}>` **KDA**: {kda_list.get(player)}"
+                        if p.get('UniqueId') == p.get('Username'):
+                            steamprofile = ""
+                        else:
+                            steamprofile = f"http://steamcommunity.com/profiles/{p.get('UniqueId')}"
+                    embed.description += f"\n - {dead} {team_name} **{user_name}** `<{player}>` \n**KDA**: {kda_list.get(player)}\n{steamprofile}"
 
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
