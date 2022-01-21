@@ -259,9 +259,9 @@ class Pavlov(commands.Cog):
                 else:
                     steamprofile = f"http://steamcommunity.com/profiles/{player.get('UniqueId')}"
                 embed.description += (
-                    f"\n - {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>` "
-                    f"\n**KDA**: {kda_list.get(player.get('UniqueId'))}"
-                    f"\n{steamprofile}"
+                    f"- {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>`\n"
+                    f"**KDA**: {kda_list.get(player.get('UniqueId'))}\n"
+                    f"{steamprofile}\n"
                 )
         else:
             score_name = "Score"
@@ -290,8 +290,8 @@ class Pavlov(commands.Cog):
                         if p.get('UniqueId') == p.get('Username'):
                             steamprofile = ""
                         else:
-                            steamprofile = f"http://steamcommunity.com/profiles/{p.get('UniqueId')}"
-                    embed.description += f"\n - {dead} {team_name} **{user_name}** `<{player}>` \n**KDA**: {kda_list.get(player)}\n{steamprofile}"
+                            steamprofile = f"http://steamcommunity.com/profiles/{player}"
+                    embed.description += f"- {dead} {team_name} **{user_name}** `<{player}>`\n**KDA**: {kda_list.get(player)}\n{steamprofile}\n"
 
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:
