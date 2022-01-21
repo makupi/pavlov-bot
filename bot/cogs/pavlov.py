@@ -260,8 +260,8 @@ class Pavlov(commands.Cog):
                     steamprofile = f"http://steamcommunity.com/profiles/{player.get('UniqueId')}"
                 embed.description += (
                     f"\n - {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>` "
-                    f"**KDA**: {kda_list.get(player.get('UniqueId'))}"
-                    f"{steamprofile}"
+                    f"\n**KDA**: {kda_list.get(player.get('UniqueId'))}"
+                    f"\n{steamprofile}"
                 )
         else:
             score_name = "Score"
