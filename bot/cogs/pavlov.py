@@ -243,9 +243,9 @@ class Pavlov(commands.Cog):
             title=f"{len(players)} player{'s' if len(players)!=1 else ''} on `{server_name}`\n"
         )
         if game_mode == "SND":
-            embed.description = f"Round {game_round} on map {map_name}\n"
+            embed.description = f"Round {game_round} on map {map_name}\n\n"
         else:
-            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n"
+            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n\n"
         team_blue, team_red, kda_list, alive_list, scores, _ = await get_stats(ctx, server_name)
         if len(team_red) == 0:
             for player in players:
