@@ -6,7 +6,7 @@ import discord
 import discord_components
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, config
+from bot.utils import SteamPlayer, config, servers
 from bot.utils.interactions import spawn_item_select, spawn_player_select, spawn_team_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
@@ -37,8 +37,9 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 servername`
         """
-        if not await check_perm_moderator(ctx, server_name):
-            return
+        if server_name.casefold() != "all":
+            if not await check_perm_moderator(ctx, server_name):
+                return
         if ctx.interaction_exec:
             player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
@@ -48,8 +49,18 @@ class PavlovMod(commands.Cog):
             data, _ = await exec_server_command(ctx, server_name, f"Ban {player_arg}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
-        embed = discord.Embed(title=f"**Ban {player_arg} ** \n")
+            banned_servers = []
+            if server_name.casefold() == "all":
+                for server in servers.get_names():
+                    if not await check_perm_moderator(ctx, server):
+                        pass
+                    else:
+                        data, _ = await exec_server_command(ctx, server, f"Ban {player.unique_id}")
+                        banned_servers.append(server)
+            else:
+                data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
+                banned_servers.append(server_name)
+        embed = discord.Embed(title=f"**Ban {player_arg} {' '.join(banned_servers)}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
@@ -132,17 +143,33 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def unban(self, ctx, player_arg: str, server_name: str = config.default_server):
-        """`{prefix}unban <player_id> <server_name>`
+    async def unban(
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}ban <player_id> <server_name>`
         **Description**: Removes a player from blacklist.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}unban 89374583439127 servername`
         """
-        if not await check_perm_moderator(ctx, server_name):
-            return
+        if server_name.casefold() != "all":
+            if not await check_perm_moderator(ctx, server_name):
+                return
         player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
-        embed = discord.Embed(title=f"**Unban {player_arg} ** \n")
+        unbanned_servers = []
+        if server_name.casefold() == "all":
+            for server in servers.get_names():
+                if not await check_perm_moderator(ctx, server):
+                    pass
+                else:
+                    data, _ = await exec_server_command(ctx, server, f"Unban {player.unique_id}")
+                    unbanned_servers.append(server)
+        else:
+            data, _ = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
+            unbanned_servers.append(server_name)
+        embed = discord.Embed(title=f"**Unban {player_arg} {' '.join(unbanned_servers)}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
 
