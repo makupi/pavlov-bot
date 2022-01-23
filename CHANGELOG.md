@@ -6,6 +6,18 @@
 - Added `;menu` command to spawn admin menu with Discord buttons for use with virtual desktop in VR 
 - Improved formatting of `;players` command scoreboard
 - Lengthened pause before ResetSND on `;matchsetup` to 10 seconds from 5 seconds
+- Added `;ringers populate {team} {server}` for setting up pubstomps against randos
+- Added TTT related commands:
+  - `;tttsetkarma <player_id/all/team> <karma_amount> <server_name>`
+  
+  - `;tttflushkarma <player_id/all/team> <server_name>`
+  
+  - `;tttendround server_name`
+  - `;tttpausetimer pause/unpause/true/false server_name`
+  - `;tttalwaysenableskinmenu enable/disable/true/false server_name`
+- Added `;nametags enable/disable/true/false server_name` command to turn off nametags for vod recording
+
+
 
 ## v0.6.1 - 2020-11-?
 - Improved performance of `;players` command

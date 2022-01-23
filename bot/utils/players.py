@@ -14,7 +14,6 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
         return "NoPlayers"
     else:
         for player in player_list:
-            await asyncio.sleep(0.1)
             data, _ = await exec_server_command(
                 ctx,
                 server_name,
@@ -43,7 +42,6 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
                 ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
             )
             player_team = data.get("PlayerInfo").get("TeamId")
-            await asyncio.sleep(0.1)
             if player_team == team_id:
                 data2, _ = await exec_server_command(
                     ctx,
@@ -101,7 +99,6 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
         data, ctx = await exec_server_command(ctx, server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
-            await asyncio.sleep(0.1)
             data2, ctx = await exec_server_command(
                 ctx, server, f"InspectPlayer {player.get('UniqueId')}"
             )

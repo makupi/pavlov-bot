@@ -1,18 +1,16 @@
 import asyncio
 import logging
-from os import kill
 
 import discord
 import discord_components
 from discord.ext import commands
 from discord_components import Button, Select, ActionRow
 
-from bot.utils import SteamPlayer, config, servers
+from bot.utils import SteamPlayer, config
 from bot.utils.interactions import (
     spawn_item_select,
     spawn_player_select,
     spawn_server_select,
-    spawn_team_select,
     spawn_vehicle_select,
     spawn_skin_select,
 )
@@ -131,9 +129,9 @@ class PavlovAdmin(commands.Cog):
             else:
                 return
 
-        options, embed = await spawn_server_select(ctx, "Admin Menu")
+        options, menu_embed = await spawn_server_select(ctx, "Admin Menu")
         message = await ctx.send(
-            embed=embed,
+            embed=menu_embed,
             components=[
                 self.bot.components_manager.add_callback(
                     Select(placeholder="Server", options=options), actions

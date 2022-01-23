@@ -112,11 +112,23 @@ class Polling(commands.Cog):
                     logging.info(
                         f"Player {player} kicked for TK from server {server} at score {score}"
                     )
+                    embed = discord.Embed(
+                        title=f"`TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                    )
+                    p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
+                    await channel.send(p_role, embed=embed)
+                    return ctx
                 elif tk_action.casefold() == "ban":
                     _, ctx = await exec_server_command(ctx, server, f"Ban {player}")
                     logging.info(
                         f"Player {player} banned for TK from server {server} at score {score}"
                     )
+                    embed = discord.Embed(
+                        title=f"`TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                    )
+                    p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
+                    await channel.send(p_role, embed=embed)
+                    return ctx
                 elif tk_action.casefold() == "test":
                     logging.info(
                         f"Player {player} would have been actioned for TK from server {server} at score {score}"
@@ -166,6 +178,7 @@ class Polling(commands.Cog):
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
+                    return ctx
             except Exception as ex:
                 logging.info(f"Exception occurred, exiting autobalance. ex: {ex}")
                 return ctx
