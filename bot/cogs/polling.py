@@ -106,7 +106,12 @@ class Polling(commands.Cog):
 
                 tk_action = poll_config.get("tk_action")
                 logging.info(f"Task {poll_name}: Performing tk action {tk_action} on {server}")
-
+                    embed = discord.Embed(
+                        title=f"`Task {poll_name}: TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                    )
+                    p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
+                    await channel.send(p_role, embed=embed)
+                    return ctx
                 if tk_action.casefold() == "kick":
                     _, ctx = await exec_server_command(ctx, server, f"Kick {player}")
                     logging.info(
