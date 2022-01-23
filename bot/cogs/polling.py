@@ -113,7 +113,7 @@ class Polling(commands.Cog):
                         f"Player {player} kicked for TK from server {server} at score {score}"
                     )
                     embed = discord.Embed(
-                        title=f"`Task {poll_name}: TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                        title=f"`TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
@@ -124,7 +124,7 @@ class Polling(commands.Cog):
                         f"Player {player} banned for TK from server {server} at score {score}"
                     )
                     embed = discord.Embed(
-                        title=f"`Task {poll_name}: TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                        title=f"`TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
