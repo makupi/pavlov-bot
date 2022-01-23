@@ -270,7 +270,7 @@ class Pavlov(commands.Cog):
 
             teams = ["blue", "red"]
             for team in teams:
-                embed.description += f"\n **Team {team.capitalize()} {score_name}:"
+                embed.description += f"\n **Team {team.capitalize()} {score_name}:\n"
                 if team == "blue":
                     embed.description += f"{blue_score}**"
                 if team == "red":
