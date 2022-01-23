@@ -15,9 +15,6 @@ async def spawn_player_select(
     interaction: discord_components.Interaction,
     enable_extra_options: bool = True,
 ):
-    user_action_log(ctx,
-        f"SPAWN PLAYER SELECTION"
-    )
     options = list()
     data, _ = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
@@ -40,13 +37,13 @@ async def spawn_player_select(
             "Select a player below:", components=[Select(placeholder="Players", options=options)]
         )
         interaction = await ctx.bot.wait_for("select_option")
+        user_action_log(ctx,
+        f"SPAWN PLAYER SELECTION - {interaction.values[0]}"
+        )
         return interaction.values[0], interaction
 
 
 async def spawn_item_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    user_action_log(ctx,
-        f"SPAWN ITEM SELECTION"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -71,15 +68,15 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
         components=[Select(placeholder="Items", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN ITEM SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
 async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    user_action_log(ctx,
-        f"SPAWN SKIN SELECTION"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -104,15 +101,15 @@ async def spawn_skin_select(ctx: commands.Context, interaction: discord_componen
         components=[Select(placeholder="Skins", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN SKIN SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
 async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    user_action_log(ctx,
-        f"SPAWN VEHICLE SELECTION"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -137,6 +134,9 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
         components=[Select(placeholder="Vehicles", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN VEHICLE SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
@@ -145,9 +145,6 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
 async def spawn_team_select(
     ctx: commands.Context, interaction: discord_components.Interaction, team_index: int
 ):
-    user_action_log(ctx,
-        f"SPAWN TEAM SELECTION"
-    )
     team_options = []
     teams = aliases.get_teams_list()
     for team in teams:
@@ -165,13 +162,13 @@ async def spawn_team_select(
             ],
         )
         interaction1 = await ctx.bot.wait_for("select_option")
+        user_action_log(ctx,
+            f"SPAWN TEAM SELECTION - {interaction1.values[0]}"
+        )
         return interaction1.values[0], interaction1
 
 
 async def spawn_map_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    user_action_log(ctx,
-        f"SPAWN MAP SELECTION"
-    )
     options = list()
     map_lists = lists.get_by_type("map")
     for list_name, _ in map_lists.items():
@@ -194,6 +191,9 @@ async def spawn_map_select(ctx: commands.Context, interaction: discord_component
         components=[Select(placeholder="Map", options=options)],
     )
     interaction = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN MAP SELECTION - {interaction.values[0]}"
+    )
     return interaction.values[0], interaction
 
 
