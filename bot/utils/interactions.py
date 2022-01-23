@@ -5,7 +5,7 @@ import discord_components
 from discord.ext import commands
 from discord_components import Select, SelectOption
 
-from bot.utils import aliases, lists, servers
+from bot.utils import aliases, lists, servers, user_action_log
 from bot.utils.pavlov import exec_server_command
 
 
@@ -15,8 +15,8 @@ async def spawn_player_select(
     interaction: discord_components.Interaction,
     enable_extra_options: bool = True,
 ):
-    logging.info(
-        f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN PLAYER SELECTION"
     )
     options = list()
     data, _ = await exec_server_command(ctx, server, "RefreshList")
@@ -44,8 +44,8 @@ async def spawn_player_select(
 
 
 async def spawn_item_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN ITEM SELECTION"
     )
     options = list()
     itemlists = lists.get_names()
@@ -77,8 +77,8 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
 
 
 async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning skin selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN SKIN SELECTION"
     )
     options = list()
     itemlists = lists.get_names()
@@ -110,8 +110,8 @@ async def spawn_skin_select(ctx: commands.Context, interaction: discord_componen
 
 
 async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN VEHICLE SELECTION"
     )
     options = list()
     itemlists = lists.get_names()
@@ -145,8 +145,8 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
 async def spawn_team_select(
     ctx: commands.Context, interaction: discord_components.Interaction, team_index: int
 ):
-    logging.info(
-        f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN TEAM SELECTION"
     )
     team_options = []
     teams = aliases.get_teams_list()
@@ -169,8 +169,8 @@ async def spawn_team_select(
 
 
 async def spawn_map_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
+    user_action_log(ctx,
+        f"SPAWN MAP SELECTION"
     )
     options = list()
     map_lists = lists.get_by_type("map")
@@ -198,6 +198,9 @@ async def spawn_map_select(ctx: commands.Context, interaction: discord_component
 
 
 async def spawn_server_select(ctx: commands.Context, description: str = ""):
+    user_action_log(ctx,
+        f"SPAWN SERVER SELECTION"
+    )
     options = list()
     for server in servers.get_names():
         ctx.batch_exec = True
