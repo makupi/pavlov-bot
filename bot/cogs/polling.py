@@ -106,22 +106,29 @@ class Polling(commands.Cog):
 
                 tk_action = poll_config.get("tk_action")
                 logging.info(f"Task {poll_name}: Performing tk action {tk_action} on {server}")
+
+                if tk_action.casefold() == "kick":
+                    _, ctx = await exec_server_command(ctx, server, f"Kick {player}")
+                    logging.info(
+                        f"Player {player} kicked for TK from server {server} at score {score}"
+                    )
                     embed = discord.Embed(
                         title=f"`Task {poll_name}: TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
                     return ctx
-                if tk_action.casefold() == "kick":
-                    _, ctx = await exec_server_command(ctx, server, f"Kick {player}")
-                    logging.info(
-                        f"Player {player} kicked for TK from server {server} at score {score}"
-                    )
                 elif tk_action.casefold() == "ban":
                     _, ctx = await exec_server_command(ctx, server, f"Ban {player}")
                     logging.info(
                         f"Player {player} banned for TK from server {server} at score {score}"
                     )
+                    embed = discord.Embed(
+                        title=f"`Task {poll_name}: TK threshold triggered for {player} on {server} at score {score}. Performing tk action {tk_action}`"
+                    )
+                    p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
+                    await channel.send(p_role, embed=embed)
+                    return ctx
                 elif tk_action.casefold() == "test":
                     logging.info(
                         f"Player {player} would have been actioned for TK from server {server} at score {score}"
