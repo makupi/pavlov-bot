@@ -56,6 +56,7 @@ class PavlovAdmin(commands.Cog):
                     flush,
                     ban,
                     inspectplayer,
+                    switchmap,
                 ) = [
                     self.bot.all_commands.get("slap"),
                     self.bot.all_commands.get("giveitem"),
@@ -67,6 +68,7 @@ class PavlovAdmin(commands.Cog):
                     self.bot.all_commands.get("flush"),
                     self.bot.all_commands.get("ban"),
                     self.bot.all_commands.get("playerinfo"),
+                    self.bot.all_commands.get("switchmap"),
                 ]
                 if server_info.get("GameMode").casefold() == "ttt":
                     flushkarma, endround, pausetimer = [
@@ -120,6 +122,12 @@ class PavlovAdmin(commands.Cog):
                             Button(label="Inspect Player"),
                             lambda interaction: inspectplayer(ctx, "", server_name, interaction),
                         ),
+                    ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="Switch Map"),
+                            lambda interaction: switchmap(ctx, "", "", server_name, interaction),
+                        ),
+                    )
                     ),
                 ]
                 await interact.send(

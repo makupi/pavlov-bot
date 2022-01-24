@@ -10,6 +10,7 @@ from discord_components import Button, Select
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.interactions import (
+    spawn_gamemode_select,
     spawn_map_select,
     spawn_server_select,
     spawn_team_select,
@@ -202,7 +203,7 @@ class PavlovCaptain(commands.Cog):
                 return
         if ctx.interaction_exec:
             map_name, __interaction = await spawn_map_select(ctx, __interaction)
-            game_mode = "snd"
+            game_mode, __interaction = await spawn_gamemode_select(ctx, __interaction)
 
         components = list()
         if game_mode.upper() == "SND":

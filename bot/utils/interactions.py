@@ -215,3 +215,27 @@ async def spawn_server_select(ctx: commands.Context, description: str = ""):
     embed = discord.Embed(title=f"**({description}) Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
     return options, embed
+
+async def spawn_gamemode_select(ctx: commands.Context, interaction: discord_components.Interaction):
+    options = [
+        SelectOption(label="DM", value="DM"),
+        SelectOption(label="KOTH", value="KOTH"),
+        SelectOption(label="GUN", value="GUN"),
+        SelectOption(label="OITC", value="OITC"),
+        SelectOption(label="SND", value="SND"),
+        SelectOption(label="TANKTDM", value="TANKTDM"),
+        SelectOption(label="TDM", value="TDM"),
+        SelectOption(label="TTT", value="TTT"),
+        SelectOption(label="WW2GUN", value="WW2GUN"),
+        SelectOption(label="ZWV", value="ZWV"),
+        SelectOption(label="CUSTOM", value="CUSTOM"),
+    ]
+    await interaction.send(
+        "Select a gamemode below:",
+        components=[Select(placeholder="Gamemodes", options=options)],
+    )
+    interaction = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN GAME MODE SELECTION - {interaction.values[0]}"
+    )
+    return interaction.values[0], interaction
