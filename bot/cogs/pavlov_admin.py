@@ -122,12 +122,12 @@ class PavlovAdmin(commands.Cog):
                             Button(label="Inspect Player"),
                             lambda interaction: inspectplayer(ctx, "", server_name, interaction),
                         ),
+                    ),
                     ActionRow(
                         self.bot.components_manager.add_callback(
                             Button(label="Switch Map"),
                             lambda interaction: switchmap(ctx, "", "", server_name, interaction),
                         ),
-                    )
                     ),
                 ]
                 await interact.send(

@@ -223,12 +223,15 @@ class PavlovCaptain(commands.Cog):
                     lambda interaction: resetsnd(ctx, server_name, interaction),
                 )
             )
-
-        map_label = aliases.get_map(map_name)
-
-        data, _ = await exec_server_command(
-            ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
-        )
+        if not ctx.interaction_exec:
+            map_label = aliases.get_map(map_name)
+            data, _ = await exec_server_command(
+                ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
+            )
+        else:
+            data, _ = await exec_server_command(
+                ctx, server_name, f"SwitchMap {map_name} {game_mode.upper()}"
+            )
         switch_map = data.get("SwitchMap")
         if not switch_map:
             if ctx.batch_exec:
