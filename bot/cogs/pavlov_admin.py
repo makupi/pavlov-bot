@@ -56,6 +56,7 @@ class PavlovAdmin(commands.Cog):
                     flush,
                     ban,
                     inspectplayer,
+                    switchmap,
                 ) = [
                     self.bot.all_commands.get("slap"),
                     self.bot.all_commands.get("giveitem"),
@@ -67,6 +68,7 @@ class PavlovAdmin(commands.Cog):
                     self.bot.all_commands.get("flush"),
                     self.bot.all_commands.get("ban"),
                     self.bot.all_commands.get("playerinfo"),
+                    self.bot.all_commands.get("switchmap"),
                 ]
                 if server_info.get("GameMode").casefold() == "ttt":
                     flushkarma, endround, pausetimer = [
@@ -119,6 +121,12 @@ class PavlovAdmin(commands.Cog):
                         self.bot.components_manager.add_callback(
                             Button(label="Inspect Player"),
                             lambda interaction: inspectplayer(ctx, "", server_name, interaction),
+                        ),
+                    ),
+                    ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="Switch Map"),
+                            lambda interaction: switchmap(ctx, "", "", server_name, interaction),
                         ),
                     ),
                 ]
@@ -416,111 +424,6 @@ class PavlovAdmin(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def tttsetkarma(
-        self,
-        ctx,
-        player_arg: str,
-        karma: str,
-        server_name: str = config.default_server,
-        __interaction: discord_components.Interaction = None,
-    ):
-        """`{prefix}tttsetkarma <player_id/all/team> <karma_amount> <server_name>`
-        **Description**: Sets the amount of karma a player has.
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}tttsetkarma 89374583439127 1100 servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
-            if player_arg == "NoPlayers":
-                embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await __interaction.send(embed=embed)
-                return
-        if player_arg.casefold() == "all":
-            if player_arg.casefold() == "all":
-                data = await exec_command_all_players(ctx, server_name, f"tttsetkarma all {karma}")
-        else:
-            if ctx.interaction_exec:
-                data, _ = await exec_server_command(
-                    ctx, server_name, f"tttsetkarma {player_arg} {karma}"
-                )
-            else:
-                player = SteamPlayer.convert(player_arg)
-                data, _ = await exec_server_command(
-                    ctx, server_name, f"tttsetkarma {player.unique_id} {karma}"
-                )
-        embed = discord.Embed(title=f"**TTTSetKarma {player_arg} {karma}** \n")
-        embed = await parse_player_command_results(ctx, data, embed, server_name)
-        if ctx.batch_exec:
-            return embed.description
-        elif ctx.interaction_exec:
-            await __interaction.send(embed=embed)
-            return
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def tttflushkarma(
-        self,
-        ctx,
-        player_arg: str,
-        server_name: str = config.default_server,
-        __interaction: discord_components.Interaction = None,
-    ):
-        """`{prefix}tttflushkarma <player_id/all/team> <server_name>`
-        **Description**: Resets a player's karma.
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}tttflushkarma 89374583439127 servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        if ctx.interaction_exec:
-            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
-            if player_arg == "NoPlayers":
-                embed = discord.Embed(title=f"**No players on `{server_name}`**")
-                await __interaction.send(embed=embed)
-                return
-        if player_arg.casefold() == "all":
-            if player_arg.casefold() == "all":
-                data = await exec_command_all_players(ctx, server_name, f"tttflushkarma all ")
-        else:
-            if ctx.interaction_exec:
-                data, _ = await exec_server_command(ctx, server_name, f"tttflushkarma {player_arg}")
-            else:
-                player = SteamPlayer.convert(player_arg)
-                data, _ = await exec_server_command(
-                    ctx, server_name, f"tttflushkarma {player.unique_id}"
-                )
-        embed = discord.Embed(title=f"**tttflushkarma {player_arg}** \n")
-        embed = await parse_player_command_results(ctx, data, embed, server_name)
-        if ctx.batch_exec:
-            return embed.description
-        elif ctx.interaction_exec:
-            await __interaction.send(embed=embed)
-            return
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def tttendround(self, ctx, server_name: str = config.default_server):
-        """`{prefix}tttendround server_name`
-        **Description**: Ends the current TTT round.
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}tttendround servername`
-        """
-        if not await check_perm_admin(ctx, server_name):
-            return
-        data, _ = await exec_server_command(ctx, server_name, f"tttendround")
-        if not data:
-            data = "No response"
-        if ctx.batch_exec:
-            return data
-        if data.get("TTTEndRound"):
-            embed = discord.Embed(title=f"**TTT round ended!** \n")
-        else:
-            embed = discord.Embed(title=f"**Failed to end TTT round!** \n")
-        await ctx.send(embed=embed)
-
-    @commands.command()
     async def custom(self, ctx, rcon_command: str, server_name: str = config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name`
         **Description**: Runs a custom RCON command.
@@ -560,54 +463,6 @@ class PavlovAdmin(commands.Cog):
             embed = discord.Embed(title=f"**Nametags enabled!** \n")
         else:
             embed = discord.Embed(title=f"**Nametags disabled!** \n")
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def tttpausetimer(self, ctx, boolean, server_name: str = config.default_server):
-        """`{prefix}tttpausetimer pause/unpause/true/false server_name`
-        **Description**: Pauses/unpauses the TTT round timer.
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}tttpausetimer pause servername`
-        """
-        if boolean.casefold() == "pause":
-            boolean = "true"
-        elif boolean.casefold() == "unpause":
-            boolean = "false"
-        if not await check_perm_admin(ctx, server_name):
-            return
-        data, _ = await exec_server_command(ctx, server_name, f"TTTPauseTimer {boolean}")
-        if not data:
-            data = "No response"
-        if ctx.batch_exec:
-            return data
-        if data.get("TTTPauseState"):
-            embed = discord.Embed(title=f"**TTT round timer paused!** \n")
-        else:
-            embed = discord.Embed(title=f"**TTT round timer unpaused!** \n")
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    async def tttalwaysenableskinmenu(self, ctx, boolean, server_name: str = config.default_server):
-        """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
-        **Description**: Enables/disables skin menu during a TTT round.
-        **Requires**: Admin permissions for the server
-        **Example**: `{prefix}tttalwaysenableskinmenu enable servername`
-        """
-        if boolean.casefold() == "enable":
-            boolean = "true"
-        elif boolean.casefold() == "disable":
-            boolean = "false"
-        if not await check_perm_admin(ctx, server_name):
-            return
-        data, _ = await exec_server_command(ctx, server_name, f"TTTAlwaysEnableSkinMenu {boolean}")
-        if not data:
-            data = "No response"
-        if ctx.batch_exec:
-            return data
-        if data.get("TTTSkinMenuState"):
-            embed = discord.Embed(title=f"**Skin menu enabled during mid-round!** \n")
-        else:
-            embed = discord.Embed(title=f"**Skin menu disabled during mid-round!** \n")
         await ctx.send(embed=embed)
 
     @commands.command()

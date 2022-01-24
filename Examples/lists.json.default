@@ -186,34 +186,31 @@
             "6": "tiger"
         }
     },
-    "KFC3list": {
+    "Default Maps": {
 	"type": "map",
 	"list": {
-		"1": "mirage",
-    	 	"2": "dust",
-		"3": "overpass",
-		"4": "inferno",
-		"5": "seaside",
-		"6": "ruins",
-		"7": "Oilrig",
-		"8": "dig",
-		"9": "manor",
-		"10": "stockpile"
-   	}
-    },
-    "S9league": {
-	"type": "map",
-	"list": {
-		"1": "santorini",
-    	 	"2": "pipes",
-		"3": "museum",
-		"4": "industry",
-		"5": "manor",
-		"6": "reachsky",
-		"7": "oilrig",
-		"8": "dig",
-		"9": "stahl",
-		"10": "stockpile"
+		"1": "datacenter",
+    	"2": "sand",
+		"3": "bridge",
+		"4": "containeryard",
+		"5": "siberia",
+		"6": "hospital",
+		"7": "killhouse",
+		"8": "range",
+		"9": "tutorial",
+		"10": "santorini",
+        "11": "station",
+        "12": "industry",
+		"13": "ogcontainers",
+		"14": "haguenau",
+		"15": "foundation",
+		"16": "stalingrad",
+        "17": "stalingrad_night",
+        "18": "santorini_night",
+		"19": "sand_night",
+		"20": "station_night",
+		"21": "industry_night",
+		"22": "bunker"
    	}
     },
     "Default Skins": {

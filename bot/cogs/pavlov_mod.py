@@ -6,7 +6,7 @@ import discord
 import discord_components
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, config
+from bot.utils import SteamPlayer, config, servers
 from bot.utils.interactions import spawn_item_select, spawn_player_select, spawn_team_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
@@ -37,8 +37,9 @@ class PavlovMod(commands.Cog):
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 servername`
         """
-        if not await check_perm_moderator(ctx, server_name):
-            return
+        if server_name.casefold() != "all":
+            if not await check_perm_moderator(ctx, server_name):
+                return
         if ctx.interaction_exec:
             player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
             if player_arg == "NoPlayers":
@@ -48,8 +49,18 @@ class PavlovMod(commands.Cog):
             data, _ = await exec_server_command(ctx, server_name, f"Ban {player_arg}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
-        embed = discord.Embed(title=f"**Ban {player_arg} ** \n")
+            banned_servers = []
+            if server_name.casefold() == "all":
+                for server in servers.get_names():
+                    if not await check_perm_moderator(ctx, server):
+                        pass
+                    else:
+                        data, _ = await exec_server_command(ctx, server, f"Ban {player.unique_id}")
+                        banned_servers.append(server)
+            else:
+                data, _ = await exec_server_command(ctx, server_name, f"Ban {player.unique_id}")
+                banned_servers.append(server_name)
+        embed = discord.Embed(title=f"**Ban {player_arg} {' '.join(banned_servers)}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
@@ -132,17 +143,33 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def unban(self, ctx, player_arg: str, server_name: str = config.default_server):
-        """`{prefix}unban <player_id> <server_name>`
+    async def unban(
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+    ):
+        """`{prefix}ban <player_id> <server_name>`
         **Description**: Removes a player from blacklist.txt
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}unban 89374583439127 servername`
         """
-        if not await check_perm_moderator(ctx, server_name):
-            return
+        if server_name.casefold() != "all":
+            if not await check_perm_moderator(ctx, server_name):
+                return
         player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
-        embed = discord.Embed(title=f"**Unban {player_arg} ** \n")
+        unbanned_servers = []
+        if server_name.casefold() == "all":
+            for server in servers.get_names():
+                if not await check_perm_moderator(ctx, server):
+                    pass
+                else:
+                    data, _ = await exec_server_command(ctx, server, f"Unban {player.unique_id}")
+                    unbanned_servers.append(server)
+        else:
+            data, _ = await exec_server_command(ctx, server_name, f"Unban {player.unique_id}")
+            unbanned_servers.append(server_name)
+        embed = discord.Embed(title=f"**Unban {player_arg} {' '.join(unbanned_servers)}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         await ctx.send(embed=embed)
 
@@ -220,6 +247,159 @@ class PavlovMod(commands.Cog):
         elif ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def tttsetkarma(
+        self,
+        ctx,
+        player_arg: str,
+        karma: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
+    ):
+        """`{prefix}tttsetkarma <player_id/all> <karma_amount> <server_name>`
+        **Description**: Sets the amount of karma a player has.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}tttsetkarma 89374583439127 1100 servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        if ctx.interaction_exec:
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await __interaction.send(embed=embed)
+                return
+        if player_arg.casefold() == "all":
+            if player_arg.casefold() == "all":
+                data = await exec_command_all_players(ctx, server_name, f"tttsetkarma all {karma}")
+        else:
+            if ctx.interaction_exec:
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"tttsetkarma {player_arg} {karma}"
+                )
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"tttsetkarma {player.unique_id} {karma}"
+                )
+        embed = discord.Embed(title=f"**TTTSetKarma {player_arg} {karma}** \n")
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
+        elif ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+            return
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def tttflushkarma(
+        self,
+        ctx,
+        player_arg: str,
+        server_name: str = config.default_server,
+        __interaction: discord_components.Interaction = None,
+    ):
+        """`{prefix}tttflushkarma <player_id/all> <server_name>`
+        **Description**: Resets a player's karma.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}tttflushkarma 89374583439127 servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        if ctx.interaction_exec:
+            player_arg, __interaction = await spawn_player_select(ctx, server_name, __interaction)
+            if player_arg == "NoPlayers":
+                embed = discord.Embed(title=f"**No players on `{server_name}`**")
+                await __interaction.send(embed=embed)
+                return
+        if player_arg.casefold() == "all":
+            if player_arg.casefold() == "all":
+                data = await exec_command_all_players(ctx, server_name, f"tttflushkarma all ")
+        else:
+            if ctx.interaction_exec:
+                data, _ = await exec_server_command(ctx, server_name, f"tttflushkarma {player_arg}")
+            else:
+                player = SteamPlayer.convert(player_arg)
+                data, _ = await exec_server_command(
+                    ctx, server_name, f"tttflushkarma {player.unique_id}"
+                )
+        embed = discord.Embed(title=f"**tttflushkarma {player_arg}** \n")
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
+        if ctx.batch_exec:
+            return embed.description
+        elif ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+            return
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def tttendround(self, ctx, server_name: str = config.default_server):
+        """`{prefix}tttendround server_name`
+        **Description**: Ends the current TTT round.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}tttendround servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f"tttendround")
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        if data.get("TTTEndRound"):
+            embed = discord.Embed(title=f"**TTT round ended!** \n")
+        else:
+            embed = discord.Embed(title=f"**Failed to end TTT round!** \n")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def tttpausetimer(self, ctx, boolean, server_name: str = config.default_server):
+        """`{prefix}tttpausetimer pause/unpause/true/false server_name`
+        **Description**: Pauses/unpauses the TTT round timer.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}tttpausetimer pause servername`
+        """
+        if boolean.casefold() == "pause":
+            boolean = "true"
+        elif boolean.casefold() == "unpause":
+            boolean = "false"
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f"TTTPauseTimer {boolean}")
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        if data.get("TTTPauseState"):
+            embed = discord.Embed(title=f"**TTT round timer paused!** \n")
+        else:
+            embed = discord.Embed(title=f"**TTT round timer unpaused!** \n")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def tttalwaysenableskinmenu(self, ctx, boolean, server_name: str = config.default_server):
+        """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
+        **Description**: Enables/disables skin menu during a TTT round.
+        **Requires**: Admin permissions for the server
+        **Example**: `{prefix}tttalwaysenableskinmenu enable servername`
+        """
+        if boolean.casefold() == "enable":
+            boolean = "true"
+        elif boolean.casefold() == "disable":
+            boolean = "false"
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f"TTTAlwaysEnableSkinMenu {boolean}")
+        if not data:
+            data = "No response"
+        if ctx.batch_exec:
+            return data
+        if data.get("TTTSkinMenuState"):
+            embed = discord.Embed(title=f"**Skin menu enabled during mid-round!** \n")
+        else:
+            embed = discord.Embed(title=f"**Skin menu disabled during mid-round!** \n")
         await ctx.send(embed=embed)
 
     @commands.command()

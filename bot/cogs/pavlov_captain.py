@@ -10,6 +10,7 @@ from discord_components import Button, Select
 
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.interactions import (
+    spawn_gamemode_select,
     spawn_map_select,
     spawn_server_select,
     spawn_team_select,
@@ -202,7 +203,7 @@ class PavlovCaptain(commands.Cog):
                 return
         if ctx.interaction_exec:
             map_name, __interaction = await spawn_map_select(ctx, __interaction)
-            game_mode = "snd"
+            game_mode, __interaction = await spawn_gamemode_select(ctx, __interaction)
 
         components = list()
         if game_mode.upper() == "SND":
@@ -222,12 +223,15 @@ class PavlovCaptain(commands.Cog):
                     lambda interaction: resetsnd(ctx, server_name, interaction),
                 )
             )
-
-        map_label = aliases.get_map(map_name)
-
-        data, _ = await exec_server_command(
-            ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
-        )
+        if not ctx.interaction_exec:
+            map_label = aliases.get_map(map_name)
+            data, _ = await exec_server_command(
+                ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
+            )
+        else:
+            data, _ = await exec_server_command(
+                ctx, server_name, f"SwitchMap {map_name} {game_mode.upper()}"
+            )
         switch_map = data.get("SwitchMap")
         if not switch_map:
             if ctx.batch_exec:

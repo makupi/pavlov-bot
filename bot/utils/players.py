@@ -14,6 +14,8 @@ async def exec_command_all_players(ctx, server_name: str, command: str):
         return "NoPlayers"
     else:
         for player in player_list:
+            if player.get("UniqueId") == '' or player.get('Username') == '':
+                continue
             data, _ = await exec_server_command(
                 ctx,
                 server_name,
@@ -35,15 +37,17 @@ async def exec_command_all_players_on_team(ctx, server_name: str, team_id: str, 
             team_id = "0"
         elif team_id.casefold() == "red":
             team_id = "1"
-        if team_id.isnumeric():
+        if team_id.isnumeric() == False:
             return "NotValidTeam"
         for player in player_list:
+            if player.get("UniqueId") == '' or player.get('Username') == '':
+                continue
             data, _ = await exec_server_command(
                 ctx, server_name, f"InspectPlayer {player.get('UniqueId')}"
             )
             player_team = data.get("PlayerInfo").get("TeamId")
             if player_team == team_id:
-                data2 = await exec_server_command(
+                data2, _ = await exec_server_command(
                     ctx,
                     server_name,
                     command.replace(" team ", " " + player.get("UniqueId") + " "),
@@ -99,6 +103,8 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
         data, ctx = await exec_server_command(ctx, server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
+            if player.get("UniqueId") == '' or player.get('Username') == '':
+                continue
             data2, ctx = await exec_server_command(
                 ctx, server, f"InspectPlayer {player.get('UniqueId')}"
             )

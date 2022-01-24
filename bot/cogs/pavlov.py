@@ -243,20 +243,27 @@ class Pavlov(commands.Cog):
             title=f"{len(players)} player{'s' if len(players)!=1 else ''} on `{server_name}`\n"
         )
         if game_mode == "SND":
-            embed.description = f"Round {game_round} on map {map_name}\n"
+            embed.description = f"Round {game_round} on map {map_name}\n\n"
         else:
-            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n"
+            embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n\n"
         team_blue, team_red, kda_list, alive_list, scores, _ = await get_stats(ctx, server_name)
         if len(team_red) == 0:
             for player in players:
+                if player.get("UniqueId") == '' or player.get('Username') == '':
+                    continue
                 dead = ""
                 if alive_list.get(player.get("UniqueId")):
                     dead = ":skull:"
                 elif not alive_list.get(player.get("UniqueId")):
                     dead = ":slight_smile:"
+                if player.get('UniqueId') == player.get('Username'):
+                    steamprofile = ""
+                else:
+                    steamprofile = f"http://steamcommunity.com/profiles/{player.get('UniqueId')}\n"
                 embed.description += (
-                    f"\n - {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>` "
-                    f"**KDA**: {kda_list.get(player.get('UniqueId'))}"
+                    f"- {dead} **{player.get('Username')}** `<{player.get('UniqueId')}>`\n"
+                    f"**KDA**: {kda_list.get(player.get('UniqueId'))}\n"
+                    f"{'' if steamprofile == '' else f'{steamprofile}'}"
                 )
         else:
             score_name = "Score"
@@ -265,11 +272,11 @@ class Pavlov(commands.Cog):
 
             teams = ["blue", "red"]
             for team in teams:
-                embed.description += f"\n **Team {team.capitalize()} {score_name}:"
+                embed.description += f"**Team {team.capitalize()} {score_name}: "
                 if team == "blue":
-                    embed.description += f"{blue_score}**"
+                    embed.description += f"{blue_score}**\n"
                 if team == "red":
-                    embed.description += f"{red_score}**"
+                    embed.description += f"{red_score}**\n"
                 team_name = f":{team}_circle:"
                 team_list = team_blue if team == "blue" else team_red
                 dead = ""
@@ -282,7 +289,15 @@ class Pavlov(commands.Cog):
                     for p in players:
                         if player == p.get("UniqueId"):
                             user_name = p.get("Username")
-                    embed.description += f"\n - {dead} {team_name} **{user_name}** `<{player}>` **KDA**: {kda_list.get(player)}"
+                    if player == user_name:
+                        steamprofile = ""
+                    else:
+                        steamprofile = f"http://steamcommunity.com/profiles/{player}\n"
+                    embed.description += (
+                        f"- {dead} {team_name} **{user_name}** `<{player}>`\n"
+                        f"**KDA**: {kda_list.get(player)}\n"
+                        f"{'' if steamprofile == '' else f'{steamprofile}'}"
+                    )
 
         if hasattr(ctx, "batch_exec"):
             if ctx.batch_exec:

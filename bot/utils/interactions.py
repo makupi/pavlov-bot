@@ -1,11 +1,10 @@
 import logging
-
 import discord
 import discord_components
 from discord.ext import commands
 from discord_components import Select, SelectOption
 
-from bot.utils import aliases, lists, servers
+from bot.utils import aliases, lists, servers, user_action_log
 from bot.utils.pavlov import exec_server_command
 
 
@@ -15,9 +14,6 @@ async def spawn_player_select(
     interaction: discord_components.Interaction,
     enable_extra_options: bool = True,
 ):
-    logging.info(
-        f"Spawning player selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     options = list()
     data, _ = await exec_server_command(ctx, server, "RefreshList")
     player_list = data.get("PlayerList")
@@ -30,9 +26,12 @@ async def spawn_player_select(
         return "NoPlayers", interaction
     else:
         for player in player_list:
-            options.append(
-                SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
-            )
+            if player.get("UniqueId") == '' or player.get('Username') == '':
+                continue
+            else:
+                options.append(
+                    SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
+                )
         if enable_extra_options:
             for k, v in extras.items():
                 options.append(SelectOption(label=k, value=v))
@@ -40,13 +39,13 @@ async def spawn_player_select(
             "Select a player below:", components=[Select(placeholder="Players", options=options)]
         )
         interaction = await ctx.bot.wait_for("select_option")
+        user_action_log(ctx,
+        f"SPAWN PLAYER SELECTION - {interaction.values[0]}"
+        )
         return interaction.values[0], interaction
 
 
 async def spawn_item_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning item selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -71,15 +70,15 @@ async def spawn_item_select(ctx: commands.Context, interaction: discord_componen
         components=[Select(placeholder="Items", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN ITEM SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
 async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning skin selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -104,15 +103,15 @@ async def spawn_skin_select(ctx: commands.Context, interaction: discord_componen
         components=[Select(placeholder="Skins", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN SKIN SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
 
 
 async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning vehicle selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     options = list()
     itemlists = lists.get_names()
     for item in itemlists:
@@ -137,6 +136,9 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
         components=[Select(placeholder="Vehicles", options=itemsilist)],
     )
     interaction2 = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN VEHICLE SELECTION - {interaction2.values[0]}"
+    )
     if interaction2.values[0] == "all":
         return items, interaction2, interaction1.values[0]
     return interaction2.values[0], interaction2, interaction1.values[0]
@@ -145,9 +147,6 @@ async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_compo
 async def spawn_team_select(
     ctx: commands.Context, interaction: discord_components.Interaction, team_index: int
 ):
-    logging.info(
-        f"Spawning team selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     team_options = []
     teams = aliases.get_teams_list()
     for team in teams:
@@ -165,13 +164,13 @@ async def spawn_team_select(
             ],
         )
         interaction1 = await ctx.bot.wait_for("select_option")
+        user_action_log(ctx,
+            f"SPAWN TEAM SELECTION - {interaction1.values[0]}"
+        )
         return interaction1.values[0], interaction1
 
 
 async def spawn_map_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    logging.info(
-        f"Spawning map selection menu for {interaction.author.name}#{interaction.author.discriminator}!"
-    )
     options = list()
     map_lists = lists.get_by_type("map")
     for list_name, _ in map_lists.items():
@@ -194,10 +193,16 @@ async def spawn_map_select(ctx: commands.Context, interaction: discord_component
         components=[Select(placeholder="Map", options=options)],
     )
     interaction = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN MAP SELECTION - {interaction.values[0]}"
+    )
     return interaction.values[0], interaction
 
 
 async def spawn_server_select(ctx: commands.Context, description: str = ""):
+    user_action_log(ctx,
+        f"SPAWN SERVER SELECTION"
+    )
     options = list()
     for server in servers.get_names():
         ctx.batch_exec = True
@@ -210,3 +215,27 @@ async def spawn_server_select(ctx: commands.Context, description: str = ""):
     embed = discord.Embed(title=f"**({description}) Select a server below:**")
     embed.set_author(name=ctx.author.display_name, url="", icon_url=ctx.author.avatar_url)
     return options, embed
+
+async def spawn_gamemode_select(ctx: commands.Context, interaction: discord_components.Interaction):
+    options = [
+        SelectOption(label="DM", value="DM"),
+        SelectOption(label="KOTH", value="KOTH"),
+        SelectOption(label="GUN", value="GUN"),
+        SelectOption(label="OITC", value="OITC"),
+        SelectOption(label="SND", value="SND"),
+        SelectOption(label="TANKTDM", value="TANKTDM"),
+        SelectOption(label="TDM", value="TDM"),
+        SelectOption(label="TTT", value="TTT"),
+        SelectOption(label="WW2GUN", value="WW2GUN"),
+        SelectOption(label="ZWV", value="ZWV"),
+        SelectOption(label="CUSTOM", value="CUSTOM"),
+    ]
+    await interaction.send(
+        "Select a gamemode below:",
+        components=[Select(placeholder="Gamemodes", options=options)],
+    )
+    interaction = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN GAME MODE SELECTION - {interaction.values[0]}"
+    )
+    return interaction.values[0], interaction

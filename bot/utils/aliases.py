@@ -61,14 +61,14 @@ class Team:
         if len(self._original_members) > 0:
             s = f"Original Members:```\n"
             for member in self._original_members:
-                s += f''' - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n'''
+                s += f""" - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n"""
             s += "```"
         else:
             s = ""
         if self._ringers:
             s += "Ringers:```\n"
             for member in self._ringers:
-                s += f''' - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n'''
+                s += f""" - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n"""
             s += "```"
         return s
 
