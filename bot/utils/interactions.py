@@ -1,5 +1,4 @@
 import logging
-
 import discord
 import discord_components
 from discord.ext import commands
@@ -27,9 +26,12 @@ async def spawn_player_select(
         return "NoPlayers", interaction
     else:
         for player in player_list:
-            options.append(
-                SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
-            )
+            if player.get("UniqueId") == '' or player.get('Username') == '':
+                continue
+            else:
+                options.append(
+                    SelectOption(label=str(player.get("Username")), value=str(player.get("UniqueId")))
+                )
         if enable_extra_options:
             for k, v in extras.items():
                 options.append(SelectOption(label=k, value=v))

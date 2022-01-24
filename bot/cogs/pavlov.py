@@ -249,6 +249,8 @@ class Pavlov(commands.Cog):
         team_blue, team_red, kda_list, alive_list, scores, _ = await get_stats(ctx, server_name)
         if len(team_red) == 0:
             for player in players:
+                if player.get("UniqueId") == '' or player.get('Username') == '':
+                    continue
                 dead = ""
                 if alive_list.get(player.get("UniqueId")):
                     dead = ":skull:"
@@ -287,10 +289,10 @@ class Pavlov(commands.Cog):
                     for p in players:
                         if player == p.get("UniqueId"):
                             user_name = p.get("Username")
-                        if p.get('UniqueId') == p.get('Username'):
-                            steamprofile = ""
-                        else:
-                            steamprofile = f"http://steamcommunity.com/profiles/{player}\n"
+                    if player == user_name:
+                        steamprofile = ""
+                    else:
+                        steamprofile = f"http://steamcommunity.com/profiles/{player}\n"
                     embed.description += (
                         f"- {dead} {team_name} **{user_name}** `<{player}>`\n"
                         f"**KDA**: {kda_list.get(player)}\n"
