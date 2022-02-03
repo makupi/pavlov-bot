@@ -11,9 +11,10 @@ from discord_components import Button, Select
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.interactions import (
     spawn_gamemode_select,
-    spawn_map_select,
+    spawn_list_select,
     spawn_server_select,
     spawn_team_select,
+    SpawnListTypes,
 )
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
@@ -39,7 +40,7 @@ class PavlovCaptain(commands.Cog):
             await msg.edit(content="")
             if server_name == "":
                 server_name = interact.values[0]
-            elif server_name == "OFFLINE":
+            elif "offline" in server_name.lower():
                 embed = discord.Embed(title="Server is offline.")
                 await interact.send(embed=embed)
                 return
@@ -201,7 +202,17 @@ class PavlovCaptain(commands.Cog):
         else:
             if not await check_perm_captain(__interaction, server_name):
                 return
-            map_name, __interaction = await spawn_map_select(ctx, __interaction)
+            try:
+                map_name, __interaction, mapl = await spawn_list_select(
+                    ctx, __interaction, SpawnListTypes.SPAWN_MAP_SELECT
+                )
+            except SpawnListTypes:
+                embed = discord.Embed(
+                    title=f"**Your skin list `{mapl}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await __interaction.send(embed=embed)
+                return
             game_mode, __interaction = await spawn_gamemode_select(ctx, __interaction)
 
         components = list()

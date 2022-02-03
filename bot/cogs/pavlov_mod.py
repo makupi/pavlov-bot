@@ -1,13 +1,11 @@
-import asyncio
 import logging
-from datetime import datetime
 
 import discord
 import discord_components
 from discord.ext import commands
 
 from bot.utils import SteamPlayer, config, servers
-from bot.utils.interactions import spawn_item_select, spawn_player_select, spawn_team_select
+from bot.utils.interactions import spawn_player_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,

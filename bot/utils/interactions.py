@@ -1,4 +1,5 @@
 import asyncio
+from enum import Enum
 
 import discord
 import discord_components
@@ -7,6 +8,51 @@ from discord_components import Select, SelectOption
 
 from bot.utils import aliases, lists, servers, user_action_log
 from bot.utils.pavlov import exec_server_command
+
+
+class SpawnExceptionListTooLong(Exception):
+    def __init__(self, list_name: str):
+        self.list = list_name
+
+
+class SpawnListTypes(Enum):
+    SPAWN_ITEM_SELECT = "item"
+    SPAWN_SKIN_SELECT = "skin"
+    SPAWN_VEHICLE_SELECT = "vehicle"
+    SPAWN_MAP_SELECT = "map"
+
+
+async def spawn_list_select(
+    ctx: commands.Context, interaction: discord_components.Interaction, list_type: SpawnListTypes
+):
+    options = list()
+    _list = lists.get_by_type(list_type.name)
+    for item in _list:
+        if lists.get(item) == list_type.name:
+            options.append(SelectOption(label=str(item), value=str(item)))
+    component = Select(placeholder=f"{list_type.name.capitalize()} Lists", options=options)
+    await interaction.send(
+        f"Select a {list_type.name} list below:",
+        components=[component],
+    )
+    selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
+    items = lists.get(selected_list.values[0]).get("list")
+    options = list()
+    for item in items:
+        options.append(SelectOption(label=str(items.get(item)), value=str(items.get(item))))
+    options.append(SelectOption(label="all", value="all"))
+    if len(options) > 25:
+        raise SpawnExceptionListTooLong(list_type.name)
+    component = Select(placeholder="Items", options=options)
+    await selected_list.send(
+        f"Select a {list_type.name} below:",
+        components=[component],
+    )
+    selected_item = await ctx.bot.components_manager.wait_for("select_option", component=component)
+    user_action_log(ctx, f"SPAWN {list_type.name.upper()} SELECTION - {selected_item.values[0]}")
+    if selected_item.values[0] == "all":
+        return items, selected_item, selected_list.values[0]
+    return selected_item.values[0], selected_item, selected_list.values[0]
 
 
 async def spawn_player_select(
@@ -45,108 +91,6 @@ async def spawn_player_select(
         return selected.values[0], selected
 
 
-async def spawn_item_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    options = list()
-    itemlists = lists.get_names()
-    for item in itemlists:
-        alist = lists.get(item)
-        if alist.get("type") == "item":
-            options.append(SelectOption(label=str(item), value=str(item)))
-    component = Select(placeholder="Item Lists", options=options)
-    await interaction.send(
-        "Select a item list below:",
-        components=[component],
-    )
-    selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    slist = lists.get(selected_list.values[0])
-    items = slist.get("list")
-    itemsilist = []
-    for i in items:
-        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
-    itemsilist.append(SelectOption(label="all", value="all"))
-    if len(itemsilist) > 25:
-        return "ListTooLong", selected_list, selected_list.values[0]
-    component = Select(placeholder="Items", options=itemsilist)
-    await interaction.send(
-        "Select a item below:",
-        components=[component],
-    )
-    selected_item = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    user_action_log(ctx, f"SPAWN ITEM SELECTION - {selected_item.values[0]}")
-    if selected_item.values[0] == "all":
-        return items, selected_item, selected_list.values[0]
-    return selected_item.values[0], selected_item, selected_list.values[0]
-
-
-async def spawn_skin_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    options = list()
-    itemlists = lists.get_names()
-    for item in itemlists:
-        alist = lists.get(item)
-        if alist.get("type") == "skin":
-            options.append(SelectOption(label=str(item), value=str(item)))
-    component = Select(placeholder="Skin Lists", options=options)
-    await interaction.send(
-        "Select a skin list below:",
-        components=[component],
-    )
-    selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    slist = lists.get(selected_list.values[0])
-    items = slist.get("list")
-    itemsilist = []
-    for i in items:
-        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
-    itemsilist.append(SelectOption(label="all", value="all"))
-    if len(itemsilist) > 25:
-        return "ListTooLong", selected_list, selected_list.values[0]
-    component = Select(placeholder="Skins", options=itemsilist)
-    await interaction.send(
-        "Select a skin below:",
-        components=[component],
-    )
-    selected_skin = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    user_action_log(ctx, f"SPAWN SKIN SELECTION - {selected_skin.values[0]}")
-    if selected_skin.values[0] == "all":
-        return items, selected_skin, selected_skin.values[0]
-    return selected_skin.values[0], selected_skin, selected_list.values[0]
-
-
-async def spawn_vehicle_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    options = list()
-    itemlists = lists.get_names()
-    for item in itemlists:
-        alist = lists.get(item)
-        if alist.get("type") == "vehicle":
-            options.append(SelectOption(label=str(item), value=str(item)))
-
-    component = Select(placeholder="Vehicle Lists", options=options)
-    await interaction.send(
-        "Select a vehicle list below:",
-        components=[component],
-    )
-    selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    slist = lists.get(selected_list.values[0])
-    items = slist.get("list")
-    itemsilist = []
-    for i in items:
-        itemsilist.append(SelectOption(label=str(items.get(i)), value=str(items.get(i))))
-    itemsilist.append(SelectOption(label="all", value="all"))
-    if len(itemsilist) > 25:
-        return "ListTooLong", selected_list, selected_list.values[0]
-    component = Select(placeholder="Vehicles", options=itemsilist)
-    await interaction.send(
-        "Select a vehicle below:",
-        components=[component],
-    )
-    selected_vehicle = await ctx.bot.components_manager.wait_for(
-        "select_option", component=component
-    )
-    user_action_log(ctx, f"SPAWN VEHICLE SELECTION - {selected_vehicle.values[0]}")
-    if selected_vehicle.values[0] == "all":
-        return items, selected_vehicle, selected_list.values[0]
-    return selected_vehicle.values[0], selected_vehicle, selected_list.values[0]
-
-
 async def spawn_team_select(
     ctx: commands.Context, interaction: discord_components.Interaction, team_index: int
 ):
@@ -165,34 +109,6 @@ async def spawn_team_select(
     selected_team = await ctx.bot.components_manager.wait_for("select_option", component=component)
     user_action_log(ctx, f"SPAWN TEAM SELECTION - {selected_team.values[0]}")
     return selected_team.values[0], selected_team
-
-
-async def spawn_map_select(ctx: commands.Context, interaction: discord_components.Interaction):
-    options = list()
-    map_lists = lists.get_by_type("map")
-    for list_name, _ in map_lists.items():
-        options.append(SelectOption(label=str(list_name), value=str(list_name)))
-    component = Select(placeholder="Map Lists", options=options)
-    await interaction.send(
-        "Select a map list below:",
-        components=[component],
-    )
-    selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    map_list = map_lists.get(selected_list.values[0])
-    items = map_list.get("list")
-    options = list()
-    for item in items:
-        options.append(SelectOption(label=str(items.get(item)), value=str(items.get(item))))
-    if len(options) > 25:
-        return "ListTooLong", selected_list, selected_list.values[0]
-    component = Select(placeholder="Map", options=options)
-    await interaction.send(
-        "Select map below:",
-        components=[component],
-    )
-    selected_map = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    user_action_log(ctx, f"SPAWN MAP SELECTION - {selected_map.values[0]}")
-    return selected_map.values[0], selected_map
 
 
 async def spawn_server_select(ctx: commands.Context, description: str = ""):
