@@ -123,8 +123,6 @@ class Aliases:
                 return f"UGC{id}"
             except KeyError:
                 raise AliasNotFoundError("maps", name)
-            jid = parse_qs(parsed_url.query)["id"][0]
-            return f"UGC{id}"
         if check_map_already_label(name):
             return name
         return self.get("maps", name)
