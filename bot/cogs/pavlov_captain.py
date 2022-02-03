@@ -195,19 +195,17 @@ class PavlovCaptain(commands.Cog):
         **Example**: `{prefix}switchmap 89374583439127 servername`
         **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
-        if ctx.interaction_exec:
-            if not await check_perm_captain(__interaction, server_name):
-                return
-        else:
+        if not ctx.interaction_exec:
             if not await check_perm_captain(ctx, server_name):
                 return
-        if ctx.interaction_exec:
+        else:
+            if not await check_perm_captain(__interaction, server_name):
+                return
             map_name, __interaction = await spawn_map_select(ctx, __interaction)
             game_mode, __interaction = await spawn_gamemode_select(ctx, __interaction)
 
         components = list()
         if game_mode.upper() == "SND":
-
             gamesetup = self.bot.all_commands.get("gamesetup")
             resetsnd = self.bot.all_commands.get("resetsnd")
 
@@ -223,15 +221,11 @@ class PavlovCaptain(commands.Cog):
                     lambda interaction: resetsnd(ctx, server_name, interaction),
                 )
             )
-        if not ctx.interaction_exec:
-            map_label = aliases.get_map(map_name)
-            data, _ = await exec_server_command(
-                ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
-            )
-        else:
-            data, _ = await exec_server_command(
-                ctx, server_name, f"SwitchMap {map_name} {game_mode.upper()}"
-            )
+
+        map_label = aliases.get_map(map_name)
+        data, _ = await exec_server_command(
+            ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
+        )
         switch_map = data.get("SwitchMap")
         if not switch_map:
             if ctx.batch_exec:
