@@ -26,13 +26,14 @@ async def spawn_list_select(
     ctx: commands.Context, interaction: discord_components.Interaction, list_type: SpawnListTypes
 ):
     options = list()
-    _list = lists.get_by_type(list_type.name)
-    for item in _list:
-        if lists.get(item) == list_type.name:
-            options.append(SelectOption(label=str(item), value=str(item)))
-    component = Select(placeholder=f"{list_type.name.capitalize()} Lists", options=options)
+    _lists = lists.get_by_type(list_type.value)
+    for name, _ in _lists.items():
+        options.append(SelectOption(label=str(name), value=str(name)))
+    if len(options) > 25:
+        raise SpawnExceptionListTooLong(list_type.value)
+    component = Select(placeholder=f"{list_type.value.capitalize()} Lists", options=options)
     await interaction.send(
-        f"Select a {list_type.name} list below:",
+        f"Select a {list_type.value} list below:",
         components=[component],
     )
     selected_list = await ctx.bot.components_manager.wait_for("select_option", component=component)
@@ -42,14 +43,14 @@ async def spawn_list_select(
         options.append(SelectOption(label=str(items.get(item)), value=str(items.get(item))))
     options.append(SelectOption(label="all", value="all"))
     if len(options) > 25:
-        raise SpawnExceptionListTooLong(list_type.name)
+        raise SpawnExceptionListTooLong(list_type.value)
     component = Select(placeholder="Items", options=options)
     await selected_list.send(
-        f"Select a {list_type.name} below:",
+        f"Select a {list_type.value} below:",
         components=[component],
     )
     selected_item = await ctx.bot.components_manager.wait_for("select_option", component=component)
-    user_action_log(ctx, f"SPAWN {list_type.name.upper()} SELECTION - {selected_item.values[0]}")
+    user_action_log(ctx, f"SPAWN {list_type.value.upper()} SELECTION - {selected_item.values[0]}")
     if selected_item.values[0] == "all":
         return items, selected_item, selected_list.values[0]
     return selected_item.values[0], selected_item, selected_list.values[0]

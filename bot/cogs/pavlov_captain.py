@@ -15,6 +15,7 @@ from bot.utils.interactions import (
     spawn_server_select,
     spawn_team_select,
     SpawnListTypes,
+    SpawnExceptionListTooLong,
 )
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
@@ -206,7 +207,7 @@ class PavlovCaptain(commands.Cog):
                 map_name, __interaction, mapl = await spawn_list_select(
                     ctx, __interaction, SpawnListTypes.SPAWN_MAP_SELECT
                 )
-            except SpawnListTypes:
+            except SpawnExceptionListTooLong:
                 embed = discord.Embed(
                     title=f"**Your skin list `{mapl}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
