@@ -402,8 +402,8 @@ class PavlovMod(commands.Cog):
 
     @commands.command()
     async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
-        """`{prefix}setpin <pin> <server_name>`
-        **Description**: Sets a password for your server. Must be 4-digits.
+        """`{prefix}setpin <pin> <server_name>` - *Changes server pin
+        **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}setpin 0000 servername`
         """

@@ -18,7 +18,11 @@ class Commands(commands.Cog):
 
     @commands.command()
     async def command(self, ctx, command_name: str):
-        """`{prefix}command <command_name>`"""
+        """`{prefix}command <command_name>` - *Runs a pre-defined shell command on server hosting pavlov-bot*
+                **Description**: Runs a pre-defined shell command on server hosting pavlov-bot. These must be setup in commands.json file
+                **Requires**: Permissions for the server as defined in commands.json
+                **Example**: `{prefix}command restart_all`
+                """
         command = server_commands.get(command_name)
         await command(ctx)
         await ctx.send(f"Execution of command `{command_name}` done.")

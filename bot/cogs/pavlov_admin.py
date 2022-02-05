@@ -32,6 +32,10 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def menu(self, ctx):
+        """`{prefix}menu`  - *Creates a button driven admin menu*
+        **Description**: Creates a button driven admin menu.
+        **Requires**: Admin permissions for the server
+        """
         async def actions(interact):
             await message.edit(content="")
             server_name = interact.values[0]
@@ -435,7 +439,7 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def custom(self, ctx, rcon_command: str, server_name: str = config.default_server):
-        """`{prefix}custom "<rcon_command with args>" server_name`
+        """`{prefix}custom "<rcon_command with args>" server_name` - *Telnet-like direct entry to RCON*
         **Description**: Runs a custom RCON command.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}custom ServerInfo servername`

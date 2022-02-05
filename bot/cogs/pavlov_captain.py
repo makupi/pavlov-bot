@@ -36,6 +36,10 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def gamesetup(self, ctx, __interaction: discord_components.Interaction = None):
+        """`{prefix}gamesetup` - *Starts a button driven game session in Discord*
+                **Description**: Starts a button driven game session in Discord.
+                **Requires**: Captain permissions for the server
+                """
         async def actions(interact, msg, server_name: str = ""):
             gamesetup = self.bot.all_commands.get("gamesetup")
             await msg.edit(content="")
@@ -191,8 +195,8 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}switchmap <map_name> <game_mode> <server_name>`
-
+        """`{prefix}switchmap <map_name> <game_mode> <server_name>` - *Switches map
+        **Description**: Switches to requested map and mode. Will download map if required.
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}switchmap 89374583439127 servername`
         **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
@@ -263,8 +267,8 @@ class PavlovCaptain(commands.Cog):
     async def resetsnd(
         self, ctx, server_name: str = config.default_server, __interaction: str = ""
     ):
-        """`{prefix}resetsnd <server_name>`
-
+        """`{prefix}resetsnd <server_name>` - *Issues ResetSND command*
+        **Description**: Issues ResetSND command that restarts game with same teams
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
@@ -296,8 +300,8 @@ class PavlovCaptain(commands.Cog):
         team_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}switchteam <player_id> <team_id> <server_name>`
-
+        """`{prefix}switchteam <player_id> <team_id> <server_name>` - *Moves player to team*
+        **Description**: Moves player to requested team
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd 89374583439127 0 servername`
         """
@@ -313,8 +317,8 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command(aliases=["next"])
     async def rotatemap(self, ctx, server_name: str = config.default_server):
-        """`{prefix}rotatemap <server_name>`
-
+        """`{prefix}rotatemap <server_name>` - *Changes map to next in rotation*
+        **Description**: Changes map to next in Game.ini
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap servername`
         **Aliases**: rotatemap can also be called as next `{prefix}next servername`
@@ -340,8 +344,8 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}matchsetup <CT team name> <T team name> <server name>`
-
+        """`{prefix}matchsetup <CT team name> <T team name> <server name>` - *Sets up SND match with teams*
+        **Description**: Sets up an SND match with teams
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
@@ -391,7 +395,8 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}flush <servername>`
+        """`{prefix}flush <servername>` - *Randomly kicks a player not in aliases*
+        **Description**: Randomly picks player not in aliases and kicks them. Useful for joining full server
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}flush snd1`
         """
