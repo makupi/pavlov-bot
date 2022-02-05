@@ -432,6 +432,34 @@ class PavlovCaptain(commands.Cog):
             else:
                 await ctx.send(embed=embed)
 
+    @commands.command()
+    async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
+        """`{prefix}setpin <pin> <server_name>` - *Changes server pin*
+        **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset
+        **Requires**: Captain permissions or higher for the server
+        **Example**: `{prefix}setpin 0000 servername`
+        """
+        if not await check_perm_captain(ctx, server_name):
+            return
+        if len(pin) == 4 and pin.isdigit():
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin {pin}")
+        elif pin.lower() == "remove":
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin")
+        else:
+            embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
+            await ctx.send(embed=embed)
+            return
+        spin = data.get("Successful")
+        if ctx.batch_exec:
+            return spin
+        if not spin:
+            embed = discord.Embed(title=f"**Failed** to set pin {pin}")
+        else:
+            if pin.lower() == "remove":
+                embed = discord.Embed(title=f"Pin removed")
+            else:
+                embed = discord.Embed(title=f"Pin {pin} successfully set")
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))
