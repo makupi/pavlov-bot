@@ -30,8 +30,8 @@ class PavlovMod(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}ban <player_id> <server_name>`
-        **Description**: Adds a player to blacklist.txt
+        """`{prefix}ban <player_id> <server_name/all>`
+        **Description**: Adds a player to blacklist.txt on a server. If "all" is given, bans on all servers
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 servername`
         """
@@ -74,7 +74,7 @@ class PavlovMod(commands.Cog):
         __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
-        **Description**: Kills a player.
+        **Description**: Kills a player, or a team or all players
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kill 89374583439127 servername`
         """
