@@ -134,17 +134,19 @@ async def spawn_gamemode_select(ctx: commands.Context, interaction: discord_comp
     component = Select(
         placeholder="Gamemodes",
         options=[
-            SelectOption(label="DM", value="DM"),
-            SelectOption(label="KOTH", value="KOTH"),
-            SelectOption(label="GUN", value="GUN"),
-            SelectOption(label="OITC", value="OITC"),
             SelectOption(label="SND", value="SND"),
-            SelectOption(label="TANKTDM", value="TANKTDM"),
-            SelectOption(label="TDM", value="TDM"),
+            SelectOption(label="DeathMatch", value="DM"),
+            SelectOption(label="King of the Hill", value="KOTH"),
+            SelectOption(label="GunGame", value="GUN"),
+            SelectOption(label="One in the chamber", value="OITC"),
+            SelectOption(label="PUSH", value="PUSH"),
+            SelectOption(label="TANK Team Deathmatch", value="TANKTDM"),
+            SelectOption(label="Team Deathmatch", value="TDM"),
             SelectOption(label="TTT", value="TTT"),
-            SelectOption(label="WW2GUN", value="WW2GUN"),
-            SelectOption(label="ZWV", value="ZWV"),
-            SelectOption(label="CUSTOM", value="CUSTOM"),
+            SelectOption(label="WW2 Gun Game", value="WW2GUN"),
+            SelectOption(label="Zombies", value="ZWV"),
+            SelectOption(label="Hide", value="HIDE"),
+            SelectOption(label="Prophunt", value="PH"),
         ],
     )
 
