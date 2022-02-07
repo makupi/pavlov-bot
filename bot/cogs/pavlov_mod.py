@@ -7,7 +7,7 @@ import discord_components
 from discord.ext import commands
 
 from bot.utils import SteamPlayer, config, servers
-from bot.utils.interactions import spawn_item_select, spawn_player_select, spawn_team_select
+from bot.utils.interactions import spawn_boolean_select, spawn_item_select, spawn_player_select, spawn_team_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -335,7 +335,7 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def tttendround(self, ctx, server_name: str = config.default_server):
+    async def tttendround(self, ctx, server_name: str = config.default_server, __interaction: discord_components.Interaction = None):
         """`{prefix}tttendround server_name`
         **Description**: Ends the current TTT round.
         **Requires**: Admin permissions for the server
@@ -352,10 +352,13 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**TTT round ended!** \n")
         else:
             embed = discord.Embed(title=f"**Failed to end TTT round!** \n")
-        await ctx.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+        else:
+            await ctx.send(embed=embed)
 
     @commands.command()
-    async def tttpausetimer(self, ctx, boolean, server_name: str = config.default_server):
+    async def tttpausetimer(self, ctx, boolean, server_name: str = config.default_server, __interaction: discord_components.Interaction = None):
         """`{prefix}tttpausetimer pause/unpause/true/false server_name`
         **Description**: Pauses/unpauses the TTT round timer.
         **Requires**: Admin permissions for the server
@@ -367,6 +370,10 @@ class PavlovMod(commands.Cog):
             boolean = "false"
         if not await check_perm_moderator(ctx, server_name):
             return
+        if ctx.interaction_exec:
+            boolean, __interaction = await spawn_boolean_select(ctx, __interaction)
+        if boolean == "None":
+            return
         data, _ = await exec_server_command(ctx, server_name, f"TTTPauseTimer {boolean}")
         if not data:
             data = "No response"
@@ -376,7 +383,10 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**TTT round timer paused!** \n")
         else:
             embed = discord.Embed(title=f"**TTT round timer unpaused!** \n")
-        await ctx.send(embed=embed)
+        if ctx.interaction_exec:
+            await __interaction.send(embed=embed)
+        else:
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def tttalwaysenableskinmenu(self, ctx, boolean, server_name: str = config.default_server):

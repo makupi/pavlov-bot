@@ -239,3 +239,18 @@ async def spawn_gamemode_select(ctx: commands.Context, interaction: discord_comp
         f"SPAWN GAME MODE SELECTION - {interaction.values[0]}"
     )
     return interaction.values[0], interaction
+
+async def spawn_boolean_select(ctx: commands.Context, interaction: discord_components.Interaction):
+    options = [
+        SelectOption(label="True/Enable", value="True"),
+        SelectOption(label="False/Disable", value="False"),
+    ]
+    await interaction.send(
+        "Select a boolean below:",
+        components=[Select(placeholder="Booleans", options=options)],
+    )
+    interaction = await ctx.bot.wait_for("select_option")
+    user_action_log(ctx,
+        f"SPAWN BOOLEAN SELECTION - {interaction.values[0]}"
+    )
+    return interaction.values[0], interaction

@@ -76,6 +76,26 @@ class PavlovAdmin(commands.Cog):
                         self.bot.all_commands.get("tttendround"),
                         self.bot.all_commands.get("tttpausetimer"),
                     ]
+                    tttactionrow = ActionRow(
+                        self.bot.components_manager.add_callback(
+                            Button(label="TTT Flush Karma"),
+                            lambda interaction: flushkarma(
+                                ctx, "", server_name, interaction
+                            ),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="TTT End Round"),
+                            lambda interaction: endround(
+                                ctx, server_name, interaction
+                            ),
+                        ),
+                        self.bot.components_manager.add_callback(
+                            Button(label="TTT Pause Timer"),
+                            lambda interaction: pausetimer(
+                                ctx, "", server_name, interaction
+                            ),
+                        ),
+                    )
                 components = [
                     ActionRow(
                         self.bot.components_manager.add_callback(
@@ -130,6 +150,8 @@ class PavlovAdmin(commands.Cog):
                         ),
                     ),
                 ]
+                if server_info.get("GameMode").casefold() == "ttt":
+                    components.append(tttactionrow)
                 await interact.send(
                     embed=embed,
                     components=components,

@@ -367,7 +367,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}batch "rotatemap rush" "serverinfo rush"`
         """
-        embed = discord.Embed(title="batch execute")
+        embed = discord.Embed(title="Batch Execution Results")
         before = datetime.now()
         for args in batch_commands:
             _args = args.split(" ")
@@ -390,14 +390,14 @@ class Pavlov(commands.Cog):
                 except Exception as ex:
                     logging.error(f"BATCH: {command} failed with {ex}")
                     traceback.print_exc(file=sys.stdout)
-                    embed.add_field(name=args, value="execution failed", inline=False)
+                    embed.add_field(name=args, value="Execution Failed", inline=False)
             else:
                 embed.add_field(
                     name=args,
-                    value="execution failed - command not found",
+                    value="Execution Failed - Command Not Found",
                     inline=False,
                 )
-        embed.set_footer(text=f"Execution time: {datetime.now() - before}")
+        embed.set_footer(text=f"Execution Time: {datetime.now() - before}")
         await ctx.send(embed=embed)
 
     @commands.command()
