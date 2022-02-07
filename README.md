@@ -65,7 +65,7 @@ If you only have one server, if you name it `default` in servers.json and you ca
 
 *Optional advanced feature*: Copy polling.json.default file from Examples directory to `/home/steam/pavlov-bot/polling.json` and edit as required. This feature allows for continuous monitoring of servers for player count and sending messages to discord at customizable low, medium and high player counts. Autobalance feature kicks/bans team killers and keeps teams numerically balanced (intended for PUSH servers)
 
-*Optional advanced feature*: If you intend to use `;menu` or `;gamesetup` button based control, edit `/home/steam/pavlov-bot/lists.json` to control entries in dropdown lists for items and maps. 
+*Optional advanced feature*: If you intend to use `;menu` or `;gamesetup` button based control, copy lists.json.default file from Examples directory to `/home/steam/pavlov-bot/lists.json` and edit as required.  to control entries in dropdown lists for items and maps. 
 
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
@@ -161,7 +161,9 @@ In addition to the implemented RCON commands, the bot has a few advanced functio
 * Command shortcuts: `;switchmap` can be shortened to `;map` and `;rotatemap` can be shortened to `;next`
 * `;switchmap` command can accept either map aliases, UGC### or full URLs from workshop like "https://steamcommunity.com/sharedfiles/filedetails/?id=1664873782"
 * A set of commands which can apply to an individual player, a team or all players: ``;giveitem``, ``;slap``, ``;kill``, ``;switchplayerskins`` and ``;givecash``. These can take either an alias/steamID/q-questname, the keyword "all" or the keywords "teamblue/teamred/team0/team1" to apply command to an individual player, all players, or players on a team. 
-* `;menu` command will spawn a buttons based menu for admin control of server with ban, kick, Godmode and item spawning available from within VR via virtual desktop
+* `;menu` command will spawn a buttons based menu for admin control of server with ban, kick, Godmode and item spawning available from within VR via virtual desktop.
+
+  ***Please note*: There are some known issues with the menu if more than one admin is attempting to use at once. Also known not to work well with servers with high playercount (<10) due to delays in returning long player list**
 ##Polling features 
 Pavlov-bot now has the ability to constantly poll servers looking for players or conditions and either take actions or make discord posts. This is configured using polling.json (see example file)
 * Player polling: Monitors servers looking for players. Posts to Discord channels when player count hits low, med and high numbers and can ping roles.

@@ -23,7 +23,8 @@ class Teams(commands.Cog):
     @commands.command()
     async def teamsetup(self, ctx, players_arg: str, team_name: str):
         """`{prefix}teamsetup <comma seperated list of unique_id or alias> <team_name>`
-
+        **Description**: Takes a list of aliases or IDs and puts them on a team after wiping player list
+        **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}teamsetup maku,invicta team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
@@ -47,7 +48,8 @@ class Teams(commands.Cog):
     @ringers.command()
     async def add(self, ctx, player_arg: str, team_name: str):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
-
+        **Description**: Adds a single player to a team. Can be called by ID or alias
+        **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers add maku team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
@@ -61,8 +63,9 @@ class Teams(commands.Cog):
     @ringers.command()
     async def populate(self, ctx, team_name: str, server_name: str = config.default_server):
         """`{prefix}ringers populate <team_name> <server_name>`
-
-        **Examples**: `{prefix}ringers populate tdm random`"""
+        **Description**: Takes all players on a server not in aliases and puts them on a team.
+        **Requires**: Captain permissions or higher for the server
+        **Examples**: `{prefix}ringers populate random_team tdm_server`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
         data, _ = await exec_server_command(ctx, server_name, "RefreshList")
@@ -87,7 +90,8 @@ class Teams(commands.Cog):
     @ringers.command()
     async def reset(self, ctx, team_name: str):
         """`{prefix}ringers reset <team_name>`
-
+        **Description**: Removes all ringers on a team.
+        **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers reset team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
@@ -98,7 +102,8 @@ class Teams(commands.Cog):
     @ringers.command(aliases=["remove"])
     async def delete(self, ctx, player_arg: str, team_name: str):
         """`{prefix}ringers delete <unique_id or alias> <team_name>`
-
+        **Description**: Removes a specific ringer from a team.
+        **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers delete maku team_a`"""
         if not await check_perm_captain(ctx, global_check=True):
             return
@@ -112,7 +117,8 @@ class Teams(commands.Cog):
     @commands.command()
     async def teams(self, ctx, team_name: str = None):
         """`{prefix}teams [team_name]`
-
+        **Description**: Lists players assigned to teams
+        **Requires**: Captain permissions or higher for the server
         team_name is optional. Without it will list all possible teams."""
         if not team_name:
             teams = aliases.get_teams_list()

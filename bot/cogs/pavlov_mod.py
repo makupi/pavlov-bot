@@ -1,13 +1,11 @@
-import asyncio
 import logging
-from datetime import datetime
 
 import discord
 import discord_components
 from discord.ext import commands
 
 from bot.utils import SteamPlayer, config, servers
-from bot.utils.interactions import spawn_boolean_select, spawn_item_select, spawn_player_select, spawn_team_select
+from bot.utils.interactions import spawn_player_select
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -32,8 +30,8 @@ class PavlovMod(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}ban <player_id> <server_name>`
-        **Description**: Adds a player to blacklist.txt
+        """`{prefix}ban <player_id> <server_name/all>`
+        **Description**: Adds a player to blacklist.txt on a server. If "all" is given, bans on all servers
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}ban 89374583439127 servername`
         """
@@ -76,7 +74,7 @@ class PavlovMod(commands.Cog):
         __interaction: discord_components.Interaction = None,
     ):
         """`{prefix}kill <player_id/all/team> <server_name>`
-        **Description**: Kills a player.
+        **Description**: Kills a player, or a team or all players
         **Requires**: Moderator permissions or higher for the server
         **Example**: `{prefix}kill 89374583439127 servername`
         """
@@ -411,36 +409,6 @@ class PavlovMod(commands.Cog):
         else:
             embed = discord.Embed(title=f"**Skin menu disabled during mid-round!** \n")
         await ctx.send(embed=embed)
-
-    @commands.command()
-    async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
-        """`{prefix}setpin <pin> <server_name>`
-        **Description**: Sets a password for your server. Must be 4-digits.
-        **Requires**: Moderator permissions or higher for the server
-        **Example**: `{prefix}setpin 0000 servername`
-        """
-        if not await check_perm_moderator(ctx, server_name):
-            return
-        if len(pin) == 4 and pin.isdigit():
-            data, _ = await exec_server_command(ctx, server_name, f"SetPin {pin}")
-        elif pin.lower() == "remove":
-            data, _ = await exec_server_command(ctx, server_name, f"SetPin")
-        else:
-            embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
-            await ctx.send(embed=embed)
-            return
-        spin = data.get("Successful")
-        if ctx.batch_exec:
-            return spin
-        if not spin:
-            embed = discord.Embed(title=f"**Failed** to set pin {pin}")
-        else:
-            if pin.lower() == "remove":
-                embed = discord.Embed(title=f"Pin removed")
-            else:
-                embed = discord.Embed(title=f"Pin {pin} successfully set")
-        await ctx.send(embed=embed)
-
 
 def setup(bot):
     bot.add_cog(PavlovMod(bot))

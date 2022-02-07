@@ -124,7 +124,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def serverinfo(self, ctx, server_name: str = config.default_server):
-        """`{prefix}serverinfo <server_name>`
+        """`{prefix}serverinfo <server_name>` - *Provides details on server*
 
         **Example**: `{prefix}serverinfo rush`
         """
@@ -163,7 +163,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def banlist(self, ctx, server_name: str = config.default_server):
-        """`{prefix}banlist <server_name> - Lists banned players on a server`
+        """`{prefix}banlist <server_name>` - *Lists banned players on a server*
 
         **Example**: `{prefix}banlist rush`
         """
@@ -181,7 +181,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def itemlist(self, ctx, server_name: str = config.default_server):
-        """`{prefix}itemlist <servername>`
+        """`{prefix}itemlist <servername>` - *Lists available items on a server*
 
         **Example**: `{prefix}itemlist snd1`
         """
@@ -199,7 +199,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()  # Exceeds Helptext embed, maplist hidden for now
     async def maplist(self, ctx, server_name: str = config.default_server):
-        """`{prefix}maplist <server_name>`
+        """`{prefix}maplist <server_name>` - *Lists configured maps on a server*
 
         **Example**: `{prefix}maplist rush`
         """
@@ -222,7 +222,7 @@ class Pavlov(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components = None,
     ):
-        """`{prefix}players <server_name>`
+        """`{prefix}players <server_name>` - *Provides a scoreboard with player info*
 
         **Example**: `{prefix}players rush`
         """
@@ -315,7 +315,7 @@ class Pavlov(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components = None,
     ):
-        """`{prefix}playerinfo <player_id> <server_name>`
+        """`{prefix}playerinfo <player_id> <server_name>` - *Player details*
 
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
@@ -402,7 +402,7 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def anyoneplaying(self, ctx, server_group: str = None):
-        """`{prefix}anyoneplaying [server_group]`"""
+        """`{prefix}anyoneplaying` - *Provides a table with info for all servers*"""
         ctx.batch_exec = True
         players_header = ANYONEPLAYING_ROW_FORMAT.format(
             alias="Alias",

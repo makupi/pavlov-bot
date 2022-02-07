@@ -8,11 +8,11 @@ from discord_components import Button, Select, ActionRow
 
 from bot.utils import SteamPlayer, config
 from bot.utils.interactions import (
-    spawn_item_select,
     spawn_player_select,
     spawn_server_select,
-    spawn_vehicle_select,
-    spawn_skin_select,
+    spawn_list_select,
+    SpawnListTypes,
+    SpawnExceptionListTooLong,
 )
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
@@ -32,15 +32,20 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def menu(self, ctx):
+        """`{prefix}menu`  - *Creates a button driven admin menu*
+        **Description**: Creates a button driven admin menu.
+        **Requires**: Admin permissions for the server
+        """
         async def actions(interact):
             await message.edit(content="")
             server_name = interact.values[0]
-            data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
-            server_info = data.get("ServerInfo")
-            if server_name == "OFFLINE":
+            if "offline" in server_name.lower():
                 embed = discord.Embed(title="Server is offline.")
                 await interact.send(embed=embed)
                 return
+            data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
+            server_info = data.get("ServerInfo")
+
             if interact.author.id == ctx.author.id:
                 embed = discord.Embed(title=f"**{server_name} Admin Menu**")
                 ctx.interaction_exec = True
@@ -191,8 +196,11 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            item_id, __interaction, iteml = await spawn_item_select(ctx, __interaction)
-            if item_id == "ListTooLong":
+            try:
+                item_id, __interaction, iteml = await spawn_list_select(
+                    ctx, __interaction, SpawnListTypes.SPAWN_ITEM_SELECT
+                )
+            except SpawnExceptionListTooLong:
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
@@ -273,8 +281,11 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            vehicle_id, __interaction, iteml = await spawn_vehicle_select(ctx, __interaction)
-            if vehicle_id == "ListTooLong":
+            try:
+                vehicle_id, __interaction, iteml = await spawn_list_select(
+                    ctx, __interaction, SpawnListTypes.SPAWN_VEHICLE_SELECT
+                )
+            except SpawnExceptionListTooLong:
                 embed = discord.Embed(
                     title=f"**Your item list `{iteml}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
@@ -409,8 +420,11 @@ class PavlovAdmin(commands.Cog):
                 embed = discord.Embed(title=f"**No players on `{server_name}`**")
                 await __interaction.send(embed=embed)
                 return
-            skin_id, __interaction, skinl = await spawn_skin_select(ctx, __interaction)
-            if skin_id == "ListTooLong":
+            try:
+                skin_id, __interaction, skinl = await spawn_list_select(
+                    ctx, __interaction, SpawnListTypes.SPAWN_SKIN_SELECT
+                )
+            except SpawnExceptionListTooLong:
                 embed = discord.Embed(
                     title=f"**Your skin list `{skinl}` contains more than 25 items!**",
                     description="**Keep your item list to 25 items or lower.**",
@@ -447,7 +461,7 @@ class PavlovAdmin(commands.Cog):
 
     @commands.command()
     async def custom(self, ctx, rcon_command: str, server_name: str = config.default_server):
-        """`{prefix}custom "<rcon_command with args>" server_name`
+        """`{prefix}custom "<rcon_command with args>" server_name` - *Telnet-like direct entry to RCON*
         **Description**: Runs a custom RCON command.
         **Requires**: Admin permissions for the server
         **Example**: `{prefix}custom ServerInfo servername`

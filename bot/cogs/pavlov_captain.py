@@ -11,9 +11,11 @@ from discord_components import Button, Select
 from bot.utils import SteamPlayer, aliases, config
 from bot.utils.interactions import (
     spawn_gamemode_select,
-    spawn_map_select,
+    spawn_list_select,
     spawn_server_select,
     spawn_team_select,
+    SpawnListTypes,
+    SpawnExceptionListTooLong,
 )
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
@@ -34,12 +36,16 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command()
     async def gamesetup(self, ctx, __interaction: discord_components.Interaction = None):
+        """`{prefix}gamesetup` - *Starts a button driven game session in Discord*
+                **Description**: Starts a button driven game session in Discord.
+                **Requires**: Captain permissions for the server
+                """
         async def actions(interact, msg, server_name: str = ""):
             gamesetup = self.bot.all_commands.get("gamesetup")
             await msg.edit(content="")
             if server_name == "":
                 server_name = interact.values[0]
-            elif server_name == "OFFLINE":
+            elif "offline" in server_name.lower():
                 embed = discord.Embed(title="Server is offline.")
                 await interact.send(embed=embed)
                 return
@@ -189,25 +195,33 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}switchmap <map_name> <game_mode> <server_name>`
-
+        """`{prefix}switchmap <map_name> <game_mode> <server_name>` - *Switches map
+        **Description**: Switches to requested map and mode. Will download map if required.
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}switchmap 89374583439127 servername`
         **Alias**: switchmap can be shortened to just map `{prefix}map 89374583439127 servername`
         """
-        if ctx.interaction_exec:
-            if not await check_perm_captain(__interaction, server_name):
-                return
-        else:
+        if not ctx.interaction_exec:
             if not await check_perm_captain(ctx, server_name):
                 return
-        if ctx.interaction_exec:
-            map_name, __interaction = await spawn_map_select(ctx, __interaction)
+        else:
+            if not await check_perm_captain(__interaction, server_name):
+                return
+            try:
+                map_name, __interaction, mapl = await spawn_list_select(
+                    ctx, __interaction, SpawnListTypes.SPAWN_MAP_SELECT
+                )
+            except SpawnExceptionListTooLong:
+                embed = discord.Embed(
+                    title=f"**Your skin list `{mapl}` contains more than 25 items!**",
+                    description="**Keep your item list to 25 items or lower.**",
+                )
+                await __interaction.send(embed=embed)
+                return
             game_mode, __interaction = await spawn_gamemode_select(ctx, __interaction)
 
         components = list()
         if game_mode.upper() == "SND":
-
             gamesetup = self.bot.all_commands.get("gamesetup")
             resetsnd = self.bot.all_commands.get("resetsnd")
 
@@ -223,15 +237,11 @@ class PavlovCaptain(commands.Cog):
                     lambda interaction: resetsnd(ctx, server_name, interaction),
                 )
             )
-        if not ctx.interaction_exec:
-            map_label = aliases.get_map(map_name)
-            data, _ = await exec_server_command(
-                ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
-            )
-        else:
-            data, _ = await exec_server_command(
-                ctx, server_name, f"SwitchMap {map_name} {game_mode.upper()}"
-            )
+
+        map_label = aliases.get_map(map_name)
+        data, _ = await exec_server_command(
+            ctx, server_name, f"SwitchMap {map_label} {game_mode.upper()}"
+        )
         switch_map = data.get("SwitchMap")
         if not switch_map:
             if ctx.batch_exec:
@@ -257,8 +267,8 @@ class PavlovCaptain(commands.Cog):
     async def resetsnd(
         self, ctx, server_name: str = config.default_server, __interaction: str = ""
     ):
-        """`{prefix}resetsnd <server_name>`
-
+        """`{prefix}resetsnd <server_name>` - *Issues ResetSND command*
+        **Description**: Issues ResetSND command that restarts game with same teams
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd servername`
         """
@@ -290,8 +300,8 @@ class PavlovCaptain(commands.Cog):
         team_id: str,
         server_name: str = config.default_server,
     ):
-        """`{prefix}switchteam <player_id> <team_id> <server_name>`
-
+        """`{prefix}switchteam <player_id> <team_id> <server_name>` - *Moves player to team*
+        **Description**: Moves player to requested team
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}resetsnd 89374583439127 0 servername`
         """
@@ -307,8 +317,8 @@ class PavlovCaptain(commands.Cog):
 
     @commands.command(aliases=["next"])
     async def rotatemap(self, ctx, server_name: str = config.default_server):
-        """`{prefix}rotatemap <server_name>`
-
+        """`{prefix}rotatemap <server_name>` - *Changes map to next in rotation*
+        **Description**: Changes map to next in Game.ini
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}rotatemap servername`
         **Aliases**: rotatemap can also be called as next `{prefix}next servername`
@@ -334,8 +344,8 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}matchsetup <CT team name> <T team name> <server name>`
-
+        """`{prefix}matchsetup <CT team name> <T team name> <server name>` - *Sets up SND match with teams*
+        **Description**: Sets up an SND match with teams
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}matchsetup ct_team t_team servername`
         """
@@ -385,7 +395,8 @@ class PavlovCaptain(commands.Cog):
         server_name: str = config.default_server,
         __interaction: discord_components.Interaction = None,
     ):
-        """`{prefix}flush <servername>`
+        """`{prefix}flush <servername>` - *Randomly kicks a player not in aliases*
+        **Description**: Randomly picks player not in aliases and kicks them. Useful for joining full server
         **Requires**: Captain permissions or higher for the server
         **Example**: `{prefix}flush snd1`
         """
@@ -421,6 +432,34 @@ class PavlovCaptain(commands.Cog):
             else:
                 await ctx.send(embed=embed)
 
+    @commands.command()
+    async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
+        """`{prefix}setpin <pin> <server_name>` - *Changes server pin*
+        **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset
+        **Requires**: Captain permissions or higher for the server
+        **Example**: `{prefix}setpin 0000 servername`
+        """
+        if not await check_perm_captain(ctx, server_name):
+            return
+        if len(pin) == 4 and pin.isdigit():
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin {pin}")
+        elif pin.lower() == "remove":
+            data, _ = await exec_server_command(ctx, server_name, f"SetPin")
+        else:
+            embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
+            await ctx.send(embed=embed)
+            return
+        spin = data.get("Successful")
+        if ctx.batch_exec:
+            return spin
+        if not spin:
+            embed = discord.Embed(title=f"**Failed** to set pin {pin}")
+        else:
+            if pin.lower() == "remove":
+                embed = discord.Embed(title=f"Pin removed")
+            else:
+                embed = discord.Embed(title=f"Pin {pin} successfully set")
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))
