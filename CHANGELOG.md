@@ -1,12 +1,30 @@
 # Changelog
 
-## v0.6.1 - 2020-11-?
+## v0.7.1 - 2022-02-06
+- Autobalance: Designed primarly for PUSH servers, this feature monitors the scoreboard for team killers and kicks or bans at your tolerance limit. Watches player count for the two teams and when enough players are present and the teams are unbalanced, forces players from high count team to low to keep games numerically balanced.
+- Added `;gamesetup` command that will spawn menu buttons in discord allowing control of an SND match using Discord buttons from within VR.
+- Added `;menu` command to spawn admin menu with Discord buttons for use with virtual desktop in VR 
+- Improved formatting of `;players` command scoreboard
+- Lengthened pause before ResetSND on `;matchsetup` to 10 seconds from 5 seconds
+- Added `;ringers populate {team} {server}` for setting up pubstomps against randos
+- Added TTT related commands:
+  - `;tttsetkarma <player_id/all/team> <karma_amount> <server_name>`
+  
+  - `;tttflushkarma <player_id/all/team> <server_name>`
+  
+  - `;tttendround server_name`
+  - `;tttpausetimer pause/unpause/true/false server_name`
+  - `;tttalwaysenableskinmenu enable/disable/true/false server_name`
+- Added `;nametags enable/disable/true/false server_name` command to turn off nametags for vod recording
+- Added "all" option to ban to ban player on all managed servers. `;ban 1234 all`
+
+## v0.6.1 - 2021-11-?
 - Improved performance of `;players` command
 - Improved output of `;players` command to give player stats and game score
 - Created the start of a polling system that continually runs commands against servers. First use case is a polling system that can send messages to discord channels when a server is filling up or emptying out
 - Shortened pause before ResetSND on `;matchsetup` to 5 seconds from 10 seconds
 
-## v0.5.1 - 2020-10-21
+## v0.5.1 - 2021-10-21
 - Fixed Blacklist command changing to Banlist
 - Removed "all" commands and made following commands accept either a UserID or keywords ``all``, ``teamred/teamblue`` or "team0/team1" with enhanced feedback on which players the command applied to:
 	- ;slap
@@ -17,7 +35,7 @@
 - Graphics updates to ;players command
 - Added in new player info parsing backend
 - 
-## v0.5 - 2020-10
+## v0.5 - 2021-10
 - Added support for following new RCON commands
 	- SetPin
 	- AddMod

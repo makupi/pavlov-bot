@@ -142,3 +142,5 @@ commands.json
 polling.json
 
 lists.json
+
+user_action_log.txt

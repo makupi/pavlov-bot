@@ -1,9 +1,8 @@
 import json
 import os
 import re
-from typing import List, Tuple
-
 import urllib.parse as urlparse
+from typing import List, Tuple
 from urllib.parse import parse_qs
 
 from bot.utils.steamplayer import SteamPlayer
@@ -59,14 +58,18 @@ class Team:
         return self.member_repr()
 
     def member_repr(self):
-        s = f"original members:```\n"
-        for member in self._original_members:
-            s += f" - {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
+        if len(self._original_members) > 0:
+            s = f"Original Members:```\n"
+            for member in self._original_members:
+                s += f""" - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n"""
+            s += "```"
+        else:
+            s = ""
         if self._ringers:
-            s += "```ringers:```\n"
+            s += "Ringers:```\n"
             for member in self._ringers:
-                s += f" - {f'{member.name}' if member.has_alias else ''} <{member.unique_id}>\n"
-        s += "```"
+                s += f""" - {f"{member.name.replace('q-', '')}" if member.has_alias else ""} <{member.unique_id}>\n"""
+            s += "```"
         return s
 
 
@@ -120,8 +123,6 @@ class Aliases:
                 return f"UGC{id}"
             except KeyError:
                 raise AliasNotFoundError("maps", name)
-            jid = parse_qs(parsed_url.query)["id"][0]
-            return f"UGC{id}"
         if check_map_already_label(name):
             return name
         return self.get("maps", name)

@@ -5,6 +5,7 @@ from pathlib import Path
 import aiohttp
 import discord
 from discord.ext import commands
+from discord_components import DiscordComponents
 
 from bot.utils import aliases, config, servers, user_action_log
 
@@ -15,7 +16,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.6.1"
+__version__ = "0.7.1"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
@@ -30,6 +31,7 @@ async def get_prefix(_bot, message):
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
 bot.version = __version__
 bot.remove_command("help")
+DiscordComponents(bot)
 
 
 @bot.event
@@ -75,6 +77,7 @@ async def on_command_error(ctx, error):
 @bot.before_invoke
 async def before_invoke(ctx):
     ctx.batch_exec = False
+    ctx.interaction_exec = False
     await ctx.trigger_typing()
     user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
