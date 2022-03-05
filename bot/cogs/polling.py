@@ -154,18 +154,36 @@ class Polling(commands.Cog):
                 else:
                     logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
                     if blue_count > red_count:
-                        to_switch = random.choice(teamblue)
+                        median_number = int(blue_count / 2)
+                        scorelist_sorted = sorted(scorelist.items(), key=lambda x: x[1])
+                        for red_player in teamred:
+                            scorelist_sorted.pop(red_player)
+                        while median_number > 0:
+                            scorelist_sorted.popitem()
+                            median_number -= 1
+                        player_score_to_switch = scorelist_sorted.popitem()
+                        to_switch = player_score_to_switch[0]
                         sw_command = f"SwitchTeam {to_switch} 1"
                         logging.info(
-                            f"Player {to_switch} moved from blue to red on {server} at player count"
+                            f"Player {player_score_to_switch} moved from blue to red on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
+                            f"Median number was {median_number}"
                         )
                     else:
-                        to_switch = random.choice(teamred)
+                        median_number = int(red_count / 2)
+                        scorelist_sorted = sorted(scorelist.items(), key=lambda x: x[1])
+                        for blue_player in teamblue:
+                            scorelist_sorted.pop(blue_player)
+                        while median_number > 0:
+                            scorelist_sorted.popitem()
+                            median_number -= 1
+                        player_score_to_switch = scorelist_sorted.popitem()
+                        to_switch = player_score_to_switch[0]
                         sw_command = f"SwitchTeam {to_switch} 0"
                         logging.info(
-                            f"Player {to_switch} moved from red to blue on {server} at player count"
+                            f"Player {player_score_to_swith} moved from red to blue on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
+                            f"Median number was {median_number}"
                         )
                 if poll_config.get("autobalance_testing"):
                     logging.info(f"Just testing {sw_command}")
