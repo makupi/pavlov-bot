@@ -181,7 +181,7 @@ class Polling(commands.Cog):
                         to_switch = player_score_to_switch[0]
                         sw_command = f"SwitchTeam {to_switch} 0"
                         logging.info(
-                            f"Player {player_score_to_swith} moved from red to blue on {server} at player count"
+                            f"Player {player_score_to_switch} moved from red to blue on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
                             f"Median number was {median_number}"
                         )
