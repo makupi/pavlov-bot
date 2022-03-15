@@ -94,8 +94,8 @@ class Polling(commands.Cog):
 
     async def autobalance_polling(self, ctx, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
-        teamblue, teamred, _, _, scorelist, ctx = await players.get_stats(ctx, server)
-        for player, score in scorelist.items():
+        teamblue, teamred, _, _, scoredict, ctx = await players.get_stats(ctx, server)
+        for player, score in scoredict.items():
             try:
                 score = int(score)
 
@@ -133,6 +133,21 @@ class Polling(commands.Cog):
                     logging.info(
                         f"Player {player} would have been actioned for TK from server {server} at score {score}"
                     )
+#        for red_player in teamred:
+#            logging.info(f"Red: {red_player}")
+#        for blue_player in teamblue:
+#            logging.info(f"Blue: {blue_player}")
+#        for player, score in scoredict.items():
+#            logging.info(f"{player}:{score}")
+
+        scorelist_sorted = sorted(scoredict.items(), key=lambda x: int(x[1]))
+#       for player in scorelist_sorted:
+#           logging.info(f"{player}")
+
+        playerlist_sorted = [player[0] for player in scorelist_sorted]
+#        for player in playerlist_sorted:
+#           logging.info(f"{player}")
+
         blue_count = len(teamblue)
         red_count = len(teamred)
         tolerance = int(poll_config.get("autobalance_tolerance"))
@@ -154,34 +169,44 @@ class Polling(commands.Cog):
                 else:
                     logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
                     if blue_count > red_count:
-                        median_number = int(blue_count / 2)
-                        scorelist_sorted = sorted(scorelist.items(), key=lambda x: x[1])
+                        blue_count_int = int(blue_count)
+                        logging.info(f"{blue_count_int}")
+                        median_number = int(blue_count_int / 2)
+#                        logging.info(f"Median: {median_number}")
+
                         for red_player in teamred:
-                            scorelist_sorted.pop(red_player)
+                            playerlist_sorted.remove(red_player)
+#                            logging.info(f"Popping reds {red_player}")
                         while median_number > 0:
-                            scorelist_sorted.popitem()
+                            median_pop = playerlist_sorted.pop()
                             median_number -= 1
-                        player_score_to_switch = scorelist_sorted.popitem()
-                        to_switch = player_score_to_switch[0]
+#                            logging.info(f"Pop median: {median_pop}")
+                        to_switch = playerlist_sorted.pop()
+                        logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 1"
                         logging.info(
-                            f"Player {player_score_to_switch} moved from blue to red on {server} at player count"
+                            f"Player {to_switch} moved from blue to red on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
                             f"Median number was {median_number}"
                         )
                     else:
-                        median_number = int(red_count / 2)
-                        scorelist_sorted = sorted(scorelist.items(), key=lambda x: x[1])
+                        red_count_int = int(red_count)
+                        logging.info(f"{red_count_int}")
+                        median_number = int(red_count_int / 2)
+#                        logging.info(f"Median: {median_number}")
+
                         for blue_player in teamblue:
-                            scorelist_sorted.pop(blue_player)
+                            playerlist_sorted.remove(blue_player)
+#                            logging.info(f"Popping blues {blue_player}")
                         while median_number > 0:
-                            scorelist_sorted.popitem()
+                            median_pop = playerlist_sorted.pop()
                             median_number -= 1
-                        player_score_to_switch = scorelist_sorted.popitem()
-                        to_switch = player_score_to_switch[0]
+#                            logging.info(f"Pop median: {median_pop}")
+                        to_switch = playerlist_sorted.pop()
+                        logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 0"
                         logging.info(
-                            f"Player {player_score_to_switch} moved from red to blue on {server} at player count"
+                            f"Player {to_switch} moved from red to blue on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
                             f"Median number was {median_number}"
                         )
