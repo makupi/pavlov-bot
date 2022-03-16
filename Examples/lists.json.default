@@ -1,0 +1,233 @@
+{
+    "WW2 Guns": {
+        "type": "item",
+        "list": {
+            "1": "ppsh",
+            "2": "mp40",
+            "3": "g43",
+            "4": "m1garand",
+            "5": "svt40",
+            "6": "luger",
+            "7": "tokarev",
+            "8": "webley",
+            "9": "bren",
+            "10": "bar",
+            "11": "sten",
+            "12": "stg44",
+            "13": "mosin",
+            "14": "springfield",
+            "15": "thompson",
+            "16": "mg42",
+            "17": "leeenfield",
+            "18": "dp27"
+        }
+    },
+    "Grenades": {
+        "type": "item",
+        "list": {
+            "1": "grenade_us",
+            "2": "grenade_ger",
+            "3": "smoke_us",
+            "4": "smoke_ger",
+            "5": "grenade_svt",
+            "6": "smoke_svt",
+            "7": "grenade",
+            "8": "grenade_ru",
+            "9": "flash",
+            "10": "smoke",
+            "11": "smoke_ru",
+            "12": "grenade_dis"
+        }
+    },
+    "Launchers": {
+        "type": "item",
+        "list": {
+            "1": "rl_piat",
+            "2": "rl_m1a1",
+            "3": "rl_panzer"
+        }
+    },
+    "Pistols": {
+        "type": "item",
+        "list": {
+            "1": "cet9",
+            "2": "m9",
+            "3": "1911",
+            "4": "sock",
+            "5": "57",
+            "6": "de",
+            "7": "revolver",
+            "8": "sawedoff"
+        }
+    },
+    "Rifles": {
+        "type": "item",
+        "list": {
+            "1": "lmga",
+            "2": "uzi",
+            "3": "mp5",
+            "4": "smg",
+            "5": "vanas",
+            "6": "p90",
+            "7": "kar98",
+            "8": "ak47",
+            "9": "ak12",
+            "10": "ak",
+            "11": "ar",
+            "12": "aug",
+            "13": "autosniper",
+            "14": "antitank",
+            "15": "awp",
+            "16": "sks",
+            "17": "akshorty",
+            "19": "ar9",
+            "20": "m16",
+            "21": "kross",
+            "22": "vzz",
+            "23": "scur"
+        }
+    },
+    "Attachments": {
+        "type": "item",
+        "list": {
+            "1": "reddot",
+            "2": "holo",
+            "3": "acog",
+            "4": "supp_pistol",
+            "5": "supp_rifle",
+            "6": "grip_angled",
+            "7": "grip_vertical",
+            "8": "armour",
+            "9": "kevlarhelmet",
+            "10": "scope_kar98",
+            "11": "scope_leeenfield",
+            "12": "scope_springfield",
+            "13": "scope_mosin",
+            "14": "bayonet_trenchgun",
+            "15": "bayonet_leeenfield",
+            "16": "bayonet_m1garand",
+            "17": "bayonet_mosin",
+            "18": "bayonet_springfield",
+            "19": "bayonet_kar98",
+            "20": "Flashlight_Rifle",
+            "21": "Laser_Rifle",
+            "22": "Laser_Pistol",
+            "23": "reddot_pistol",
+            "24": "Canted_Reddot"
+        }
+    },
+    "Misc": {
+        "type": "item",
+        "list": {
+            "1": "defuse",
+            "2": "knife",
+            "3": "painkillers",
+            "4": "taser",
+            "5": "syringe",
+            "6": "PushBomb",
+            "7": "medkit",
+            "8": "antitankmine",
+            "9": "antipersonnelmine",
+            "10": "BallisticsShield",
+            "11": "tankmg",
+            "12": "tankturret",
+            "13": "skinhelmet_us",
+            "14": "skinhelmet_ger",
+            "15": "skinhelmet_svt",
+            "16": "galul"
+        }
+    },
+    "Ammo": {
+        "type": "item",
+        "list": {
+            "1": "ammo_rifle",
+            "2": "ammo_sniper",
+            "3": "ammo_pistol",
+            "4": "ammo_smg",
+            "5": "ammo_shotgun",
+            "6": "ammo_special",
+            "7": "ammocrate"
+        }
+    },
+    "TTT": {
+        "type": "item",
+        "list": {
+            "1": "tttknife",
+            "2": "detectivesmg",
+            "3": "dnascanner",
+            "4": "silentcet9",
+            "5": "TTTC4",
+            "6": "goldengun",
+            "7": "pipe",
+            "8": "monocular",
+            "9": "teleporter",
+            "10": "newtonlauncher",
+            "11": "healthstation",
+            "12": "flaregun"
+        }
+    },
+    "Shotguns": {
+        "type": "item",
+        "list": {
+            "1": "shotgun",
+            "2": "autoshotgun",
+            "3": "drumshotgun",
+            "4": "trenchgun"
+        }
+    },
+    "Vehicles": {
+        "type": "vehicle",
+        "list": {
+            "1": "panzer",
+            "2": "sherman",
+            "3": "t34",
+            "4": "truck",
+            "5": "atv",
+            "6": "tiger"
+        }
+    },
+    "Default Maps": {
+	"type": "map",
+	"list": {
+		"1": "datacenter",
+    	"2": "sand",
+		"3": "bridge",
+		"4": "containeryard",
+		"5": "siberia",
+		"6": "hospital",
+		"7": "killhouse",
+		"8": "range",
+		"9": "tutorial",
+		"10": "santorini",
+        "11": "station",
+        "12": "industry",
+		"13": "ogcontainers",
+		"14": "haguenau",
+		"15": "foundation",
+		"16": "stalingrad",
+        "17": "stalingrad_night",
+        "18": "santorini_night",
+		"19": "sand_night",
+		"20": "station_night",
+		"21": "industry_night",
+		"22": "bunker"
+   	}
+    },
+    "Default Skins": {
+        "type": "skin",
+        "list": {
+            "1": "clown",
+            "2": "cop",
+            "3": "farmer",
+            "4": "german",
+            "5": "naked",
+            "6": "nato",
+            "7": "prisoner",
+            "8": "russian",
+            "9": "soviet",
+            "10": "us",
+            "11": "aurora",
+            "12": "hidden"
+        }
+    }
+}

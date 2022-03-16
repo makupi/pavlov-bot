@@ -59,12 +59,13 @@ Note that server names are processed case insensitive, so server named "Rush" ca
 
 If you only have one server, if you name it `default` in servers.json and you can skip defining a server in all commands that require one as `default` will be used automatically. This default name can be changed in `config.json` 
 
-*Optional but recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC### for maps or SteamID/EOSID or aliases defined in this file using these ID formats. Teams are setup as arrays of SteamIDs/EOSIDs for use with ;matchsetup command. Team aliases are required to used ``;matchsetup`` command.    
+*Optional but highly recommended*: Copy aliases.json.default file from Examples directory to `/home/steam/pavlov-bot/aliases.json` and edit as required for your servers. Maps and players can be called using either UGC### for maps or SteamID/EOSID or aliases defined in this file using these ID formats. Teams are setup as arrays of SteamIDs/EOSIDs for use with `;matchsetup` and `;gamesetup` commands. Empty team aliases are required to use ``;teamsetup`` command.    
 
 *Optional advanced feature*: Copy commands.json.default file from Examples directory to `/home/steam/pavlov-bot/commands.json` and edit as required. By default, all commands require Admin permission unless the "permission" field contains "All", "Captain" or "Mod" which grants execution rights to that level and higher.  Note that all commands will be run as the steam user. If you want to allow commands to call scripts requiring root permission, you will need to configure sudo to allow this. 
 
+*Optional advanced feature*: Copy polling.json.default file from Examples directory to `/home/steam/pavlov-bot/polling.json` and edit as required. This feature allows for continuous monitoring of servers for player count and sending messages to discord at customizable low, medium and high player counts. Autobalance feature kicks/bans team killers and keeps teams numerically balanced (intended for PUSH servers)
 
-*Optional advanced feature*: Copy polling.json.default file from Examples directory to `/home/steam/pavlov-bot/polling.json` and edit as required. This new feature allows for continuous monitoring of servers for player count and sending messages to discord at customizable low, medium and high player counts
+*Optional advanced feature*: If you intend to use `;menu` or `;gamesetup` button based control, copy lists.json.default file from Examples directory to `/home/steam/pavlov-bot/lists.json` and edit as required.  to control entries in dropdown lists for items and maps. 
 
 ## Setup your bot with discord
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
@@ -148,16 +149,25 @@ The bot has 4 permission levels:
 In addition to the implemented RCON commands, the bot has a few advanced functions:
 * Aliases as defined in aliases.json file allow UGC###/SteamID for maps and players to be called with easy to remember aliases. ``;aliases`` will list player and map aliases defined. ``;teams`` will list teams defined with ``;teams <teamname>`` providing list of players
 * Team managment commands (``;ringer add, ;ringer delete, ;ringer reset``) allow dynamic addition of temporary players to teams defined in aliases.json. ``;teamsetup`` allows for quick creation of ad-hoc teams using an empty team name defined in aliases.json
+* ``;teamsetup player1,player2,player3,player4,player5 <team alias>`` will allow for quick ad-hoc team creation. Make a pair of blank teams in aliases.json to fill with players. 
+* ``;gamesetup`` will spawn menu buttons in discord allowing control of an SND match using Discord buttons from within VR. Choose server to control, teams to play and then trigger match setups and switchmap commands. Other buttons are available after certain commands to either enter gamesetup or ResetSND. 
 * ``;matchsetup <CT Team> <T Team> <server>`` using the teams setup in aliases.json and with team management commands will push players to the correct teams in game, pause 10 seconds then issue ResetSND
- * ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
- * ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
+* ``;anyoneplaying`` will give a summary report of all servers controlled by the bot
+* ``;custom "<command string>" <server>`` will pass the command string along to RCON and presents back whatever data is returned (if any). This is useful for maps with rcon interfaces
 * If you have a server called "default", you can omit the server name from commands. To set a different default server name, set `server_name` key in config.json
 * ``;flush <server>`` will randomly pick a player who isn't in aliases.json and kick them from the server to make room for a registered player. 
 * ``;command <command_name>`` will allow you to execute pre-defined commandline commands in commands.json on the local server running the bot. Useful for automation of things like starting and stopping pavlovserver instances or clearing disk space on server full of maps. 
 * ``;repeat <full pavlov-bot command> <number>`` will issue the requested pavlov-bot command requested number of times up to 100. Useful for making a pile of nades or something. 
-* Command shorthands: ;switchmap can be shortened to ;map and ;rotatemap can be shortened to ;next
-* ;switchmap command can accept either map aliases, UGC### or full URLs from workshop like "https://steamcommunity.com/sharedfiles/filedetails/?id=1664873782"
+* Command shortcuts: `;switchmap` can be shortened to `;map` and `;rotatemap` can be shortened to `;next`
+* `;switchmap` command can accept either map aliases, UGC### or full URLs from workshop like "https://steamcommunity.com/sharedfiles/filedetails/?id=1664873782"
 * A set of commands which can apply to an individual player, a team or all players: ``;giveitem``, ``;slap``, ``;kill``, ``;switchplayerskins`` and ``;givecash``. These can take either an alias/steamID/q-questname, the keyword "all" or the keywords "teamblue/teamred/team0/team1" to apply command to an individual player, all players, or players on a team. 
+* `;menu` command will spawn a buttons based menu for admin control of server with ban, kick, Godmode and item spawning available from within VR via virtual desktop.
+
+  ***Please note*: There are some known issues with the menu if more than one admin is attempting to use at once. Also known not to work well with servers with high playercount (<10) due to delays in returning long player list**
+##Polling features 
+Pavlov-bot now has the ability to constantly poll servers looking for players or conditions and either take actions or make discord posts. This is configured using polling.json (see example file)
+* Player polling: Monitors servers looking for players. Posts to Discord channels when player count hits low, med and high numbers and can ping roles.
+* Autobalance: Designed primarly for PUSH servers, this feature monitors the scoreboard for team killers and kicks or bans at your tolerance limit. Watches player count for the two teams and when enough players are present and the teams are unbalanced, forces players from high count team to low to keep games numerically balanced.   
 
 ## Quest IDs and maps 
 
@@ -170,6 +180,5 @@ For example, you want to ban player "annoying" who isn't in your aliases file ``
 Quest maps need to be entered into the aliases.json file for them to work at all. Can either be a 1 to 1 (eg ``"mapname": "mapname",``) or might as well make a short alias (``"shortname": "mapname",``). 
 
 # Known issues with Rcon that bot can't fix
-* When a SwitchMap Rcon command is issued, the server always returns true no matter what map (or no valid map at all) was requested. No way to know if the request was valid or not or what will happen. Could be nothing, could be datacenter. It is a mystery. 
 * After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
 * Issuing a ``ResetSND`` command to RCON very quickly after a ``SwitchTeam`` command can result in oddities like extra death count in scoreboard or weapons or SND bomb not getting removed from player. 
