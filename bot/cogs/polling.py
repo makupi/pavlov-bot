@@ -217,7 +217,7 @@ class Polling(commands.Cog):
                     logging.info(f"Executed {sw_command}")
                     _, ctx = await exec_server_command(ctx, server, sw_command)
                     embed = discord.Embed(
-                        title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}. Median player moved`"
+                        title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}. Median player moved `"
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
