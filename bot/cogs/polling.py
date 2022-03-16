@@ -133,7 +133,7 @@ class Polling(commands.Cog):
                     logging.info(
                         f"Player {player} would have been actioned for TK from server {server} at score {score}"
                     )
-#        for red_player in teamred:
+##        for red_player in teamred:
 #            logging.info(f"Red: {red_player}")
 #        for blue_player in teamblue:
 #            logging.info(f"Blue: {blue_player}")
