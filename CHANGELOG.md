@@ -1,5 +1,10 @@
 # Changelog
 
+##v0.7.2 - 2022-03-16
+- Tweaked autobalance so that instead of randomly picking a player it always picks the player with median score. Prevents very skilled or very not skilled players from being move, neither of which balance the game well
+- Added `;checkban` command to look for an ID in the banlist instead of having to do it manually
+
+
 ## v0.7.1 - 2022-02-06
 - Autobalance: Designed primarly for PUSH servers, this feature monitors the scoreboard for team killers and kicks or bans at your tolerance limit. Watches player count for the two teams and when enough players are present and the teams are unbalanced, forces players from high count team to low to keep games numerically balanced.
 - Added `;gamesetup` command that will spawn menu buttons in discord allowing control of an SND match using Discord buttons from within VR.
