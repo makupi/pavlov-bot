@@ -1,0 +1,32 @@
+{
+    "playerpoll1": {
+        "type": "player",
+        "servers": ["pavz"],
+        "polling_interval": 1,
+        "polling_channel": 721148700868608140,
+        "low_threshold": 3,
+        "medium_threshold": 16,
+        "high_threshold": 22,
+        "show_scoreboard": true
+    },
+    "playerpoll2": {
+        "type": "player",
+        "servers": ["push"],
+        "polling_interval": 1,
+        "polling_channel": 721148700868608140,
+        "low_threshold": 3,
+        "medium_threshold": 8,
+        "high_threshold": 10,
+        "show_scoreboard": true
+    },
+    "autobalance": {
+        "type": "autobalance",
+        "servers": ["push"],
+        "polling_interval": 1,
+        "polling_channel": 721148700868608140,
+        "tk_threshold": "-5",
+        "tk_action": "kick",
+        "autobalance_min_players": "1",
+        "autobalance_tolerance": "1"
+	}
+}
