@@ -137,16 +137,16 @@ class Polling(commands.Cog):
 #            logging.info(f"Red: {red_player}")
 #        for blue_player in teamblue:
 #            logging.info(f"Blue: {blue_player}")
-#        for player, score in scoredict.items():
-#            logging.info(f"{player}:{score}")
+        for player, score in scoredict.items():
+            logging.info(f"{player}:{score}")
 
         scorelist_sorted = sorted(scoredict.items(), key=lambda x: int(x[1]))
-#       for player in scorelist_sorted:
-#           logging.info(f"{player}")
+       for player in scorelist_sorted:
+           logging.info(f"{player}")
 
         playerlist_sorted = [player[0] for player in scorelist_sorted]
-#        for player in playerlist_sorted:
-#           logging.info(f"{player}")
+        for player in playerlist_sorted:
+           logging.info(f"{player}")
 
         blue_count = len(teamblue)
         red_count = len(teamred)
@@ -176,11 +176,11 @@ class Polling(commands.Cog):
 
                         for red_player in teamred:
                             playerlist_sorted.remove(red_player)
-#                            logging.info(f"Popping reds {red_player}")
+                            logging.info(f"Popping reds {red_player}")
                         while median_number > 0:
                             median_pop = playerlist_sorted.pop()
                             median_number -= 1
-#                            logging.info(f"Pop median: {median_pop}")
+                            logging.info(f"Pop median: {median_pop}")
                         to_switch = playerlist_sorted.pop()
                         logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 1"
@@ -197,11 +197,11 @@ class Polling(commands.Cog):
 
                         for blue_player in teamblue:
                             playerlist_sorted.remove(blue_player)
-#                            logging.info(f"Popping blues {blue_player}")
+                            logging.info(f"Popping blues {blue_player}")
                         while median_number > 0:
                             median_pop = playerlist_sorted.pop()
                             median_number -= 1
-#                            logging.info(f"Pop median: {median_pop}")
+                            logging.info(f"Pop median: {median_pop}")
                         to_switch = playerlist_sorted.pop()
                         logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 0"
