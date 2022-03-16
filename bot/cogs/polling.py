@@ -137,16 +137,16 @@ class Polling(commands.Cog):
 #            logging.info(f"Red: {red_player}")
 #        for blue_player in teamblue:
 #            logging.info(f"Blue: {blue_player}")
-        for player, score in scoredict.items():
-            logging.info(f"{player}:{score}")
+#        for player, score in scoredict.items():
+#            logging.info(f"{player}:{score}")
 
         scorelist_sorted = sorted(scoredict.items(), key=lambda x: int(x[1]))
-        for player in scorelist_sorted:
-           logging.info(f"{player}")
+#        for player in scorelist_sorted:
+#           logging.info(f"{player}")
 
         playerlist_sorted = [player[0] for player in scorelist_sorted]
-        for player in playerlist_sorted:
-           logging.info(f"{player}")
+#        for player in playerlist_sorted:
+#           logging.info(f"{player}")
 
         blue_count = len(teamblue)
         red_count = len(teamred)
