@@ -180,6 +180,26 @@ class Pavlov(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command()
+    async def checkban(self, ctx, player, server_name: str = config.default_server):
+        """`{prefix}checkban <playerid> <server_name>` - *Lists banned players on a server*
+
+        **Example**: `{prefix}checkban invicta push`
+        """
+        embed = discord.Embed(title=f"Looking for {player} on `{server_name}` banlist:")
+        data, _ = await exec_server_command(ctx, server_name, "Banlist")
+        black_list = data.get("BanList")
+        if black_list:
+            if player in black_list:
+                embed.description = "Player is banned... naughty boy found."
+                await ctx.send(embed=embed)
+            else:
+                embed.description = "Player is not banned."
+                await ctx.send(embed=embed)
+        else:
+            embed.description = "No banned players found."
+            await ctx.send(embed=embed)
+
+    @commands.command()
     async def itemlist(self, ctx, server_name: str = config.default_server):
         """`{prefix}itemlist <servername>` - *Lists available items on a server*
 

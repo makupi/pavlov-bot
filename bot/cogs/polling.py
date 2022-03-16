@@ -94,8 +94,8 @@ class Polling(commands.Cog):
 
     async def autobalance_polling(self, ctx, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
-        teamblue, teamred, _, _, scorelist, ctx = await players.get_stats(ctx, server)
-        for player, score in scorelist.items():
+        teamblue, teamred, _, _, scoredict, ctx = await players.get_stats(ctx, server)
+        for player, score in scoredict.items():
             try:
                 score = int(score)
 
@@ -133,6 +133,21 @@ class Polling(commands.Cog):
                     logging.info(
                         f"Player {player} would have been actioned for TK from server {server} at score {score}"
                     )
+##        for red_player in teamred:
+#            logging.info(f"Red: {red_player}")
+#        for blue_player in teamblue:
+#            logging.info(f"Blue: {blue_player}")
+#        for player, score in scoredict.items():
+#            logging.info(f"{player}:{score}")
+
+        scorelist_sorted = sorted(scoredict.items(), key=lambda x: int(x[1]))
+#        for player in scorelist_sorted:
+#           logging.info(f"{player}")
+
+        playerlist_sorted = [player[0] for player in scorelist_sorted]
+#        for player in playerlist_sorted:
+#           logging.info(f"{player}")
+
         blue_count = len(teamblue)
         red_count = len(teamred)
         tolerance = int(poll_config.get("autobalance_tolerance"))
@@ -154,18 +169,46 @@ class Polling(commands.Cog):
                 else:
                     logging.info(f"Blue:{blue_count} Red: {red_count} on {server}")
                     if blue_count > red_count:
-                        to_switch = random.choice(teamblue)
+                        blue_count_int = int(blue_count)
+                        logging.info(f"{blue_count_int}")
+                        median_number = int(blue_count_int / 2)
+#                        logging.info(f"Median: {median_number}")
+
+                        for red_player in teamred:
+                            playerlist_sorted.remove(red_player)
+                            logging.info(f"Popping reds {red_player}")
+                        while median_number > 0:
+                            median_pop = playerlist_sorted.pop()
+                            median_number -= 1
+                            logging.info(f"Pop median: {median_pop}")
+                        to_switch = playerlist_sorted.pop()
+                        logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 1"
                         logging.info(
                             f"Player {to_switch} moved from blue to red on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
+                            f"Median number was {median_number}"
                         )
                     else:
-                        to_switch = random.choice(teamred)
+                        red_count_int = int(red_count)
+                        logging.info(f"{red_count_int}")
+                        median_number = int(red_count_int / 2)
+#                        logging.info(f"Median: {median_number}")
+
+                        for blue_player in teamblue:
+                            playerlist_sorted.remove(blue_player)
+                            logging.info(f"Popping blues {blue_player}")
+                        while median_number > 0:
+                            median_pop = playerlist_sorted.pop()
+                            median_number -= 1
+                            logging.info(f"Pop median: {median_pop}")
+                        to_switch = playerlist_sorted.pop()
+                        logging.info(f"to_switch: {to_switch}")
                         sw_command = f"SwitchTeam {to_switch} 0"
                         logging.info(
                             f"Player {to_switch} moved from red to blue on {server} at player count"
                             f" {blue_count + red_count} ratio {blue_count}/{red_count} "
+                            f"Median number was {median_number}"
                         )
                 if poll_config.get("autobalance_testing"):
                     logging.info(f"Just testing {sw_command}")
@@ -174,7 +217,7 @@ class Polling(commands.Cog):
                     logging.info(f"Executed {sw_command}")
                     _, ctx = await exec_server_command(ctx, server, sw_command)
                     embed = discord.Embed(
-                        title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}`"
+                        title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}. Median player moved `"
                     )
                     p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
                     await channel.send(p_role, embed=embed)
