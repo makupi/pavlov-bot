@@ -141,7 +141,7 @@ class Polling(commands.Cog):
             logging.info(f"{player}:{score}")
 
         scorelist_sorted = sorted(scoredict.items(), key=lambda x: int(x[1]))
-        for player in scorelist_sorted:
+       for player in scorelist_sorted:
            logging.info(f"{player}")
 
         playerlist_sorted = [player[0] for player in scorelist_sorted]
