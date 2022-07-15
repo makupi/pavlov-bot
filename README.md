@@ -7,7 +7,7 @@ Discord bot to inferface with Pavlov VR RCON
 
 ## Prerequisites
 - pip3    
-- python3.8    
+- python3.9    
 - pipenv
 
 ## Installing pip3
@@ -31,12 +31,12 @@ When prompted press Enter to continue
 Once the repository is enabled, install Python 3.8 with:
 
 ```
-sudo apt install python3.8
+sudo apt install python3.9
 ```
 
 Verify that the installation was successful by typing:
 ```
-python3.8 --version
+python3.9 --version
 ```
 
 ## Getting pavlov-bot code from github and creating config files
@@ -81,7 +81,7 @@ login as steam user
 
 ## Test startup of bot
 As steam user run the following command    
-`cd ~/pavlov-bot && /usr/local/bin/pipenv run python3.8 run.py`
+`cd ~/pavlov-bot && /usr/local/bin/pipenv run python3.9 run.py`
 
 Go to your discord channel that the bot has been invited to and allowed to read and write to and try a few commands to test. Suggest ``;help`` and ``;info`` as good starters, then ``;servers`` to see if your server.json was read correctly. 
 
