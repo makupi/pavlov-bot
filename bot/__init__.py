@@ -27,8 +27,9 @@ async def get_prefix(_bot, message):
     #    prefix = get_guild_prefix(_bot, message.guild.id)
     return commands.when_mentioned_or(prefix)(_bot, message)
 
-
-bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
+intents = discord.Intents.default()
+intents.messages = True
+bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
 bot.version = __version__
 bot.remove_command("help")
 DiscordComponents(bot)
