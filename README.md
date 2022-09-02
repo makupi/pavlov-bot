@@ -71,6 +71,9 @@ If you only have one server, if you name it `default` in servers.json and you ca
 Follow instructions [here](https://discordpy.readthedocs.io/en/latest/discord.html#).    
 Obtain the bot token and install in config.json
 
+**NOTE**: Recent changes to discord require you to go to the configuration of the bot at https://discord.com/developers/applications/ and under "bot" settings enable "Message content Intent" 
+
+
 ## Installing pipenv
 As root user run the following command    
 `pip3 install pipenv`
