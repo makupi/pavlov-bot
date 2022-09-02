@@ -1,5 +1,9 @@
 # Changelog
 
+##v0.7.3 - 2022-09-03
+- Locked Discord.py on 1.7.3 and discord-components to archived version
+- Add privileged message intent to bot instance
+
 ##v0.7.2 - 2022-03-16
 - Tweaked autobalance so that instead of randomly picking a player it always picks the player with median score. Prevents very skilled or very not skilled players from being move, neither of which balance the game well
 - Added `;checkban` command to look for an ID in the banlist instead of having to do it manually

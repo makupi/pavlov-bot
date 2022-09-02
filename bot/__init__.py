@@ -16,7 +16,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
-__version__ = "0.7.2"
+__version__ = "0.7.3"
 
 invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
 
@@ -27,8 +27,9 @@ async def get_prefix(_bot, message):
     #    prefix = get_guild_prefix(_bot, message.guild.id)
     return commands.when_mentioned_or(prefix)(_bot, message)
 
-
-bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True)
+intents = discord.Intents.default()
+intents.messages = True
+bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
 bot.version = __version__
 bot.remove_command("help")
 DiscordComponents(bot)
