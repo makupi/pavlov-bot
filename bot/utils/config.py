@@ -15,6 +15,8 @@ class Config:
             self.config = json.load(file)
         self.prefix = self.config.get("prefix", default_config.get("prefix"))
         self.token = self.config.get("token", default_config.get("token"))
+        self.apiPATH = self.config.get("apiPATH", default_config.get("apiPATH"))
+        self.apiKEY = self.config.get("apiKEY", default_config.get("apiKEY"))
         self.default_server = self.config.get(
             "default_server", default_config.get("default_server")
         )

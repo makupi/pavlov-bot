@@ -2,6 +2,8 @@ import logging
 import re
 import sys
 import traceback
+import subprocess
+import json
 from asyncio.exceptions import TimeoutError
 from datetime import datetime
 
@@ -58,17 +60,12 @@ class Pavlov(commands.Cog):
             return _map.get("name"), _map.get("image")
         try:
             map_id = map_label.split("UGC")[1]
-            data = await fetch(
-                self.bot.aiohttp,
-                f"https://steamcommunity.com/sharedfiles/filedetails/?id={map_id}",
-            )
-            soup = BeautifulSoup(data, "html.parser")
-            # url_regex = r"/(\b(https?|ftp|file):\/\/[-A-Z0-9+&Q#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig"
-            regex = r"(https:\/\/steamuserimages-a\.akamaihd\.net\/ugc\/[A-Z0-9\/]*)"
-            match = re.findall(regex, data)[0]
-            map_image = match
-            map_name = soup.title.string.split("::")[1]
-            self._map_aliases[map_label] = {"name": map_name, "image": map_image}
+            curl_command = f'curl -s -X GET "{config.apiPATH}/games/3959/mods/{map_id}?api_key={config.apiKEY}" -H "Accept: application/json"'
+            process = subprocess.Popen(curl_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            data = json.loads(output)
+            map_name = data.get("name")
+            map_image = data.get("logo", {}).get("original")
             return map_name, map_image
         except Exception as ex:
             logging.error(f"Getting map label {map_label} failed with {ex}")
