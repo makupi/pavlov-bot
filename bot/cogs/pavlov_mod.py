@@ -400,5 +400,32 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**Skin menu disabled during mid-round!** \n")
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def addmap(self, ctx, map_id: str, game_mode: str, server_name: str = config.default_server):
+        """`{prefix}addmap <map_id> <gamemode> <server_name>`
+        **Description**: Adds map to game rotation
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}addmap UGC12345657 PUSH servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f"AddMapRotation {map_id} {game_mode}")
+        embed = discord.Embed(title=f"**AddMapRotation {map_id} {game_mode} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def removemap(self, ctx, map_id: str, game_mode: str, server_name: str = config.default_server):
+        """`{prefix}removemap <map_id> <gamemode> <server_name>`
+        **Description**: Removes map from game rotation
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}removemap UGC12345657 PUSH servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        data, _ = await exec_server_command(ctx, server_name, f"RemoveMapRotation {map_id} {game_mode}")
+        embed = discord.Embed(title=f"**RemoveMapRotation {map_id} {game_mode} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
+        await ctx.send(embed=embed)
 def setup(bot):
     bot.add_cog(PavlovMod(bot))
