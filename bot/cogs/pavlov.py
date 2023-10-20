@@ -227,7 +227,9 @@ class Pavlov(commands.Cog):
         if len(map_list) == 0:
             embed.description = f"Currently no active maps on `{server_name}`"
         for _map in map_list:
-            embed.description += f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+            map_label = _map.get('MapId')
+            map_name, map_image = await self.get_map_alias(map_label)
+            embed.description += f"\n {map_name} <{_map.get('GameMode')}>  {_map.get('MapId', '')}"
         if ctx.batch_exec:
             return embed.description
         await ctx.send(embed=embed)
