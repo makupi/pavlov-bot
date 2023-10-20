@@ -172,6 +172,21 @@ class PavlovMod(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    async def gag(self, ctx, player_arg: str, server_name: str = config.default_server):
+        """`{prefix}gag <player_id> <server_name>`
+        **Description**: Globally mutes a player
+        **Requires**: Moderator permissions or higher for the server
+        **Example**: `{prefix}gag 89374583439127 servername`
+        """
+        if not await check_perm_moderator(ctx, server_name):
+            return
+        player = SteamPlayer.convert(player_arg)
+        data, _ = await exec_server_command(ctx, server_name, f"Gag {player.unique_id}")
+        embed = discord.Embed(title=f"**Gag {player_arg} ** \n")
+        embed = await parse_player_command_results(ctx, data, embed, server_name)
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def addmod(self, ctx, player_arg: str, server_name: str = config.default_server):
         """`{prefix}addmod <player_id> <server_name>`
         **Description**: Adds a player to mods.txt
