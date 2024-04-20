@@ -36,6 +36,10 @@ ANYONEPLAYING_ROW_FORMAT = (
     "| {map_alias:^15} | {player_count:^6}"
 )
 
+PUSHSERVER_ROW_FORMAT = (
+    "{server_name:^36.36} | {map_name:^36.36} "
+    "| {player_max:^15} | {player_count:^6}"
+)
 
 async def fetch(session, url):
     response = await session.get(url)
@@ -421,49 +425,90 @@ class Pavlov(commands.Cog):
 
     @commands.command()
     async def anyoneplaying(self, ctx, server_group: str = None):
-        """`{prefix}anyoneplaying` - *Provides a table with info for all servers*"""
+            """`{prefix}anyoneplaying` - *Provides a table with info for all servers*"""
+            ctx.batch_exec = True
+            players_header = ANYONEPLAYING_ROW_FORMAT.format(
+                alias="Alias",
+                server_name="Server Name",
+                map_name="Map Name",
+                map_alias="Map Alias",
+                player_count="Players",
+            )
+            desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
+            for server_alias in servers.get_names(server_group):
+                try:
+                    data, _ = await exec_server_command(ctx, server_alias, "ServerInfo")
+                    server_info = data.get("ServerInfo", {})
+                    players_count = server_info.get("PlayerCount", "0/0")
+                    server_name = server_info.get("ServerName", "")
+                    map_label = server_info.get("MapLabel")
+                    if map_label.startswith("SVR"):
+                        map_name = map_label
+                    else:
+                        map_name, _ = await self.get_map_alias(map_label)
+                    map_alias = aliases.find_map_alias(map_label)
+                    if not map_name:
+                        map_name = ""
+                    if not map_alias:
+                        map_alias = ""
+                    desc += ANYONEPLAYING_ROW_FORMAT.format(
+                        alias=server_alias,
+                        server_name=server_name,
+                        map_name=map_name,
+                        map_alias=map_alias,
+                        player_count=players_count,
+                    )
+                    desc += "\n"
+                except (ConnectionRefusedError, OSError, TimeoutError):
+                    desc += ANYONEPLAYING_ROW_FORMAT.format(
+                        alias=server_alias,
+                        server_name="SERVER UNAVAILABLE",
+                        map_name="N/A",
+                        map_alias="N/A",
+                        player_count="N/A",
+                    )
+                    desc += "\n"
+            file = text_to_image(desc, "anyoneplaying.png")
+            await ctx.send(file=file)
+
+    @commands.command()
+    async def pushservers(self, ctx, server_group: str = None):
+        """`{prefix}pushservers` - *Provides a table with info for all push servers*"""
         ctx.batch_exec = True
-        players_header = ANYONEPLAYING_ROW_FORMAT.format(
-            alias="Alias",
+        players_header = PUSHSERVER_ROW_FORMAT.format(
             server_name="Server Name",
             map_name="Map Name",
-            map_alias="Map Alias",
+            player_max="Max Players",
             player_count="Players",
         )
-        desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
-        for server_alias in servers.get_names(server_group):
-            try:
-                data, _ = await exec_server_command(ctx, server_alias, "ServerInfo")
-                server_info = data.get("ServerInfo", {})
-                players_count = server_info.get("PlayerCount", "0/0")
-                server_name = server_info.get("ServerName", "")
-                map_label = server_info.get("MapLabel")
-                if map_label.startswith("SVR"):
-                    map_name = map_label
-                else:
-                    map_name, _ = await self.get_map_alias(map_label)
-                map_alias = aliases.find_map_alias(map_label)
-                if not map_name:
-                    map_name = ""
-                if not map_alias:
-                    map_alias = ""
-                desc += ANYONEPLAYING_ROW_FORMAT.format(
-                    alias=server_alias,
-                    server_name=server_name,
-                    map_name=map_name,
-                    map_alias=map_alias,
-                    player_count=players_count,
+        desc = f"\n{players_header}\n{'-' * len(players_header)}\n"
+
+        try:
+            curl_command = f'curl -s -X GET "{config.pav_push_URL}" -H "Accept: application/json"'
+            process = subprocess.Popen(curl_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, _ = process.communicate()
+            data = json.loads(output)
+            for server in data["servers"]:
+                players_count = server["slots"]
+                players_max = server["maxSlots"]
+                server_name = server["name"]
+                map_name = server["mapLabel"]
+
+                desc += PUSHSERVER_ROW_FORMAT.format(
+                server_name=server_name,
+                map_name=map_name,
+                player_max=players_max,
+                player_count=players_count,
                 )
                 desc += "\n"
-            except (ConnectionRefusedError, OSError, TimeoutError):
-                desc += ANYONEPLAYING_ROW_FORMAT.format(
-                    alias=server_alias,
-                    server_name="SERVER UNAVAILABLE",
-                    map_name="N/A",
-                    map_alias="N/A",
-                    player_count="N/A",
-                )
-                desc += "\n"
+        except (ConnectionRefusedError, OSError, TimeoutError):
+            desc += PUSHSERVER_ROW_FORMAT.format(
+                server_name="SERVER UNAVAILABLE",
+                map_name="N/A",
+                player_max="N/A",
+                player_count="N/A",
+            )
+            desc += "\n"
         file = text_to_image(desc, "anyoneplaying.png")
         await ctx.send(file=file)
 

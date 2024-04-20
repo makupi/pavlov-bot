@@ -16,6 +16,7 @@ class Config:
         self.prefix = self.config.get("prefix", default_config.get("prefix"))
         self.token = self.config.get("token", default_config.get("token"))
         self.apiPATH = self.config.get("apiPATH", default_config.get("apiPATH"))
+        self.pav_push_URL = self.config.get("pav_push_URL", default_config.get("pav_push_URL"))
         self.apiKEY = self.config.get("apiKEY", default_config.get("apiKEY"))
         self.default_server = self.config.get(
             "default_server", default_config.get("default_server")
