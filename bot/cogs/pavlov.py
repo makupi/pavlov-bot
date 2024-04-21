@@ -37,7 +37,7 @@ ANYONEPLAYING_ROW_FORMAT = (
 )
 
 PUSHSERVER_ROW_FORMAT = (
-    "{server_name:^36.36} | {map_name:^36.36} "
+    "{server_name:^46.46} | {map_name:^36.36} "
     "| {player_max:^15} | {player_count:^6}"
 )
 
