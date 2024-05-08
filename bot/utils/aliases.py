@@ -159,7 +159,7 @@ class Aliases:
     def get_maps(self):
         return self._aliases.get("maps", {})
 
-    def get_maps(self):
+    def get_gamemodes(self):
         return self._aliases.get("gamemodes", {})
 
     def get_players(self):
