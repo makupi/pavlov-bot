@@ -87,6 +87,7 @@ class Pavlov(commands.Cog):
         await self.maps_aliases(ctx)
         await self.players_aliases(ctx)
         await self.teams_aliases(ctx)
+        await self.gamemodes_aliases(ctx)
 
     @aliases.command(name="maps")
     async def maps_aliases(self, ctx):
@@ -100,6 +101,20 @@ class Pavlov(commands.Cog):
             await paginator.create(ctx, embed=embed)
         else:
             embed.description = "No aliases exist for maps."
+            await ctx.send(embed=embed)
+
+    @aliases.command(name="gamemodes")
+    async def gamemodes_aliases(self, ctx):
+        """`{prefix}aliases gamemodes` - *Lists all gamemode aliases*"""
+        embed = discord.Embed(title="Gamemode Aliases")
+        gamemodes = aliases.get_gamemodes()
+        paginator = Paginator(max_lines=20)
+        if gamemodes:
+            for alias, label in gamemodes.items():
+                paginator.add_line(f"{alias:<15} - {label}")
+            await paginator.create(ctx, embed=embed)
+        else:
+            embed.description = "No aliases exist for gamemodes."
             await ctx.send(embed=embed)
 
     @aliases.command(name="players")
