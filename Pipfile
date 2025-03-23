@@ -11,3 +11,4 @@ async-pavlov = "*"
 beautifulsoup4 = "*"
 pillow = "*"
 discord-components = {file = "https://github.com/kiki7000/discord.py-components/archive/refs/tags/2.1.2.tar.gz"}
+aiohttp = "*"
