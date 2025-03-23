@@ -1,11 +1,11 @@
 import logging
 import sys
 from pathlib import Path
+import asyncio
 
 import aiohttp
 import discord
 from discord.ext import commands
-from discord_components import DiscordComponents
 
 from bot.utils import aliases, config, servers, user_action_log
 
@@ -23,16 +23,32 @@ invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bo
 
 async def get_prefix(_bot, message):
     prefix = config.prefix
-    # if not isinstance(message.channel, discord.DMChannel):
-    #    prefix = get_guild_prefix(_bot, message.guild.id)
     return commands.when_mentioned_or(prefix)(_bot, message)
 
+
 intents = discord.Intents.default()
+intents.message_content = True
 intents.messages = True
+intents.guilds = True
 bot = commands.AutoShardedBot(command_prefix=get_prefix, case_insensitive=True, intents=intents)
 bot.version = __version__
 bot.remove_command("help")
-DiscordComponents(bot)
+
+
+class ConfirmView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.value = None
+
+    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = True
+        self.stop()
+
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.red)
+    async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.value = False
+        self.stop()
 
 
 @bot.event
@@ -50,29 +66,27 @@ async def on_ready():
 
 @bot.event
 async def on_command_error(ctx, error):
-    embed = discord.Embed()
     if isinstance(error, commands.MissingRequiredArgument):
-        embed.description = (
-            f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+        await ctx.send(
+            f"⚠️ Missing required arguments. Use `{config.prefix}help` for more info!"
         )
     elif hasattr(error, "original"):
         if isinstance(error.original, servers.ServerNotFoundError):
-            embed.description = (
-                f"⚠️ Server `{error.original.server_name}` not found.\n "
-                f"Please try again or use `{config.prefix}servers` to list the available servers."
+            await ctx.send(
+                f"⚠️ Server `{error.original.server_name}` not found.\n"
+                f"Use `{config.prefix}servers` to list available servers."
             )
         elif isinstance(error.original, aliases.AliasNotFoundError):
-            embed.description = (
-                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
-                f"Please try again or use `{config.prefix}aliases` to list the available `{error.original.alias_type}`."
+            await ctx.send(
+                f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n"
+                f"Use `{config.prefix}aliases` to list available `{error.original.alias_type}`."
             )
         elif isinstance(error.original, (ConnectionRefusedError, OSError, TimeoutError)):
-            embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
+            await ctx.send("Failed to establish connection to server. Try again later or contact an admin.")
         else:
             raise error
     else:
         raise error
-    await ctx.send(embed=embed)
 
 
 @bot.before_invoke
@@ -89,14 +103,19 @@ def extensions():
         yield file.as_posix()[:-3].replace("/", ".")
 
 
-def load_extensions(_bot):
+async def load_extensions(_bot):
     for ext in extensions():
         try:
-            _bot.load_extension(ext)
+            await _bot.load_extension(ext)
         except Exception as ex:
             logging.error(f"Failed to load extension {ext} - exception: {ex}")
 
 
-def run():
-    load_extensions(bot)
-    bot.run(config.token)
+async def main():
+    await load_extensions(bot)
+    await bot.start(config.token)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
