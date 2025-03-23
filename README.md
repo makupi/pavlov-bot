@@ -183,5 +183,6 @@ For example, you want to ban player "annoying" who isn't in your aliases file ``
 Quest maps need to be entered into the aliases.json file for them to work at all. Can either be a 1 to 1 (eg ``"mapname": "mapname",``) or might as well make a short alias (``"shortname": "mapname",``). 
 
 # Known issues with Rcon that bot can't fix
-* After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9. Both bugs are documented here (https://discord.com/channels/267301605882200065/577875229599072266/729124885141389382).
+* After a ResetSND command is issued to pavlovserver the very first round can release the players before the countdown is complete. Also on occasion there have been noted CT/T side switches prior to round 9.
+  
 * Issuing a ``ResetSND`` command to RCON very quickly after a ``SwitchTeam`` command can result in oddities like extra death count in scoreboard or weapons or SND bomb not getting removed from player. 
