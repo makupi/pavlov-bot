@@ -11,5 +11,22 @@
   "teams": {
     "PCteam1": [76568423451070460, 76568768421070460],
     "Questteam2": ["Questplayer1", "Questplayer2"]
+  },
+  "gamemodes":{
+    "DM": 	        "Death match",
+    "KOTH": 	      "King of the hill",
+    "GUN": 	        "Gun game",
+    "OITC": 	      "One in the chamber",
+    "SND": 	        "Search and destroy",
+    "TANKTDM": 	    "WW2 Team Death Match",
+    "TDM": 	        "Team Death Match",
+    "TTT": 	        "Trouble in Terrorist Town",
+    "TTTclassic": 	"TTT with only innocent/traitor/detective",
+    "WW2GUN": 	    "WW2 gun game",
+    "ZWV": 	        "Zombie wave survival",
+    "HIDE": 	      "The Hidden",
+    "INFECTION": 	  "Hidden infection",
+    "PUSH": 	      "Push",
+    "PH": 	        "Prop hunt"
   }
 }
