@@ -9,13 +9,18 @@ from bot.utils import aliases, config, servers, user_action_log
 
 
 def setup_logger() -> logging.Logger:
-    logging.basicConfig(format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", level=logging.INFO)
+    logging.basicConfig(format="%(asctime)s %(name)-16s %(levelname)-8s %(message)s", level=logging.INFO)
     return logging.getLogger()
 
 
 __version__ = "0.7.3"
 
-invite_link = "https://discordapp.com/api/oauth2/authorize?client_id={}&scope=bot&permissions=8192"
+invite_link = "https://discord.com/oauth2/authorize?client_id={}"
+
+initial_extensions = (
+    'bot.cogs.pavlov',
+)
+
 
 def extensions():
     files = Path("bot", "cogs").rglob("*.py")
@@ -29,18 +34,24 @@ class PavlovBot(commands.Bot):
             command_prefix="!",
             intents=intents
         )
-        self.invite = invite_link.format(bot.user.id)
+
+        self.session = None
+        self.invite = ""
         self.log = setup_logger()
         self.version = __version__
         self.remove_command("help")
-        self.session = aiohttp.ClientSession()
+
 
     async def setup_hook(self) -> None:
-        for cog in extensions():
+        self.session = aiohttp.ClientSession()
+        self.invite = invite_link.format(self.user.id)
+        for cog in initial_extensions:
             try:
                 await self.load_extension(cog)
             except Exception as e:
                 self.log.error(f"Failed to load extension {cog}: {e}")
+        self.tree.copy_global_to(guild=discord.Object(id=492701249192460298))
+        await self.tree.sync(guild=discord.Object(id=492701249192460298))
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Game(f"v{__version__}"))
@@ -51,7 +62,7 @@ class PavlovBot(commands.Bot):
         """
         )
 
-    async def on_command_error(self, ctx: discord.Context, error: commands.CommandError):
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
         embed = discord.Embed()
         if isinstance(error, commands.MissingRequiredArgument):
             embed.description = (
@@ -76,12 +87,10 @@ class PavlovBot(commands.Bot):
             raise error
         await ctx.send(embed=embed)
 
-    async def before_invoke(self, ctx: discord.Context):
+    async def before_invoke(self, ctx: commands.Context):
         ctx.batch_exec = False
         ctx.interaction_exec = False
-        await ctx.trigger_typing()
         user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
-
 
 # async def get_prefix(_bot, message):
 #     prefix = config.prefix

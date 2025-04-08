@@ -1,5 +1,10 @@
 import json
 import os
+from typing import List
+
+import discord
+from discord import app_commands
+
 
 
 class ServerNotFoundError(Exception):
@@ -34,3 +39,9 @@ class Servers:
 
     def get_servers(self, server_group: str = None):
         return self._servers
+
+    async def autocomplete(self, interaction: discord.Interaction, current: str)  -> List[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name=s, value=s)
+            for s in self._servers.keys() if current.lower() in s.lower()
+        ]
