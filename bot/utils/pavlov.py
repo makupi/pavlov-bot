@@ -114,36 +114,38 @@ async def check_perm_captain(ctx, server_name: str = None, global_check: bool = 
     return True
 
 
-async def exec_server_command(
-    ctx: Optional[Union[commands.Context, PavlovRCON]], server_name: str, command: str
-) -> [dict, Optional[PavlovRCON]]:
-    pavlov = None
-    if ctx is not None and isinstance(ctx, commands.Context):
-        if hasattr(ctx, "pavlov"):
-            pavlov = ctx.pavlov.get(server_name)
-        if pavlov is None:
-            server = servers.get(server_name)
-            pavlov = PavlovRCON(
-                server.get("ip"),
-                server.get("port"),
-                server.get("password"),
-                timeout=RCON_TIMEOUT,
-            )
-            if not hasattr(ctx, "pavlov"):
-                ctx.pavlov = {server_name: pavlov}
-            else:
-                ctx.pavlov[server_name] = pavlov
-        data = await pavlov.send(command)
-        return data, ctx
-    if ctx is None:
-        server = servers.get(server_name)
-        pavlov = PavlovRCON(
-            server.get("ip"),
-            server.get("port"),
-            server.get("password"),
-            timeout=RCON_TIMEOUT,
-        )
-    elif isinstance(ctx, PavlovRCON):
-        pavlov = ctx
+async def exec_server_command(server_name: str, command: str) -> [dict, Optional[PavlovRCON]]:
+    server = servers.get(server_name)
+    pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT)
     data = await pavlov.send(command)
     return data, pavlov
+    # pavlov = None
+    # if ctx is not None and isinstance(ctx, commands.Context):
+    #     if hasattr(ctx, "pavlov"):
+    #         pavlov = ctx.pavlov.get(server_name)
+    #     if pavlov is None:
+    #         server = servers.get(server_name)
+    #         pavlov = PavlovRCON(
+    #             server.get("ip"),
+    #             server.get("port"),
+    #             server.get("password"),
+    #             timeout=RCON_TIMEOUT,
+    #         )
+    #         if not hasattr(ctx, "pavlov"):
+    #             ctx.pavlov = {server_name: pavlov}
+    #         else:
+    #             ctx.pavlov[server_name] = pavlov
+    #     data = await pavlov.send(command)
+    #     return data, ctx
+    # if ctx is None:
+    #     server = servers.get(server_name)
+    #     pavlov = PavlovRCON(
+    #         server.get("ip"),
+    #         server.get("port"),
+    #         server.get("password"),
+    #         timeout=RCON_TIMEOUT,
+    #     )
+    # elif isinstance(ctx, PavlovRCON):
+    #     pavlov = ctx
+    # data = await pavlov.send(command)
+    # return data, pavlov

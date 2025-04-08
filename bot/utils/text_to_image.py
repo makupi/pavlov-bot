@@ -17,7 +17,7 @@ def text_to_image(text: str, file_name: str) -> discord.File:
     text_w, text_h = list(), list()
 
     for line in text.split("\n"):
-        w, h = FONT.getsize(line)
+        _, _, w, h = FONT.getbbox(line)
         text_w.append(w)
         text_h.append(h)
 
