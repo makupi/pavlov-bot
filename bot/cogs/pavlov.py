@@ -1,3 +1,4 @@
+import functools
 import logging
 import re
 import sys
@@ -31,6 +32,10 @@ ANYONEPLAYING_ROW_FORMAT = (
     "| {map_alias:^15} | {player_count:^6}"
 )
 
+PUSHSERVER_ROW_FORMAT = (
+    "{server_name:^46.46} | {map_name:^36.36} "
+    "| {player_max:^15} | {player_count:^6}"
+)
 
 async def fetch(session, url):
     response = await session.get(url)
@@ -43,32 +48,26 @@ async def fetch(session, url):
 class Pavlov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.session: aiohttp.ClientSession = bot.session
         self._map_aliases = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
+    @functools.cache
     async def get_map_alias(self, map_label: str) -> [str, str]:
-        if map_label in self._map_aliases:
-            _map = self._map_aliases.get(map_label)
-            return _map.get("name"), _map.get("image")
-        try:
-            map_id = map_label.split("UGC")[1]
-            data = await fetch(
-                self.bot.aiohttp,
-                f"https://steamcommunity.com/sharedfiles/filedetails/?id={map_id}",
-            )
-            soup = BeautifulSoup(data, "html.parser")
-            # url_regex = r"/(\b(https?|ftp|file):\/\/[-A-Z0-9+&Q#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig"
-            regex = r"(https:\/\/steamuserimages-a\.akamaihd\.net\/ugc\/[A-Z0-9\/]*)"
-            match = re.findall(regex, data)[0]
-            map_image = match
-            map_name = soup.title.string.split("::")[1]
-            self._map_aliases[map_label] = {"name": map_name, "image": map_image}
-            return map_name, map_image
-        except Exception as ex:
-            logging.error(f"Getting map label {map_label} failed with {ex}")
+        if "UGC" in map_label:
+            try:
+                map_id = map_label.split("UGC")[1]
+                async with self.session as client:
+                    async with client.get(f"{config.apiPATH}/games/3959/mods/{map_id}?api_key={config.apiKEY}") as resp:
+                        data = await resp.json()
+                        map_name = data.get("name")
+                        map_image = data.get("logo", {}).get("original")
+                        return map_name, map_image
+            except Exception as ex:
+                logging.error(f"Getting map label {map_label} failed with {ex}")
         return None, None
 
     @app_commands.command(name="servers")
@@ -126,20 +125,20 @@ class Pavlov(commands.Cog):
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
         map_alias = aliases.find_map_alias(map_label)
-        if interaction.batch_exec:
-            map_alias_str = ""
-            if map_alias:
-                map_alias_str = f"Map Alias:   {map_alias}\n"
-            return (
-                f"```"
-                f'Server Name: {server_info.get("ServerName")}\n'
-                f'Round State: {server_info.get("RoundState")}\n'
-                f'Players:     {server_info.get("PlayerCount")}\n'
-                f'Game Mode:   {server_info.get("GameMode")}\n'
-                f"Map:         {map_name}\n"
-                f"{map_alias_str}"
-                f"Map Label:   {map_label}```"
-            )
+        # if interaction.batch_exec:
+        #     map_alias_str = ""
+        #     if map_alias:
+        #         map_alias_str = f"Map Alias:   {map_alias}\n"
+        #     return (
+        #         f"```"
+        #         f'Server Name: {server_info.get("ServerName")}\n'
+        #         f'Round State: {server_info.get("RoundState")}\n'
+        #         f'Players:     {server_info.get("PlayerCount")}\n'
+        #         f'Game Mode:   {server_info.get("GameMode")}\n'
+        #         f"Map:         {map_name}\n"
+        #         f"{map_alias_str}"
+        #         f"Map Label:   {map_label}```"
+        #     )
         embed = discord.Embed(title=f"**ServerInfo** for `{server_name}`")
         if map_image:
             embed.set_thumbnail(url=map_image)
@@ -231,7 +230,9 @@ class Pavlov(commands.Cog):
     #     if len(map_list) == 0:
     #         embed.description = f"Currently no active maps on `{server_name}`"
     #     for _map in map_list:
-    #         embed.description += f"\n - {_map.get('MapId', '')} <{_map.get('GameMode')}>"
+    #         map_label = _map.get('MapId')
+    #         map_name, map_image = await self.get_map_alias(map_label)
+    #         embed.description += f"\n {map_name} <{_map.get('GameMode')}>  {_map.get('MapId', '')}"
     #     if ctx.batch_exec:
     #         return embed.description
     #     await ctx.send(embed=embed)
@@ -356,8 +357,9 @@ class Pavlov(commands.Cog):
     #         embed.add_field(name="KDA", value=player_info.get("KDA"))
     #         embed.add_field(name="Cash", value=player_info.get("Cash"))
     #         embed.add_field(name="TeamId", value=player_info.get("TeamId"))
-    #         if player.has_alias:
-    #             embed.add_field(name="Alias", value=player.name)
+    #         if hasattr(player, "has_alias"):
+    #             if player.has_alias:
+    #                 embed.add_field(name="Alias", value=player.name)
     #     await ctx.send(embed=embed)
     #
     # @commands.hybrid_command()
@@ -446,6 +448,47 @@ class Pavlov(commands.Cog):
     #                 player_count="N/A",
     #             )
     #             desc += "\n"
+    #     file = text_to_image(desc, "anyoneplaying.png")
+    #     await ctx.send(file=file)
+    #
+    # @commands.command()
+    # async def pushservers(self, ctx, server_group: str = None):
+    #     """`{prefix}pushservers` - *Provides a table with info for all push servers*"""
+    #     ctx.batch_exec = True
+    #     players_header = PUSHSERVER_ROW_FORMAT.format(
+    #         server_name="Server Name",
+    #         map_name="Map Name",
+    #         player_max="Max Players",
+    #         player_count="Players",
+    #     )
+    #     desc = f"\n{players_header}\n{'-' * len(players_header)}\n"
+    #
+    #     try:
+    #         curl_command = f'curl -s -X GET "{config.pav_push_URL}" -H "Accept: application/json"'
+    #         process = subprocess.Popen(curl_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #         output, _ = process.communicate()
+    #         data = json.loads(output)
+    #         for server in data["servers"]:
+    #             players_count = server["slots"]
+    #             players_max = server["maxSlots"]
+    #             server_name = server["name"]
+    #             map_name = server["mapLabel"]
+    #
+    #             desc += PUSHSERVER_ROW_FORMAT.format(
+    #                 server_name=server_name,
+    #                 map_name=map_name,
+    #                 player_max=players_max,
+    #                 player_count=players_count,
+    #             )
+    #             desc += "\n"
+    #     except (ConnectionRefusedError, OSError, TimeoutError):
+    #         desc += PUSHSERVER_ROW_FORMAT.format(
+    #             server_name="SERVER UNAVAILABLE",
+    #             map_name="N/A",
+    #             player_max="N/A",
+    #             player_count="N/A",
+    #         )
+    #         desc += "\n"
     #     file = text_to_image(desc, "anyoneplaying.png")
     #     await ctx.send(file=file)
 

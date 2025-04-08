@@ -50,8 +50,8 @@ class PavlovBot(commands.Bot):
                 await self.load_extension(cog)
             except Exception as e:
                 self.log.error(f"Failed to load extension {cog}: {e}")
-        self.tree.copy_global_to(guild=discord.Object(id=492701249192460298))
-        await self.tree.sync(guild=discord.Object(id=492701249192460298))
+        # self.tree.copy_global_to(guild=discord.Object(id=492701249192460298))
+        # await self.tree.sync(guild=discord.Object(id=492701249192460298))
 
     async def on_ready(self):
         await self.change_presence(activity=discord.Game(f"v{__version__}"))
