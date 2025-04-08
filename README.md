@@ -12,6 +12,12 @@ Discord bot to inferface with Pavlov VR RCON
   - `modioAPIPath`: "path"
     - api path provided by modio
     
+  
+Installing uv: https://docs.astral.sh/uv/getting-started/installation/
+Running
+```commandline
+uv run run.py
+```
 
 # Setup
 *This setup guide assumes you are running Ubuntu 18.04 or later. Later versions may already have required python3.8 version. It also assumes you are running the bot on the same server running pavlovserver following setup guide found [here](http://wiki.pavlov-vr.com/index.php?title=Dedicated_server).*
