@@ -1,8 +1,17 @@
 # pavlov-bot
 Discord bot to inferface with Pavlov VR RCON
 
-> ! this branch is a work in progress update of pavlov-bot, to support the latest discord.py/python versions and using slash commands.    
+> ! this branch is a work in progress update of pavlov-bot, to support the latest discord.py/python versions and using slash commands.
 
+.json file changes:
+- config.json:
+  - `guilds`: [guild_id]
+    - a list of all guilds that slash commands should be synced to.
+  - `modioAPIKey`: "abcdef"
+    - api key for modio
+  - `modioAPIPath`: "path"
+    - api path provided by modio
+    
 
 # Setup
 *This setup guide assumes you are running Ubuntu 18.04 or later. Later versions may already have required python3.8 version. It also assumes you are running the bot on the same server running pavlovserver following setup guide found [here](http://wiki.pavlov-vr.com/index.php?title=Dedicated_server).*

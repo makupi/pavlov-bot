@@ -111,7 +111,6 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}serverinfo rush`
         """
-        logging.info(f"Server info for {server_name}")
         data, _ = await exec_server_command(server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
         map_label = server_info.get("MapLabel")

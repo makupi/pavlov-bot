@@ -1,7 +1,7 @@
 import json
 import os
 
-default_config = {"prefix": ";", "token": "", "default_server": "default"}
+default_config = {"prefix": ";", "token": "", "default_server": "default", "guilds": []}
 
 
 class Config:
@@ -21,6 +21,7 @@ class Config:
         self.default_server = self.config.get(
             "default_server", default_config.get("default_server")
         )
+        self.guilds = self.config.get("guilds", default_config.get("guilds"))
 
     def store(self):
         c = {"prefix": self.prefix, "token": self.token}
