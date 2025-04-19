@@ -126,7 +126,7 @@ class Paginator:
             )
 
         embed = self._edit_embed(embed, footer_text)
-        message = await ctx.send(embed=embed)
+        message = await interaction.response.send_message(embed=embed)
         if len(self.pages) == 1:
             return  # no need for pagination if we only have one page
         for emoji in PAGINATION_EMOJI:

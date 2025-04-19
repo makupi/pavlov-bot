@@ -59,7 +59,7 @@ class Help(commands.Cog):
         return mapping
 
     @commands.command(hidden=True)
-    async def help(self, ctx, command_name: str = None):
+    async def help(self, interaction: discord.Interaction, command_name: str = None):
         """Shows this help message"""
         prefix = config.prefix
         embed = discord.Embed(
@@ -70,9 +70,9 @@ class Help(commands.Cog):
             cmd = ctx.bot.all_commands.get(command_name)
             if cmd is not None:
                 embed.add_field(name=cmd.name, value=cmd.help.format(prefix=prefix))
-                return await ctx.send(embed=embed)
+                return await interaction.response.send_message(embed=embed)
         embed = await create_bot_help(embed, self.get_bot_mapping(), prefix)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot):

@@ -92,7 +92,7 @@ class Polling(commands.Cog):
         await channel.send(p_role, embed=embed)
         return new_state, ctx
 
-    async def autobalance_polling(self, ctx, poll_config: dict, server: str, poll_name: str):
+    async def autobalance_polling(self, interaction: discord.Interaction, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
         teamblue, teamred, _, _, scoredict, ctx = await players.get_stats(ctx, server)
         for player, score in scoredict.items():

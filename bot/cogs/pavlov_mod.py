@@ -63,7 +63,7 @@ class PavlovMod(commands.Cog):
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def kill(
@@ -106,7 +106,7 @@ class PavlovMod(commands.Cog):
             return
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def kick(
@@ -138,7 +138,7 @@ class PavlovMod(commands.Cog):
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def unban(
@@ -169,10 +169,10 @@ class PavlovMod(commands.Cog):
             unbanned_servers.append(server_name)
         embed = discord.Embed(title=f"**Unban {player_arg} {' '.join(unbanned_servers)}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def gag(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def gag(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}gag <player_id> <server_name>`
         **Description**: Globally mutes a player
         **Requires**: Moderator permissions or higher for the server
@@ -184,10 +184,10 @@ class PavlovMod(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, f"Gag {player.unique_id}")
         embed = discord.Embed(title=f"**Gag {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def addmod(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def addmod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}addmod <player_id> <server_name>`
         **Description**: Adds a player to mods.txt
         **Requires**: Moderator permissions or higher for the server
@@ -199,10 +199,10 @@ class PavlovMod(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, f"AddMod {player.unique_id}")
         embed = discord.Embed(title=f"**AddMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def removemod(self, ctx, player_arg: str, server_name: str = config.default_server):
+    async def removemod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}removemod <player_id> <server_name>`
         **Description**: Removes a player from mods.txt
         **Requires**: Moderator permissions or higher for the server
@@ -214,7 +214,7 @@ class PavlovMod(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, f"RemoveMod {player.unique_id}")
         embed = discord.Embed(title=f"**RemoveMod {player_arg} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def slap(
@@ -260,7 +260,7 @@ class PavlovMod(commands.Cog):
         elif ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def tttsetkarma(
@@ -304,7 +304,7 @@ class PavlovMod(commands.Cog):
         elif ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def tttflushkarma(
@@ -345,10 +345,10 @@ class PavlovMod(commands.Cog):
         elif ctx.interaction_exec:
             await __interaction.send(embed=embed)
             return
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def tttendround(self, ctx, server_name: str = config.default_server):
+    async def tttendround(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}tttendround server_name`
         **Description**: Ends the current TTT round.
         **Requires**: Admin permissions for the server
@@ -365,10 +365,10 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**TTT round ended!** \n")
         else:
             embed = discord.Embed(title=f"**Failed to end TTT round!** \n")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def tttpausetimer(self, ctx, boolean, server_name: str = config.default_server):
+    async def tttpausetimer(self, interaction: discord.Interaction, boolean, server_name: str = config.default_server):
         """`{prefix}tttpausetimer pause/unpause/true/false server_name`
         **Description**: Pauses/unpauses the TTT round timer.
         **Requires**: Admin permissions for the server
@@ -389,10 +389,10 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**TTT round timer paused!** \n")
         else:
             embed = discord.Embed(title=f"**TTT round timer unpaused!** \n")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def tttalwaysenableskinmenu(self, ctx, boolean, server_name: str = config.default_server):
+    async def tttalwaysenableskinmenu(self, interaction: discord.Interaction, boolean, server_name: str = config.default_server):
         """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
         **Description**: Enables/disables skin menu during a TTT round.
         **Requires**: Admin permissions for the server
@@ -413,10 +413,10 @@ class PavlovMod(commands.Cog):
             embed = discord.Embed(title=f"**Skin menu enabled during mid-round!** \n")
         else:
             embed = discord.Embed(title=f"**Skin menu disabled during mid-round!** \n")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def addmap(self, ctx, map_id: str, game_mode: str, server_name: str = config.default_server):
+    async def addmap(self, interaction: discord.Interaction, map_id: str, game_mode: str, server_name: str = config.default_server):
         """`{prefix}addmap <map_id> <gamemode> <server_name>`
         **Description**: Adds map to game rotation
         **Requires**: Moderator permissions or higher for the server
@@ -427,10 +427,10 @@ class PavlovMod(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, f"AddMapRotation {map_id} {game_mode}")
         embed = discord.Embed(title=f"**AddMapRotation {map_id} {game_mode} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def removemap(self, ctx, map_id: str, game_mode: str, server_name: str = config.default_server):
+    async def removemap(self, interaction: discord.Interaction, map_id: str, game_mode: str, server_name: str = config.default_server):
         """`{prefix}removemap <map_id> <gamemode> <server_name>`
         **Description**: Removes map from game rotation
         **Requires**: Moderator permissions or higher for the server
@@ -441,6 +441,6 @@ class PavlovMod(commands.Cog):
         data, _ = await exec_server_command(ctx, server_name, f"RemoveMapRotation {map_id} {game_mode}")
         embed = discord.Embed(title=f"**RemoveMapRotation {map_id} {game_mode} ** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 def setup(bot):
     bot.add_cog(PavlovMod(bot))

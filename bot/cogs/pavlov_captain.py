@@ -35,7 +35,7 @@ class PavlovCaptain(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @commands.command()
-    async def gamesetup(self, ctx, __interaction: discord_components.Interaction = None):
+    async def gamesetup(self, interaction: discord.Interaction, __interaction: discord_components.Interaction = None):
         """`{prefix}gamesetup` - *Starts a button driven game session in Discord*
                 **Description**: Starts a button driven game session in Discord.
                 **Requires**: Captain permissions for the server
@@ -176,7 +176,7 @@ class PavlovCaptain(commands.Cog):
                 ],
             )
         else:
-            message = await ctx.send(
+            message = await interaction.response.send_message(
                 embed=embed,
                 components=[
                     self.bot.components_manager.add_callback(
@@ -249,7 +249,7 @@ class PavlovCaptain(commands.Cog):
             embed = discord.Embed(
                 title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()} on {server_name}."
             )
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(
                 title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
@@ -261,11 +261,11 @@ class PavlovCaptain(commands.Cog):
                 if ctx.batch_exec:
                     return switch_map
                 ctx.interaction_exec = True
-                await ctx.send(embed=embed, components=components)
+                await interaction.response.send_message(embed=embed, components=components)
 
     @commands.command()
     async def resetsnd(
-        self, ctx, server_name: str = config.default_server, __interaction: str = ""
+        self, interaction: discord.Interaction, server_name: str = config.default_server, __interaction: str = ""
     ):
         """`{prefix}resetsnd <server_name>` - *Issues ResetSND command*
         **Description**: Issues ResetSND command that restarts game with same teams
@@ -290,7 +290,7 @@ class PavlovCaptain(commands.Cog):
             return
         if ctx.batch_exec:
             return reset_snd
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def switchteam(
@@ -313,10 +313,10 @@ class PavlovCaptain(commands.Cog):
         )
         embed = discord.Embed(title=f"**SwitchTeam {player_arg} {team_id}** \n")
         embed = await parse_player_command_results(ctx, data, embed, server_name)
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command(aliases=["next"])
-    async def rotatemap(self, ctx, server_name: str = config.default_server):
+    async def rotatemap(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>` - *Changes map to next in rotation*
         **Description**: Changes map to next in Game.ini
         **Requires**: Captain permissions or higher for the server
@@ -333,7 +333,7 @@ class PavlovCaptain(commands.Cog):
             embed = discord.Embed(title=f"**Failed** to rotate map on {server_name}.")
         else:
             embed = discord.Embed(title=f"Rotated map successfully on {server_name}.")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def matchsetup(
@@ -364,7 +364,7 @@ class PavlovCaptain(commands.Cog):
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
         else:
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         for index, team in enumerate(teams):
             for member in team.members:
@@ -378,7 +378,7 @@ class PavlovCaptain(commands.Cog):
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
         else:
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
         await asyncio.sleep(MATCH_DELAY_RESETSND)
         await exec_server_command(ctx, server_name, "ResetSND")
         embed = discord.Embed(title=f"SND has been reset on {server_name}. Good luck!")
@@ -386,7 +386,7 @@ class PavlovCaptain(commands.Cog):
         if ctx.interaction_exec:
             await __interaction.send(embed=embed)
         else:
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def flush(
@@ -414,7 +414,7 @@ class PavlovCaptain(commands.Cog):
             if ctx.interaction_exec:
                 await __interaction.send(embed=embed)
             else:
-                await ctx.send(embed=embed)
+                await interaction.response.send_message(embed=embed)
             return
         to_kick_id = random.choice(non_alias_player_ids)
         data, _ = await exec_server_command(ctx, server_name, f"Kick {to_kick_id}")
@@ -424,16 +424,16 @@ class PavlovCaptain(commands.Cog):
             if ctx.interaction_exec:
                 await __interaction.send(embed=embed)
             else:
-                await ctx.send(embed=embed)
+                await interaction.response.send_message(embed=embed)
         else:
             embed = discord.Embed(title=f"Successfully flushed `{server_name}`")
             if ctx.interaction_exec:
                 await __interaction.send(embed=embed)
             else:
-                await ctx.send(embed=embed)
+                await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def setpin(self, ctx, pin: str, server_name: str = config.default_server):
+    async def setpin(self, interaction: discord.Interaction, pin: str, server_name: str = config.default_server):
         """`{prefix}setpin <pin> <server_name>` - *Changes server pin*
         **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset
         **Requires**: Captain permissions or higher for the server
@@ -447,7 +447,7 @@ class PavlovCaptain(commands.Cog):
             data, _ = await exec_server_command(ctx, server_name, f"SetPin")
         else:
             embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
-            await ctx.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
             return
         spin = data.get("Successful")
         if ctx.batch_exec:
@@ -459,7 +459,7 @@ class PavlovCaptain(commands.Cog):
                 embed = discord.Embed(title=f"Pin removed")
             else:
                 embed = discord.Embed(title=f"Pin {pin} successfully set")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 def setup(bot):
     bot.add_cog(PavlovCaptain(bot))

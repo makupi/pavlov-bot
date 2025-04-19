@@ -30,127 +30,127 @@ class PavlovAdmin(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.command()
-    async def menu(self, ctx):
-        """`{prefix}menu`  - *Creates a button driven admin menu*
-        **Description**: Creates a button driven admin menu.
-        **Requires**: Admin permissions for the server
-        """
-        async def actions(interact):
-            await message.edit(content="")
-            server_name = interact.values[0]
-            if "offline" in server_name.lower():
-                embed = discord.Embed(title="Server is offline.")
-                await interact.send(embed=embed)
-                return
-            data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
-            server_info = data.get("ServerInfo")
-
-            if interact.author.id == ctx.author.id:
-                embed = discord.Embed(title=f"**{server_name} Admin Menu**")
-                ctx.interaction_exec = True
-                ctx.batch_exec = False
-                (
-                    slap,
-                    giveitem,
-                    kill,
-                    kick,
-                    givevehicle,
-                    players,
-                    skinset,
-                    flush,
-                    ban,
-                    inspectplayer,
-                    switchmap,
-                ) = [
-                    self.bot.all_commands.get("slap"),
-                    self.bot.all_commands.get("giveitem"),
-                    self.bot.all_commands.get("kill"),
-                    self.bot.all_commands.get("kick"),
-                    self.bot.all_commands.get("givevehicle"),
-                    self.bot.all_commands.get("players"),
-                    self.bot.all_commands.get("setplayerskin"),
-                    self.bot.all_commands.get("flush"),
-                    self.bot.all_commands.get("ban"),
-                    self.bot.all_commands.get("playerinfo"),
-                    self.bot.all_commands.get("switchmap"),
-                ]
-                if server_info.get("GameMode").casefold() == "ttt":
-                    flushkarma, endround, pausetimer = [
-                        self.bot.all_commands.get("tttflushkarma"),
-                        self.bot.all_commands.get("tttendround"),
-                        self.bot.all_commands.get("tttpausetimer"),
-                    ]
-                components = [
-                    ActionRow(
-                        self.bot.components_manager.add_callback(
-                            Button(label="Godmode"),
-                            lambda interaction: slap(
-                                ctx, "", "-99999999999999999", server_name, interaction
-                            ),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Give Item"),
-                            lambda interaction: giveitem(ctx, "", "", server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Kill"),
-                            lambda interaction: kill(ctx, "", server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Kick"),
-                            lambda interaction: kick(ctx, "", server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Give Vehicle"),
-                            lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
-                        ),
-                    ),
-                    ActionRow(
-                        self.bot.components_manager.add_callback(
-                            Button(label="Players"),
-                            lambda interaction: players(ctx, server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Set Player Skin"),
-                            lambda interaction: skinset(ctx, "", "", server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Flush"),
-                            lambda interaction: flush(ctx, server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Ban"),
-                            lambda interaction: ban(ctx, "", server_name, interaction),
-                        ),
-                        self.bot.components_manager.add_callback(
-                            Button(label="Inspect Player"),
-                            lambda interaction: inspectplayer(ctx, "", server_name, interaction),
-                        ),
-                    ),
-                    ActionRow(
-                        self.bot.components_manager.add_callback(
-                            Button(label="Switch Map"),
-                            lambda interaction: switchmap(ctx, "", "", server_name, interaction),
-                        ),
-                    ),
-                ]
-                await interact.send(
-                    embed=embed,
-                    components=components,
-                )
-            else:
-                return
-
-        options, menu_embed = await spawn_server_select(ctx, "Admin Menu")
-        message = await ctx.send(
-            embed=menu_embed,
-            components=[
-                self.bot.components_manager.add_callback(
-                    Select(placeholder="Server", options=options), actions
-                )
-            ],
-        )
+    # @commands.command()
+    # async def menu(self, ctx):
+    #     """`{prefix}menu`  - *Creates a button driven admin menu*
+    #     **Description**: Creates a button driven admin menu.
+    #     **Requires**: Admin permissions for the server
+    #     """
+    #     async def actions(interact):
+    #         await message.edit(content="")
+    #         server_name = interact.values[0]
+    #         if "offline" in server_name.lower():
+    #             embed = discord.Embed(title="Server is offline.")
+    #             await interact.send(embed=embed)
+    #             return
+    #         data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
+    #         server_info = data.get("ServerInfo")
+    #
+    #         if interact.author.id == ctx.author.id:
+    #             embed = discord.Embed(title=f"**{server_name} Admin Menu**")
+    #             ctx.interaction_exec = True
+    #             ctx.batch_exec = False
+    #             (
+    #                 slap,
+    #                 giveitem,
+    #                 kill,
+    #                 kick,
+    #                 givevehicle,
+    #                 players,
+    #                 skinset,
+    #                 flush,
+    #                 ban,
+    #                 inspectplayer,
+    #                 switchmap,
+    #             ) = [
+    #                 self.bot.all_commands.get("slap"),
+    #                 self.bot.all_commands.get("giveitem"),
+    #                 self.bot.all_commands.get("kill"),
+    #                 self.bot.all_commands.get("kick"),
+    #                 self.bot.all_commands.get("givevehicle"),
+    #                 self.bot.all_commands.get("players"),
+    #                 self.bot.all_commands.get("setplayerskin"),
+    #                 self.bot.all_commands.get("flush"),
+    #                 self.bot.all_commands.get("ban"),
+    #                 self.bot.all_commands.get("playerinfo"),
+    #                 self.bot.all_commands.get("switchmap"),
+    #             ]
+    #             if server_info.get("GameMode").casefold() == "ttt":
+    #                 flushkarma, endround, pausetimer = [
+    #                     self.bot.all_commands.get("tttflushkarma"),
+    #                     self.bot.all_commands.get("tttendround"),
+    #                     self.bot.all_commands.get("tttpausetimer"),
+    #                 ]
+    #             components = [
+    #                 ActionRow(
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Godmode"),
+    #                         lambda interaction: slap(
+    #                             ctx, "", "-99999999999999999", server_name, interaction
+    #                         ),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Give Item"),
+    #                         lambda interaction: giveitem(ctx, "", "", server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Kill"),
+    #                         lambda interaction: kill(ctx, "", server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Kick"),
+    #                         lambda interaction: kick(ctx, "", server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Give Vehicle"),
+    #                         lambda interaction: givevehicle(ctx, "", "", server_name, interaction),
+    #                     ),
+    #                 ),
+    #                 ActionRow(
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Players"),
+    #                         lambda interaction: players(ctx, server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Set Player Skin"),
+    #                         lambda interaction: skinset(ctx, "", "", server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Flush"),
+    #                         lambda interaction: flush(ctx, server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Ban"),
+    #                         lambda interaction: ban(ctx, "", server_name, interaction),
+    #                     ),
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Inspect Player"),
+    #                         lambda interaction: inspectplayer(ctx, "", server_name, interaction),
+    #                     ),
+    #                 ),
+    #                 ActionRow(
+    #                     self.bot.components_manager.add_callback(
+    #                         Button(label="Switch Map"),
+    #                         lambda interaction: switchmap(ctx, "", "", server_name, interaction),
+    #                     ),
+    #                 ),
+    #             ]
+    #             await interact.send(
+    #                 embed=embed,
+    #                 components=components,
+    #             )
+    #         else:
+    #             return
+    #
+    #     options, menu_embed = await spawn_server_select(ctx, "Admin Menu")
+    #     message = await interaction.response.send_message(
+    #         embed=menu_embed,
+    #         components=[
+    #             self.bot.components_manager.add_callback(
+    #                 Select(placeholder="Server", options=options), actions
+    #             )
+    #         ],
+    #     )
 
     @commands.command()
     async def giveitem(
@@ -235,7 +235,7 @@ class PavlovAdmin(commands.Cog):
             return
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def givevehicle(
@@ -317,7 +317,7 @@ class PavlovAdmin(commands.Cog):
             return
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def givecash(
@@ -345,7 +345,7 @@ class PavlovAdmin(commands.Cog):
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def giveteamcash(
@@ -374,7 +374,7 @@ class PavlovAdmin(commands.Cog):
         embed = await parse_player_command_results(ctx, data, embed, server_name)
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
     async def setplayerskin(
@@ -435,10 +435,10 @@ class PavlovAdmin(commands.Cog):
             return
         if ctx.batch_exec:
             return embed.description
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def custom(self, ctx, rcon_command: str, server_name: str = config.default_server):
+    async def custom(self, interaction: discord.Interaction, rcon_command: str, server_name: str = config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name` - *Telnet-like direct entry to RCON*
         **Description**: Runs a custom RCON command.
         **Requires**: Admin permissions for the server
@@ -453,10 +453,10 @@ class PavlovAdmin(commands.Cog):
             return data
         embed = discord.Embed()
         embed.add_field(name=rcon_command, value=str(data))
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def nametags(self, ctx, boolean, server_name: str = config.default_server):
+    async def nametags(self, interaction: discord.Interaction, boolean, server_name: str = config.default_server):
         """`{prefix}nametags enable/disable/true/false server_name`
         **Description**: Enables/disables nametags.
         **Requires**: Admin permissions for the server
@@ -477,10 +477,10 @@ class PavlovAdmin(commands.Cog):
             embed = discord.Embed(title=f"**Nametags enabled!** \n")
         else:
             embed = discord.Embed(title=f"**Nametags disabled!** \n")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
     @commands.command()
-    async def repeat(self, ctx, cmdr: str, aot: str):
+    async def repeat(self, interaction: discord.Interaction, cmdr: str, aot: str):
         """`{prefix}repeat "<command with args>" amount_of_times server_name`
         **Description**: Repeats a complete pavlov-bot command multiple times.
         **Requires**: Admin permissions for the server
@@ -504,7 +504,7 @@ class PavlovAdmin(commands.Cog):
             if data is None:
                 data = "No response"
         embed = discord.Embed(title=f"Executed '{cmdr}' {aot} times")
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 def setup(bot):
