@@ -1,10 +1,10 @@
 import logging
 
 import discord
+from discord import app_commands
 from discord.ext import commands
-from discord_components import Button
 
-from bot.utils import SteamPlayer, aliases, config
+from bot.utils import SteamPlayer, aliases, config, servers
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 
 
@@ -16,59 +16,59 @@ class Teams(commands.Cog):
     async def on_ready(self):
         logging.info(f"{type(self).__name__} Cog ready.")
 
-    @commands.group(pass_context=True, aliases=["ringer"])
-    async def ringers(self, ctx):
-        pass
-
-    @commands.command()
-    async def teamsetup(self, ctx, players_arg: str, team_name: str):
+    @app_commands.command()
+    @app_commands.describe(players_arg="List of comma separated player ids",
+                           team_name="The team you want to add the player to")
+    @app_commands.rename(players_arg="players", team_name="team")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    async def teamsetup(self, interaction: discord.Interaction, players_arg: str, team_name: str):
         """`{prefix}teamsetup <comma seperated list of unique_id or alias> <team_name>`
         **Description**: Takes a list of aliases or IDs and puts them on a team after wiping player list
         **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}teamsetup maku,invicta team_a`"""
-        if not await check_perm_captain(ctx, global_check=True):
+        if not await check_perm_captain(interaction, global_check=True):
             return
-        gamesetup = self.bot.all_commands.get("gamesetup")
         team = aliases.get_team(team_name)
         team.ringers_reset()
         players = players_arg.split(",")
         for player in players:
             player = SteamPlayer.convert(player)
             team.ringer_add(player)
-        ctx.interaction_exec = True
-        components = [
-            self.bot.components_manager.add_callback(
-                Button(label=f"Go to gamesetup"),
-                lambda interaction: gamesetup(ctx, interaction),
-            )
-        ]
         embed = discord.Embed(description=f"Player list {players_arg} added to team {team.name}.")
-        await ctx.send(embed=embed, components=components)
+        await interaction.response.send_message(embed=embed)
+
+    ringers = app_commands.Group(name="ringers", description="Ringers Commands")
 
     @ringers.command()
-    async def add(self, ctx, player_arg: str, team_name: str):
+    @app_commands.describe(player_arg="The player id you want to add", team_name="The team you want to add the player to")
+    @app_commands.rename(player_arg="player", team_name="team")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    async def add(self, interaction: discord.Interaction, player_arg: str, team_name: str):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
         **Description**: Adds a single player to a team. Can be called by ID or alias
         **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers add maku team_a`"""
-        if not await check_perm_captain(ctx, global_check=True):
+        if not await check_perm_captain(interaction, global_check=True):
             return
         team = aliases.get_team(team_name)
         player = SteamPlayer.convert(player_arg)
         team.ringer_add(player)
-        await ctx.send(
+        await interaction.response.send_message(
             embed=discord.Embed(description=f"Ringer {player.name} added to team {team.name}.")
         )
 
     @ringers.command()
-    async def populate(self, ctx, team_name: str, server_name: str = config.default_server):
+    @app_commands.describe(team_name="The team you want to populate", server_name="The name of the server")
+    @app_commands.rename(team_name="team", server_name="server")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete, server_name=servers.autocomplete)
+    async def populate(self, interaction: discord.Interaction, team_name: str, server_name: str = config.default_server):
         """`{prefix}ringers populate <team_name> <server_name>`
         **Description**: Takes all players on a server not in aliases and puts them on a team.
         **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers populate random_team tdm_server`"""
-        if not await check_perm_captain(ctx, global_check=True):
+        if not await check_perm_captain(interaction, global_check=True):
             return
-        data, _ = await exec_server_command(ctx, server_name, "RefreshList")
+        data, _ = await exec_server_command(interaction, server_name, "RefreshList")
         player_list = data.get("PlayerList")
         team = aliases.get_team(team_name)
         players_added = []
@@ -81,41 +81,51 @@ class Teams(commands.Cog):
                     playerm = SteamPlayer.convert(player.get("UniqueId"))
                 team.ringer_add(playerm)
                 players_added.append(player.get("Username"))
-        await ctx.send(
+        await interaction.response.send_message(
             embed=discord.Embed(
                 description=f"Ringer {' '.join(players_added)} added to team {team.name}."
             )
         )
 
     @ringers.command()
-    async def reset(self, ctx, team_name: str):
+    @app_commands.describe(team_name="The team you want to reset")
+    @app_commands.rename(team_name="team")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    async def reset(self, interaction: discord.Interaction, team_name: str):
         """`{prefix}ringers reset <team_name>`
         **Description**: Removes all ringers on a team.
         **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers reset team_a`"""
-        if not await check_perm_captain(ctx, global_check=True):
+        if not await check_perm_captain(interaction, global_check=True):
             return
         team = aliases.get_team(team_name)
         team.ringers_reset()
-        await ctx.send(embed=discord.Embed(description=f"Ringers for team {team.name} reset."))
+        await interaction.response.send_message(embed=discord.Embed(description=f"Ringers for team {team.name} reset."))
 
-    @ringers.command(aliases=["remove"])
-    async def delete(self, ctx, player_arg: str, team_name: str):
+    @ringers.command()
+    @app_commands.describe(player_arg="The player id you want to remove",
+                           team_name="The team you want to remove the player from")
+    @app_commands.rename(player_arg="player", team_name="team")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    async def delete(self, interaction: discord.Interaction, player_arg: str, team_name: str):
         """`{prefix}ringers delete <unique_id or alias> <team_name>`
         **Description**: Removes a specific ringer from a team.
         **Requires**: Captain permissions or higher for the server
         **Examples**: `{prefix}ringers delete maku team_a`"""
-        if not await check_perm_captain(ctx, global_check=True):
+        if not await check_perm_captain(interaction, global_check=True):
             return
         team = aliases.get_team(team_name)
         player = SteamPlayer.convert(player_arg)
         team.ringer_delete(player)
-        await ctx.send(
+        await interaction.response.send_message(
             embed=discord.Embed(description=f"Ringer {player.name} removed from team {team.name}.")
         )
 
-    @commands.command()
-    async def teams(self, ctx, team_name: str = None):
+    @app_commands.command()
+    @app_commands.describe(team_name="The team you want to remove the player from")
+    @app_commands.rename(team_name="team")
+    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    async def teams(self, interaction: discord.Interaction, team_name: str = None):
         """`{prefix}teams [team_name]`
         **Description**: Lists players assigned to teams
         **Requires**: Captain permissions or higher for the server
@@ -133,8 +143,8 @@ class Teams(commands.Cog):
         else:
             team = aliases.get_team(team_name)
             embed = discord.Embed(title=team.name, description=team.member_repr())
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Teams(bot))
+async def setup(bot):
+    await bot.add_cog(Teams(bot))

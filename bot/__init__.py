@@ -21,6 +21,9 @@ invite_link = "https://discord.com/oauth2/authorize?client_id={}"
 
 initial_extensions = (
     'bot.cogs.pavlov',
+    'bot.cogs.utility',
+    'bot.cogs.teams',
+    'bot.cogs.commands'
 )
 
 
@@ -95,36 +98,36 @@ class PavlovBot(commands.Bot):
             Invite: {self.invite}
         """
         )
-
-    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = discord.Embed()
-        if isinstance(error, commands.MissingRequiredArgument):
-            embed.description = (
-                f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
-            )
-        elif hasattr(error, "original"):
-            if isinstance(error.original, servers.ServerNotFoundError):
-                embed.description = (
-                    f"⚠️ Server `{error.original.server_name}` not found.\n "
-                    f"Please try again or use `{config.prefix}servers` to list the available servers."
-                )
-            elif isinstance(error.original, aliases.AliasNotFoundError):
-                embed.description = (
-                    f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
-                    f"Please try again or use `{config.prefix}aliases` to list the available `{error.original.alias_type}`."
-                )
-            elif isinstance(error.original, (ConnectionRefusedError, OSError, TimeoutError)):
-                embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
-            else:
-                raise error
-        else:
-            raise error
-        await ctx.send(embed=embed)
-
-    async def before_invoke(self, ctx: commands.Context):
-        ctx.batch_exec = False
-        ctx.interaction_exec = False
-        user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
+    #
+    # async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+    #     embed = discord.Embed()
+    #     if isinstance(error, commands.MissingRequiredArgument):
+    #         embed.description = (
+    #             f"⚠️ Missing some required arguments.\nPlease use `{config.prefix}help` for more info!"
+    #         )
+    #     elif hasattr(error, "original"):
+    #         if isinstance(error.original, servers.ServerNotFoundError):
+    #             embed.description = (
+    #                 f"⚠️ Server `{error.original.server_name}` not found.\n "
+    #                 f"Please try again or use `{config.prefix}servers` to list the available servers."
+    #             )
+    #         elif isinstance(error.original, aliases.AliasNotFoundError):
+    #             embed.description = (
+    #                 f"⚠️ Alias `{error.original.alias}` for `{error.original.alias_type}` not found.\n "
+    #                 f"Please try again or use `{config.prefix}aliases` to list the available `{error.original.alias_type}`."
+    #             )
+    #         elif isinstance(error.original, (ConnectionRefusedError, OSError, TimeoutError)):
+    #             embed.description = f"Failed to establish connection to server, please try again later or contact an admin."
+    #         else:
+    #             raise error
+    #     else:
+    #         raise error
+    #     await interaction.response.send_message(embed=embed)
+    #
+    # async def before_invoke(self, ctx: commands.Context):
+    #     ctx.batch_exec = False
+    #     ctx.interaction_exec = False
+    #     user_action_log(ctx, f"INVOKED {ctx.command.name.upper():<10} args: {ctx.args[2:]}")
 
 # async def get_prefix(_bot, message):
 #     prefix = config.prefix

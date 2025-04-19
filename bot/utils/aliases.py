@@ -5,6 +5,9 @@ import urllib.parse as urlparse
 from typing import List, Tuple
 from urllib.parse import parse_qs
 
+import discord
+from discord import app_commands
+
 from bot.utils.steamplayer import SteamPlayer
 
 DEFAULT_FORMAT = {"maps": {}, "players": {}, "teams": {}}
@@ -164,3 +167,9 @@ class Aliases:
 
     def get_teams_list(self):
         return self.teams.values()
+
+    async def teams_autocomplete(self,interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=t, value=t)
+            for t in self.get_teams_list() if current.lower() in t.lower()
+        ]
