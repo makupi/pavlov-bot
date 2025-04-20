@@ -145,11 +145,13 @@ class PavlovAdmin(commands.Cog):
     #     )
 
     @app_commands.command()
+    @app_commands.describe(item_id="ID of the item")
+    @app_commands.rename(player_arg="player", item_id="item-id", server_name="server")
     async def giveitem(
         self,
         interaction: discord.Interaction,
         player_arg: str,
-        item_id: str,
+        item_id: int,
         server_name: str = config.default_server,
     ):
         """`{prefix}giveitem <player_id/all/team> <item_id> <server_name>`
@@ -177,11 +179,13 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(vehicle_id="ID of the vehicle")
+    @app_commands.rename(player_arg="player", vehicle_id="vehicle-id", server_name="server")
     async def givevehicle(
         self,
         interaction: discord.Interaction,
         player_arg: str,
-        vehicle_id: str,
+        vehicle_id: int,
         server_name: str = config.default_server,
     ):
         """`{prefix}givevehicle <player_id> <vehicle_id> <server_name>`
@@ -209,11 +213,13 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(cash_amount="Amount of cash")
+    @app_commands.rename(player_arg="player", cash_amount="cash", server_name="server")
     async def givecash(
         self,
         interaction: discord.Interaction,
         player_arg: str,
-        cash_amount: str,
+        cash_amount: int,
         server_name: str = config.default_server,
     ):
         """`{prefix}givecash <player_id/all> <cash_amount> <server_name>`
@@ -235,11 +241,14 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(cash_amount="Amount of cash")
+    @app_commands.rename(team_id="team", cash_amount="cash", server_name="server")
+    @app_commands.choices(team_id=[app_commands.Choice(name="blue/0", value=0), app_commands.Choice(name="red/1", value=1)])
     async def giveteamcash(
         self,
         interaction: discord.Interaction,
-        team_id: str,
-        cash_amount: str,
+        team_id: int,
+        cash_amount: int,
         server_name: str = config.default_server,
     ):
         """`{prefix}giveteamcash <team_id> <cash_amount> <server_name>`
@@ -249,11 +258,6 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        team_id = team_id.replace("team", "")
-        if team_id.casefold() == "blue":
-            team_id = "0"
-        elif team_id.casefold() == "red":
-            team_id = "1"
         data, _ = await exec_server_command(
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
@@ -262,6 +266,8 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(skin_id="ID of the skin")
+    @app_commands.rename(player_arg="player", skin_id="skin-id", server_name="server")
     async def setplayerskin(
         self,
         interaction: discord.Interaction,
@@ -294,6 +300,8 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(rcon_command="RCON command with arguments")
+    @app_commands.rename(rcon_command="rcon", server_name="server")
     async def custom(self, interaction: discord.Interaction, rcon_command: str, server_name: str = config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name` - *Telnet-like direct entry to RCON*
         **Description**: Runs a custom RCON command.
@@ -310,7 +318,9 @@ class PavlovAdmin(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
-    async def nametags(self, interaction: discord.Interaction, boolean: bool, server_name: str = config.default_server):
+    @app_commands.rename(server_name="server")
+    @app_commands.choices(enable=[app_commands.Choice(name="enable", value=True), app_commands.Choice(name="disable", value=False)])
+    async def nametags(self, interaction: discord.Interaction, enable: bool, server_name: str = config.default_server):
         """`{prefix}nametags enable/disable/true/false server_name`
         **Description**: Enables/disables nametags.
         **Requires**: Admin permissions for the server
@@ -318,7 +328,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"ShowNameTags {str(boolean).lower()}")
+        data, _ = await exec_server_command(server_name, f"ShowNameTags {str(enable).lower()}")
         if not data:
             data = "No response"
         if data.get("NametagsEnabled"):
