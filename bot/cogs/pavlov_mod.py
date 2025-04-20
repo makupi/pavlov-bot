@@ -293,8 +293,8 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(pause="Whether to pause or unpause the timer")
     @app_commands.rename(server_name="server")
-    @app_commands.choices(pause=[app_commands.Choice(name="pause", value=True), app_commands.Choice(name="unpause", value=False)])
-    async def tttpausetimer(self, interaction: discord.Interaction, pause: bool, server_name: str = config.default_server):
+    @app_commands.choices(pause=[app_commands.Choice(name="pause", value="true"), app_commands.Choice(name="unpause", value="false")])
+    async def tttpausetimer(self, interaction: discord.Interaction, pause: str, server_name: str = config.default_server):
         """`{prefix}tttpausetimer pause/unpause/true/false server_name`
         **Description**: Pauses/unpauses the TTT round timer.
         **Requires**: Admin permissions for the server
@@ -302,7 +302,7 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"TTTPauseTimer {str(pause).lower()}")
+        data, _ = await exec_server_command(server_name, f"TTTPauseTimer {pause}")
         if not data:
             data = "No response"
         if data.get("TTTPauseState"):
@@ -313,9 +313,9 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.describe(enable="Whether to enable or disable the skin menu")
-    @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.choices(enable=[app_commands.Choice(name="enable", value=True), app_commands.Choice(name="disable", value=False)])
-    async def tttalwaysenableskinmenu(self, interaction: discord.Interaction, enable: bool, server_name: str = config.default_server):
+    @app_commands.rename(server_name="server")
+    @app_commands.choices(enable=[app_commands.Choice(name="enable", value="true"), app_commands.Choice(name="disable", value="false")])
+    async def tttalwaysenableskinmenu(self, interaction: discord.Interaction, enable: str, server_name: str = config.default_server):
         """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
         **Description**: Enables/disables skin menu during a TTT round.
         **Requires**: Admin permissions for the server
@@ -323,7 +323,7 @@ class PavlovMod(commands.Cog):
         """
         if not await check_perm_moderator(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"TTTAlwaysEnableSkinMenu {str(enable).lower()}")
+        data, _ = await exec_server_command(server_name, f"TTTAlwaysEnableSkinMenu {enable}")
         if not data:
             data = "No response"
         if data.get("TTTSkinMenuState"):

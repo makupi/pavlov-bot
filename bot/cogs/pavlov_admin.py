@@ -319,8 +319,8 @@ class PavlovAdmin(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
-    @app_commands.choices(enable=[app_commands.Choice(name="enable", value=True), app_commands.Choice(name="disable", value=False)])
-    async def nametags(self, interaction: discord.Interaction, enable: bool, server_name: str = config.default_server):
+    @app_commands.choices(enable=[app_commands.Choice(name="enable", value="true"), app_commands.Choice(name="disable", value="false")])
+    async def nametags(self, interaction: discord.Interaction, enable: str, server_name: str = config.default_server):
         """`{prefix}nametags enable/disable/true/false server_name`
         **Description**: Enables/disables nametags.
         **Requires**: Admin permissions for the server
@@ -328,7 +328,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"ShowNameTags {str(enable).lower()}")
+        data, _ = await exec_server_command(server_name, f"ShowNameTags {enable}")
         if not data:
             data = "No response"
         if data.get("NametagsEnabled"):

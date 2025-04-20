@@ -278,7 +278,7 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
-    @app_commands.rename(team_a_name="team-A", team_b_name="team-B", server_name="server")
+    @app_commands.rename(team_a_name="team-a", team_b_name="team-a", server_name="server")
     async def matchsetup(
         self,
         interaction: discord.Interaction,
