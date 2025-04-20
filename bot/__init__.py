@@ -1,4 +1,5 @@
 import logging
+import traceback
 from pathlib import Path
 
 import aiohttp
@@ -6,6 +7,7 @@ import discord
 from discord import app_commands, Interaction
 from discord._types import ClientT
 from discord.ext import commands
+from discord.ext.commands import ExtensionFailed
 
 from bot.utils import aliases, config, servers, user_action_log
 
@@ -20,13 +22,14 @@ __version__ = "2.0.0"
 invite_link = "https://discord.com/oauth2/authorize?client_id={}"
 
 initial_extensions = (
+    'bot.cogs.commands',
     'bot.cogs.pavlov',
     'bot.cogs.pavlov_admin',
     'bot.cogs.pavlov_captain',
     'bot.cogs.pavlov_mod',
-    'bot.cogs.utility',
+    'bot.cogs.polling',
     'bot.cogs.teams',
-    'bot.cogs.commands'
+    'bot.cogs.utility'
 )
 
 
@@ -37,7 +40,7 @@ def extensions():
 
 
 class CommandTree(app_commands.CommandTree):
-    async def on_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError) -> None:
+    async def on_error(self, interaction: discord.Interaction, error: app_commands.CommandInvokeError) -> None:
         logging.error(f"AppCommand Error: {error}")
 
         embed = discord.Embed()
@@ -86,8 +89,8 @@ class PavlovBot(commands.Bot):
         for cog in initial_extensions:
             try:
                 await self.load_extension(cog)
-            except Exception as e:
-                self.log.error(f"Failed to load extension {cog}: {e}")
+            except ExtensionFailed as e:
+                self.log.error(f"Failed to load extension {cog}: {e}, {traceback.format_exception(e.original)}")
         for guild in config.guilds:
             g = discord.Object(id=guild)
             self.tree.copy_global_to(guild=g)

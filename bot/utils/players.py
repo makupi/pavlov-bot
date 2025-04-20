@@ -13,7 +13,7 @@ async def exec_command_all_players(server_name: str, command: str):
         for player in player_list:
             if player.get("UniqueId") == '' or player.get('Username') == '':
                 continue
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name,
                 command.replace(" all ", " " + player.get("UniqueId") + " "),
             )
@@ -38,12 +38,12 @@ async def exec_command_all_players_on_team(server_name: str, team_id: str, comma
         for player in player_list:
             if player.get("UniqueId") == '' or player.get('Username') == '':
                 continue
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name, f"InspectPlayer {player.get('UniqueId')}"
             )
             player_team = data.get("PlayerInfo").get("TeamId")
             if player_team == team_id:
-                data2, _ = await exec_server_command(
+                data2 = await exec_server_command(
                     server_name,
                     command.replace(" team ", " " + player.get("UniqueId") + " "),
                 )
@@ -95,12 +95,12 @@ async def get_stats(server: str = ""):
         alivelist = {}
         kdalist = {}
         scorelist = {}
-        data, ctx = await exec_server_command(server, "RefreshList")
+        data = await exec_server_command(server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
             if player.get("UniqueId") == '' or player.get('Username') == '':
                 continue
-            data2, ctx = await exec_server_command(
+            data2 = await exec_server_command(
                 server, f"InspectPlayer {player.get('UniqueId')}"
             )
             dead = data2.get("PlayerInfo").get("Dead")
@@ -114,4 +114,4 @@ async def get_stats(server: str = ""):
                 teamblue.append(player.get("UniqueId"))
             elif team_id == "1":
                 teamred.append(player.get("UniqueId"))
-        return teamblue, teamred, kdalist, alivelist, scorelist, ctx
+        return teamblue, teamred, kdalist, alivelist, scorelist

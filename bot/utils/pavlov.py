@@ -1,13 +1,9 @@
 import logging
-from typing import Optional, Union
 
 import discord
-from discord.ext import commands
-from pavlov import PavlovRCON
 
+from bot.rcon import rcon
 from bot.utils import servers, user_action_log
-
-RCON_TIMEOUT = 60
 
 
 MODERATOR_ROLE = "Mod-{}"
@@ -114,11 +110,12 @@ async def check_perm_captain(interaction: discord.Interaction, server_name: str 
     return True
 
 
-async def exec_server_command(server_name: str, command: str) -> [dict, Optional[PavlovRCON]]:
-    server = servers.get(server_name)
-    pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT)
-    data = await pavlov.send(command)
-    return data, pavlov
+async def exec_server_command(server_name: str, command: str) -> dict:
+    # server = servers.get(server_name)
+    # pavlov = PavlovRCON(server.get("ip"), server.get("port"), server.get("password"), timeout=RCON_TIMEOUT)
+    # data = await pavlov.send(command)
+    data = await rcon.send(server_name, command)
+    return data
     # pavlov = None
     # if ctx is not None and isinstance(ctx, commands.Context):
     #     if hasattr(ctx, "pavlov"):

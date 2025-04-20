@@ -34,7 +34,7 @@ class PavlovAdmin(commands.Cog):
     #             embed = discord.Embed(title="Server is offline.")
     #             await interact.send(embed=embed)
     #             return
-    #         data, _ = await exec_server_command(ctx, server_name, "ServerInfo")
+    #         data = await exec_server_command(ctx, server_name, "ServerInfo")
     #         server_info = data.get("ServerInfo")
     #
     #         if interact.author.id == ctx.author.id:
@@ -170,7 +170,7 @@ class PavlovAdmin(commands.Cog):
             )
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name, f"GiveItem {player.unique_id} {item_id}"
             )
         embed = discord.Embed(title=f"**GiveItem {player_arg} {item_id}** \n")
@@ -204,7 +204,7 @@ class PavlovAdmin(commands.Cog):
             )
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name, f"GiveVehicle {player.unique_id} {vehicle_id}"
             )
         embed = discord.Embed(title=f"**GiveVehicle {player_arg} {vehicle_id}** \n")
@@ -232,7 +232,7 @@ class PavlovAdmin(commands.Cog):
             data = await exec_command_all_players(server_name, f"GiveCash all {cash_amount}")
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name, f"GiveCash {player.unique_id} {cash_amount}"
             )
         embed = discord.Embed(title=f"**GiveCash {player_arg} {cash_amount}** \n")
@@ -257,7 +257,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        data, _ = await exec_server_command(
+        data = await exec_server_command(
             server_name, f"GiveTeamCash {team_id} {cash_amount}"
         )
         embed = discord.Embed(title=f"**GiveTeamCash {team_id} {cash_amount}** \n")
@@ -291,7 +291,7 @@ class PavlovAdmin(commands.Cog):
             )
         else:
             player = SteamPlayer.convert(player_arg)
-            data, _ = await exec_server_command(
+            data = await exec_server_command(
                 server_name, f"SetPlayerSkin {player.unique_id} {skin_id}"
             )
         embed = discord.Embed(title=f"**SetPlayerSkin {player_arg} {skin_id}** \n")
@@ -309,7 +309,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, rcon_command)
+        data = await exec_server_command(server_name, rcon_command)
         if not data:
             data = "No response"
         embed = discord.Embed()
@@ -327,7 +327,7 @@ class PavlovAdmin(commands.Cog):
         """
         if not await check_perm_admin(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"ShowNameTags {enable}")
+        data = await exec_server_command(server_name, f"ShowNameTags {enable}")
         if not data:
             data = "No response"
         if data.get("NametagsEnabled"):

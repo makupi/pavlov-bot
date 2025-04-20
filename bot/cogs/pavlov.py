@@ -108,7 +108,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}serverinfo rush`
         """
-        data, _ = await exec_server_command(server_name, "ServerInfo")
+        data = await exec_server_command(server_name, "ServerInfo")
         server_info = data.get("ServerInfo")
         map_label = server_info.get("MapLabel")
         map_name, map_image = await self.get_map_alias(map_label)
@@ -135,7 +135,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}banlist rush`
         """
-        data, _ = await exec_server_command(server_name, "Banlist")
+        data = await exec_server_command(server_name, "Banlist")
         black_list = data.get("BanList")
         embed = discord.Embed(title=f"Banned players on `{server_name}`:")
         paginator = Paginator(max_lines=50)
@@ -157,7 +157,7 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}checkban invicta push`
         """
         embed = discord.Embed(title=f"Looking for {player} on `{server_name}` banlist:")
-        data, _ = await exec_server_command(server_name, "Banlist")
+        data = await exec_server_command(server_name, "Banlist")
         black_list = data.get("BanList")
         if black_list:
             if player in black_list:
@@ -176,7 +176,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}itemlist snd1`
         """
-        data, _ = await exec_server_command(server_name, "ItemList")
+        data = await exec_server_command(server_name, "ItemList")
         item_list = data.get("ItemList")
         embed = discord.Embed(title=f"Items available:")
         embed.description = "\n"
@@ -194,7 +194,7 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}maplist rush`
         """
-        data, _ = await exec_server_command(server_name, "MapList")
+        data = await exec_server_command(server_name, "MapList")
         map_list = data.get("MapList")
         embed = discord.Embed(title=f"**Active maps** on `{server_name}`:")
         embed.description = "\n"
@@ -220,8 +220,8 @@ class Pavlov(commands.Cog):
 
         **Example**: `{prefix}players rush`
         """
-        data, _ = await exec_server_command(server_name, "RefreshList")
-        server_data, _ = await exec_server_command(server_name, "ServerInfo")
+        data = await exec_server_command(server_name, "RefreshList")
+        server_data = await exec_server_command(server_name, "ServerInfo")
         players = data.get("PlayerList")
         blue_score = server_data.get("ServerInfo").get("Team0Score")
         red_score = server_data.get("ServerInfo").get("Team1Score")
@@ -240,7 +240,7 @@ class Pavlov(commands.Cog):
             embed.description = f"Round {game_round} on map {map_name}\n\n"
         else:
             embed.description = f"Playing {game_mode.upper()} on map `{map_name}`\n\n"
-        team_blue, team_red, kda_list, alive_list, scores, _ = await get_stats(ctx, server_name)
+        team_blue, team_red, kda_list, alive_list, scores = await get_stats(server_name)
         if len(team_red) == 0:
             for player in players:
                 if player.get("UniqueId") == '' or player.get('Username') == '':
@@ -299,7 +299,7 @@ class Pavlov(commands.Cog):
         **Example**: `{prefix}playerinfo 89374583439127 rush`
         """
         player = SteamPlayer.convert(player)
-        data, _ = await exec_server_command(server_name, f"InspectPlayer {player.unique_id}")
+        data = await exec_server_command(server_name, f"InspectPlayer {player.unique_id}")
         player_info = data.get("PlayerInfo")
         # if ctx.batch_exec:
         #     return player_info
@@ -332,7 +332,7 @@ class Pavlov(commands.Cog):
         desc = f"\n{players_header}\n{'-'*len(players_header)}\n"
         for server_alias in servers.get_names():
             try:
-                data, _ = await exec_server_command(server_alias, "ServerInfo")
+                data = await exec_server_command(server_alias, "ServerInfo")
                 server_info = data.get("ServerInfo", {})
                 players_count = server_info.get("PlayerCount", "0/0")
                 server_name = server_info.get("ServerName", "")

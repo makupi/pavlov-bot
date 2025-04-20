@@ -8,7 +8,7 @@ from .config import Config
 from .lists import Lists
 from .paginator import Paginator
 from .polling import Polling
-from .servers import Servers, Server
+from .servers import Servers
 from .steamplayer import SteamPlayer
 
 config = Config()

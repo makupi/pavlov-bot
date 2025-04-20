@@ -58,7 +58,7 @@ class Utility(commands.Cog):
             f"Guilds: {len(self.bot.guilds)}\n"
             f"Users: {len(self.bot.users)}\n"
             f"Shards: {self.bot.shard_count}\n"
-            f"Shard ID: {ctx.guild.shard_id}```",
+            f"Shard ID: {interaction.guild.shard_id}```",
             inline=False,
         )
         embed.add_field(

@@ -8,13 +8,14 @@ from bot.utils import Servers
 from bot.utils.servers import ServerNotFoundError
 
 STALE_TIMEOUT_SECONDS = 60
+RCON_TIMEOUT = 60
 
 class PavlovRCONManager:
     def __init__(self, servers: Servers):
         self._conns = {}
         self._last_used = {}
-        for name, server in servers.get_servers():
-            self._conns[name] = PavlovRCON(ip=server.get("ip"), port=server.get("port"), password=server.get("password"))
+        for name, server in servers.get_servers().items():
+            self._conns[name] = PavlovRCON(ip=server.get("ip"), port=server.get("port"), password=server.get("password"), timeout=RCON_TIMEOUT)
 
         asyncio.create_task(self.__disconnect_stale_conns())
 
@@ -30,7 +31,7 @@ class PavlovRCONManager:
 
     async def __disconnect_stale_conns(self):
         while True:
-            for name, conn in self._conns:
+            for name, conn in self._conns.items():
                 if conn.is_connected():
                     last_used = self._last_used.get(name)
                     if not last_used:

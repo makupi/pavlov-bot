@@ -68,7 +68,7 @@ class Teams(commands.Cog):
         **Examples**: `{prefix}ringers populate random_team tdm_server`"""
         if not await check_perm_captain(interaction, global_check=True):
             return
-        data, _ = await exec_server_command(interaction, server_name, "RefreshList")
+        data = await exec_server_command(interaction, server_name, "RefreshList")
         player_list = data.get("PlayerList")
         team = aliases.get_team(team_name)
         players_added = []

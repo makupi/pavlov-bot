@@ -197,7 +197,7 @@ class PavlovCaptain(commands.Cog):
             return
 
         map_label = aliases.get_map(map_id)
-        data, _ = await exec_server_command(
+        data = await exec_server_command(
             server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
         switch_map = data.get("SwitchMap")
@@ -226,7 +226,7 @@ class PavlovCaptain(commands.Cog):
 
         if not await check_perm_captain(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, "ResetSND")
+        data = await exec_server_command(server_name, "ResetSND")
         reset_snd = data.get("ResetSND")
         if not reset_snd:
             embed = discord.Embed(title=f"**Failed** to reset SND on {server_name}.")
@@ -251,7 +251,7 @@ class PavlovCaptain(commands.Cog):
         if not await check_perm_captain(interaction, server_name):
             return
         player = SteamPlayer.convert(player_arg)
-        data, _ = await exec_server_command(
+        data = await exec_server_command(
             server_name, f"SwitchTeam {player.unique_id} {team_id}"
         )
         embed = discord.Embed(title=f"**SwitchTeam {player_arg} {team_id}** \n")
@@ -269,7 +269,7 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, f"RotateMap")
+        data = await exec_server_command(server_name, f"RotateMap")
         rotate_map = data.get("RotateMap")
         if not rotate_map:
             embed = discord.Embed(title=f"**Failed** to rotate map on {server_name}.")
@@ -278,7 +278,7 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
-    @app_commands.rename(team_a_name="team-a", team_b_name="team-a", server_name="server")
+    @app_commands.rename(team_a_name="team-a", team_b_name="team-b", server_name="server")
     async def matchsetup(
         self,
         interaction: discord.Interaction,
@@ -332,7 +332,7 @@ class PavlovCaptain(commands.Cog):
         """
         if not await check_perm_captain(interaction, server_name):
             return
-        data, _ = await exec_server_command(server_name, "RefreshList")
+        data = await exec_server_command(server_name, "RefreshList")
         player_list = data.get("PlayerList")
         non_alias_player_ids = list()
         for player in player_list:
@@ -344,7 +344,7 @@ class PavlovCaptain(commands.Cog):
             await interaction.response.send_message(embed=embed)
             return
         to_kick_id = random.choice(non_alias_player_ids)
-        data, _ = await exec_server_command(server_name, f"Kick {to_kick_id}")
+        data = await exec_server_command(server_name, f"Kick {to_kick_id}")
         kick = data.get("Kick")
         if not kick:
             embed = discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
@@ -365,9 +365,9 @@ class PavlovCaptain(commands.Cog):
         if not await check_perm_captain(interaction, server_name):
             return
         if len(pin) == 4 and pin.isdigit():
-            data, _ = await exec_server_command(server_name, f"SetPin {pin}")
+            data = await exec_server_command(server_name, f"SetPin {pin}")
         elif pin.lower() == "remove":
-            data, _ = await exec_server_command(server_name, f"SetPin")
+            data = await exec_server_command(server_name, f"SetPin")
         else:
             embed = discord.Embed(title=f"Pin must be either a 4-digit number or remove")
             await interaction.response.send_message(embed=embed)
