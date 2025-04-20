@@ -178,10 +178,12 @@ class PavlovCaptain(commands.Cog):
     #         )
 
     @app_commands.command()
+    @app_commands.describe(map_id="ID of the map to switch to", game_mode="Game mode for the map")
+    @app_commands.rename(server_name="server")
     async def switchmap(
         self,
         interaction: discord.Interaction,
-        map_name: str,
+        map_id: str,
         game_mode: str,
         server_name: str = config.default_server,
     ):
@@ -194,24 +196,25 @@ class PavlovCaptain(commands.Cog):
         if not await check_perm_captain(interaction, server_name):
             return
 
-        map_label = aliases.get_map(map_name)
+        map_label = aliases.get_map(map_id)
         data, _ = await exec_server_command(
             server_name, f"SwitchMap {map_label} {game_mode.upper()}"
         )
         switch_map = data.get("SwitchMap")
         if not switch_map:
             embed = discord.Embed(
-                title=f"**Failed** to switch map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+                title=f"**Failed** to switch map to {map_id} with game mode {game_mode.upper()} on {server_name}."
             )
             await interaction.response.send_message(embed=embed)
             return
         embed = discord.Embed(
-            title=f"Switched map to {map_name} with game mode {game_mode.upper()} on {server_name}."
+            title=f"Switched map to {map_id} with game mode {game_mode.upper()} on {server_name}."
         )
 
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.rename(server_name="server")
     async def resetsnd(
         self, interaction: discord.Interaction, server_name: str = config.default_server
     ):
@@ -232,11 +235,12 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.rename(player_arg="player", team_id="team", server_name="server")
     async def switchteam(
         self,
         interaction: discord.Interaction,
         player_arg: str,
-        team_id: str,
+        team_id: int,
         server_name: str = config.default_server,
     ):
         """`{prefix}switchteam <player_id> <team_id> <server_name>` - *Moves player to team*
@@ -255,6 +259,7 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.rename(server_name="server")
     async def rotatemap(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>` - *Changes map to next in rotation*
         **Description**: Changes map to next in Game.ini
@@ -273,6 +278,7 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.rename(team_a_name="team-A", team_b_name="team-B", server_name="server")
     async def matchsetup(
         self,
         interaction: discord.Interaction,
@@ -313,6 +319,7 @@ class PavlovCaptain(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.rename(server_name="server")
     async def flush(
         self,
         interaction: discord.Interaction,
@@ -347,6 +354,8 @@ class PavlovCaptain(commands.Cog):
             await interaction.response.send_message(embed=embed)
 
     @app_commands.command()
+    @app_commands.describe(pin="4 digit pin or 'remove' to remove")
+    @app_commands.rename(server_name="server")
     async def setpin(self, interaction: discord.Interaction, pin: str, server_name: str = config.default_server):
         """`{prefix}setpin <pin> <server_name>` - *Changes server pin*
         **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset
