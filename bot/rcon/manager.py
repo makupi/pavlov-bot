@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime
 from typing import List
 
@@ -31,15 +32,20 @@ class PavlovRCONManager:
 
     async def __disconnect_stale_conns(self):
         while True:
-            for name, conn in self._conns.items():
-                if conn.is_connected():
-                    last_used = self._last_used.get(name)
-                    if not last_used:
-                        await conn.close()
-                    delta = datetime.now() - last_used
-                    if delta.seconds > 60:
-                        await conn.close()
-            await asyncio.sleep(5)
+            try:
+                for name, conn in self._conns.items():
+                    if conn.is_connected():
+                        last_used = self._last_used.get(name)
+                        if not last_used:
+                            await conn.close()
+                            continue
+                        delta = datetime.now() - last_used
+                        if delta.seconds > STALE_TIMEOUT_SECONDS:
+                            logging.info(f"Closing stale connection for {name} after unused for {delta.seconds} seconds.")
+                            await conn.close()
+                await asyncio.sleep(5)
+            except Exception as ex:
+                logging.error(f"__disconnect_stale_conns: {ex}")
 
     def __mark_last_used_now(self, server_name: str):
         self._last_used[server_name] = datetime.now()
