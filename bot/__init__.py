@@ -23,6 +23,7 @@ initial_extensions = (
     'bot.cogs.pavlov',
     'bot.cogs.pavlov_admin',
     'bot.cogs.pavlov_captain',
+    'bot.cogs.pavlov_mod',
     'bot.cogs.utility',
     'bot.cogs.teams',
     'bot.cogs.commands'
