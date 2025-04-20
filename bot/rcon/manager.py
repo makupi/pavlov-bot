@@ -41,7 +41,7 @@ class PavlovRCONManager:
                             continue
                         delta = datetime.now() - last_used
                         if delta.seconds > STALE_TIMEOUT_SECONDS:
-                            logging.info(f"Closing stale connection for {name} after unused for {delta.seconds} seconds.")
+                            logging.debug(f"Closing stale connection for {name} after unused for {delta.seconds} seconds.")
                             await conn.close()
                 await asyncio.sleep(5)
             except Exception as ex:
