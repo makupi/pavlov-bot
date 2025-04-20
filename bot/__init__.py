@@ -21,6 +21,7 @@ invite_link = "https://discord.com/oauth2/authorize?client_id={}"
 
 initial_extensions = (
     'bot.cogs.pavlov',
+    'bot.cogs.pavlov_admin',
     'bot.cogs.utility',
     'bot.cogs.teams',
     'bot.cogs.commands'

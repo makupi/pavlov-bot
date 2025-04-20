@@ -1,10 +1,5 @@
-import functools
 import logging
-import re
-import sys
-import traceback
 from asyncio.exceptions import TimeoutError
-from datetime import datetime
 
 from async_lru import alru_cache
 
@@ -49,15 +44,15 @@ class Pavlov(commands.Cog):
         logging.info(f"{type(self).__name__} Cog ready.")
 
     @alru_cache # automatically cache modio api response
-    async def get_map_alias(self, map_label: str) -> [str, str]:
+    async def get_map_alias(self, map_label: str) -> tuple[str, str] | tuple[None, None]:
         if "UGC" in map_label:
             try:
                 map_id = map_label.split("UGC")[1]
                 async with self.session as client:
                     async with client.get(f"{config.apiPATH}/games/3959/mods/{map_id}?api_key={config.apiKEY}") as resp:
                         data = await resp.json()
-                        map_name = data.get("name")
-                        map_image = data.get("logo", {}).get("original")
+                        map_name: str = data.get("name")
+                        map_image: str = data.get("logo", {}).get("original")
                         return map_name, map_image
             except Exception as ex:
                 logging.error(f"Getting map label {map_label} failed with {ex}")
@@ -69,8 +64,9 @@ class Pavlov(commands.Cog):
         """Lists all available servers"""
         server_names = servers.get_names()
         if not server_names:
-            return await interaction.response.send_message("No servers found.")
-        # embed = discord.Embed(title="Servers", description="\n- ".join([""] + server_names))
+            await interaction.response.send_message("No servers found.")
+            return
+            # embed = discord.Embed(title="Servers", description="\n- ".join([""] + server_names))
         await interaction.response.send_message(f"Available Servers: {", ".join(server_names)}.")
 
     aliases = app_commands.Group(name="aliases", description="List aliases")
@@ -81,7 +77,8 @@ class Pavlov(commands.Cog):
         """Lists all map aliases"""
         maps = aliases.get_maps()
         if not maps:
-            return await interaction.response.send_message("No map aliases found.")
+            await interaction.response.send_message("No map aliases found.")
+            return
 
         msg = ""
         for alias, label in maps.items():
@@ -94,7 +91,8 @@ class Pavlov(commands.Cog):
         """Lists all player aliases"""
         players = aliases.get_players()
         if not players:
-            return await interaction.response.send_message("No player aliases found.")
+            await interaction.response.send_message("No player aliases found.")
+            return
 
         msg = ""
         for alias, unique_id in players.items():
