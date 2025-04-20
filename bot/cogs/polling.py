@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import random
 from typing import Optional
 
 import discord
@@ -54,14 +53,13 @@ class Polling(commands.Cog):
 
     async def player_polling(
         self,
-        ctx,
         poll_config: dict,
         server: str,
         old_state: Optional[str],
     ):
         channel = self.bot.get_channel(poll_config.get("polling_channel"))
         logging.info(f"Starting poll on {server} with state: {old_state}")
-        data, ctx = await exec_server_command(ctx, server, "RefreshList")
+        data, ctx = await exec_server_command(server, "RefreshList")
         player_count = len(data.get("PlayerList"))
         p_role = "<@&" + str(poll_config.get("polling_role")) + ">"
         logging.info(f"{server} has {player_count} players")
@@ -92,9 +90,9 @@ class Polling(commands.Cog):
         await channel.send(p_role, embed=embed)
         return new_state, ctx
 
-    async def autobalance_polling(self, interaction: discord.Interaction, poll_config: dict, server: str, poll_name: str):
+    async def autobalance_polling(self, poll_config: dict, server: str, poll_name: str):
         channel = self.bot.get_channel(int(poll_config.get("polling_channel")))
-        teamblue, teamred, _, _, scoredict, ctx = await players.get_stats(ctx, server)
+        teamblue, teamred, _, _, scoredict, ctx = await players.get_stats(server)
         for player, score in scoredict.items():
             try:
                 score = int(score)
@@ -108,7 +106,7 @@ class Polling(commands.Cog):
                 logging.info(f"Task {poll_name}: Performing tk action {tk_action} on {server}")
 
                 if tk_action.casefold() == "kick":
-                    _, ctx = await exec_server_command(ctx, server, f"Kick {player}")
+                    _, ctx = await exec_server_command(server, f"Kick {player}")
                     logging.info(
                         f"Player {player} kicked for TK from server {server} at score {score}"
                     )
@@ -119,7 +117,7 @@ class Polling(commands.Cog):
                     await channel.send(p_role, embed=embed)
                     return ctx
                 elif tk_action.casefold() == "ban":
-                    _, ctx = await exec_server_command(ctx, server, f"Ban {player}")
+                    _, ctx = await exec_server_command(server, f"Ban {player}")
                     logging.info(
                         f"Player {player} banned for TK from server {server} at score {score}"
                     )
@@ -215,7 +213,7 @@ class Polling(commands.Cog):
                     return ctx
                 else:
                     logging.info(f"Executed {sw_command}")
-                    _, ctx = await exec_server_command(ctx, server, sw_command)
+                    _, ctx = await exec_server_command(server, sw_command)
                     embed = discord.Embed(
                         title=f"`Autobalance of {server} at player count {blue_count + red_count} ratio {blue_count}/{red_count}. Median player moved `"
                     )

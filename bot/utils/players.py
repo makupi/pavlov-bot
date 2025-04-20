@@ -1,7 +1,4 @@
-import asyncio
-
 import discord
-from discord.ext import commands
 
 from bot.utils.pavlov import exec_server_command
 
@@ -89,7 +86,7 @@ async def parse_player_command_results(data, embed, server_name):
     return embed
 
 
-async def get_stats(ctx: commands.Context = None, server: str = ""):
+async def get_stats(server: str = ""):
     if server == "":
         return "NoServerSpecified"
     else:
@@ -98,13 +95,13 @@ async def get_stats(ctx: commands.Context = None, server: str = ""):
         alivelist = {}
         kdalist = {}
         scorelist = {}
-        data, ctx = await exec_server_command(ctx, server, "RefreshList")
+        data, ctx = await exec_server_command(server, "RefreshList")
         player_list = data.get("PlayerList")
         for player in player_list:
             if player.get("UniqueId") == '' or player.get('Username') == '':
                 continue
             data2, ctx = await exec_server_command(
-                ctx, server, f"InspectPlayer {player.get('UniqueId')}"
+                server, f"InspectPlayer {player.get('UniqueId')}"
             )
             dead = data2.get("PlayerInfo").get("Dead")
             alivelist.update({player.get("UniqueId"): dead})

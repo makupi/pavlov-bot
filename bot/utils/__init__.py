@@ -8,7 +8,7 @@ from .config import Config
 from .lists import Lists
 from .paginator import Paginator
 from .polling import Polling
-from .servers import Servers
+from .servers import Servers, Server
 from .steamplayer import SteamPlayer
 
 config = Config()
@@ -31,6 +31,7 @@ def user_action_log(interaction: discord.Interaction, message: str, log_level=lo
 __all__ = [
     "config",
     "servers",
+    "Servers",
     "aliases",
     "SteamPlayer",
     "Paginator",

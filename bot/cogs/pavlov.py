@@ -5,7 +5,6 @@ from async_lru import alru_cache
 
 import aiohttp
 import discord
-from bs4 import BeautifulSoup
 from discord.ext import commands
 from discord import app_commands
 
