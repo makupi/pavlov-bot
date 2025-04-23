@@ -173,7 +173,7 @@ class Pavlov(commands.Cog):
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
     @app_commands.rename(server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete))
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def itemlist(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}itemlist <servername>` - *Lists available items on a server*
 

@@ -42,7 +42,7 @@ class Teams(commands.Cog):
     @ringers.command()
     @app_commands.describe(player_arg="The player id you want to add", team_name="The team you want to add the player to")
     @app_commands.rename(player_arg="player", team_name="team")
-    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, team_name=aliases.teams_autocomplete)
     async def add(self, interaction: discord.Interaction, player_arg: str, team_name: str):
         """`{prefix}ringers add <unique_id or alias> <team_name>`
         **Description**: Adds a single player to a team. Can be called by ID or alias
@@ -106,7 +106,7 @@ class Teams(commands.Cog):
     @app_commands.describe(player_arg="The player id you want to remove",
                            team_name="The team you want to remove the player from")
     @app_commands.rename(player_arg="player", team_name="team")
-    @app_commands.autocomplete(team_name=aliases.teams_autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, team_name=aliases.teams_autocomplete)
     async def delete(self, interaction: discord.Interaction, player_arg: str, team_name: str):
         """`{prefix}ringers delete <unique_id or alias> <team_name>`
         **Description**: Removes a specific ringer from a team.

@@ -4,7 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, config, servers
+from bot.utils import SteamPlayer, config, servers, aliases
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -146,7 +146,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(item_id="ID of the item")
     @app_commands.rename(player_arg="player", item_id="item-id", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def giveitem(
         self,
         interaction: discord.Interaction,
@@ -181,7 +181,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(vehicle_id="ID of the vehicle")
     @app_commands.rename(player_arg="player", vehicle_id="vehicle-id", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def givevehicle(
         self,
         interaction: discord.Interaction,
@@ -216,7 +216,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(cash_amount="Amount of cash")
     @app_commands.rename(player_arg="player", cash_amount="cash", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def givecash(
         self,
         interaction: discord.Interaction,
@@ -271,7 +271,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(skin_id="ID of the skin")
     @app_commands.rename(player_arg="player", skin_id="skin-id", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def setplayerskin(
         self,
         interaction: discord.Interaction,

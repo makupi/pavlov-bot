@@ -238,7 +238,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", team_id="team", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def switchteam(
         self,
         interaction: discord.Interaction,

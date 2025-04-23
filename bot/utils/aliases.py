@@ -168,8 +168,14 @@ class Aliases:
     def get_teams_list(self):
         return self.teams.values()
 
-    async def teams_autocomplete(self,interaction: discord.Interaction, current: str):
+    async def teams_autocomplete(self,interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
         return [
             app_commands.Choice(name=t, value=t)
             for t in self.get_teams_list() if current.lower() in t.lower()
+        ]
+
+    async def players_autocomplete(self,interaction: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name=p, value=p)
+            for p in self.get_players().values() if current.lower() in p.lower()
         ]

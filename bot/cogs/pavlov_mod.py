@@ -4,7 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, config, servers
+from bot.utils import SteamPlayer, config, servers, aliases
 from bot.utils.pavlov import check_perm_moderator, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -23,7 +23,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def ban(
         self,
         interaction: discord.Interaction,
@@ -57,7 +57,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def kill(
         self,
         interaction: discord.Interaction,
@@ -87,7 +87,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def kick(
         self,
         interaction: discord.Interaction,
@@ -109,7 +109,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def unban(
         self,
         interaction: discord.Interaction,
@@ -142,7 +142,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def gag(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}gag <player_id> <server_name>`
         **Description**: Globally mutes a player
@@ -159,7 +159,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def addmod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}addmod <player_id> <server_name>`
         **Description**: Adds a player to mods.txt
@@ -176,7 +176,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def removemod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}removemod <player_id> <server_name>`
         **Description**: Removes a player from mods.txt
@@ -194,7 +194,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(dmg="The amount of damage the slap should do")
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def slap(
         self,
         interaction: discord.Interaction,
@@ -227,7 +227,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(karma="The amount of karma")
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def tttsetkarma(
         self,
         interaction: discord.Interaction,
@@ -255,7 +255,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.autocomplete(player_arg=aliases.players_autocomplete, server_name=servers.autocomplete)
     async def tttflushkarma(
         self,
         interaction: discord.Interaction,
