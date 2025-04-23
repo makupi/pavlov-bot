@@ -314,14 +314,14 @@ class PavlovCaptain(commands.Cog):
         embed = discord.Embed(
             title=f"Teams set up. Resetting SND in {MATCH_DELAY_RESETSND} seconds on {server_name}."
         )
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
         await asyncio.sleep(MATCH_DELAY_RESETSND)
         await exec_server_command(server_name, "ResetSND")
         embed = discord.Embed(title=f"SND has been reset on {server_name}. Good luck!")
         embed.set_footer(text=f"Execution time: {datetime.now() - before}")
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
@@ -354,10 +354,10 @@ class PavlovCaptain(commands.Cog):
         kick = data.get("Kick")
         if not kick:
             embed = discord.Embed(title=f"Encountered error while flushing on `{server_name}`")
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
         else:
             embed = discord.Embed(title=f"Successfully flushed `{server_name}`")
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
 
     @app_commands.command()
     @app_commands.describe(pin="4 digit pin or 'remove' to remove")
