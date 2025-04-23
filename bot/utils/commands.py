@@ -2,6 +2,9 @@ import asyncio
 import json
 import os
 
+import discord
+from discord import app_commands
+
 from bot.utils.pavlov import check_perm_admin, check_perm_captain, check_perm_moderator
 
 PERMISSIONS = {
@@ -37,18 +40,18 @@ class Command:
         if self.permission.lower() in PERMISSIONS:
             self._perm_check = PERMISSIONS.get(self.permission.lower())
 
-    async def __call__(self, ctx):
+    async def __call__(self, interaction: discord.Interaction):
         if self._perm_check:
-            if not await self._perm_check(ctx, server_name=None, global_check=True):
+            if not await self._perm_check(interaction, server_name=None, global_check=True):
                 return
 
         proc = await self._get_process()
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=10)
             if stdout:
-                await ctx.send(f"**stdout**\n```{stdout.decode()}```")
+                await interaction.response.send_message(f"**stdout**\n```{stdout.decode()}```")
             if stderr:
-                await ctx.send(f"**stderr**\n```{stderr.decode()}```")
+                await interaction.response.send_message(f"**stderr**\n```{stderr.decode()}```")
         except asyncio.TimeoutError:
             pass
 
@@ -82,3 +85,9 @@ class Commands:
     def get(self, command_name: str):
         command = self._find_command(command_name)
         return Command(name=command_name, data=command)
+
+    async def autocomplete(self, interaction: discord.Interaction, current: str):
+        return [
+            app_commands.Choice(name=c, value=c)
+            for c in self._commands.keys() if current.lower() in c.lower()
+        ]
