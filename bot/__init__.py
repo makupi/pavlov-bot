@@ -64,7 +64,8 @@ class CommandTree(app_commands.CommandTree):
         await interaction.response.send_message(embed=embed)
 
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
-        logging.info(f"INVOKED {interaction.command.name} args: {interaction.extras}")
+        if interaction.type == discord.InteractionType.application_command:
+            logging.info(f"INVOKED user: {interaction.user.name} ({interaction.user.id}) cmd: /{interaction.command.qualified_name}")
         return await super().interaction_check(interaction)
 
 
