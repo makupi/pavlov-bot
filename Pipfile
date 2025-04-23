@@ -6,8 +6,20 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-discord-py = "==1.7.3"
-async-pavlov = "*"
-beautifulsoup4 = "*"
-pillow = "*"
-discord-components = {file = "https://github.com/kiki7000/discord.py-components/archive/refs/tags/2.1.2.tar.gz"}
+aiohappyeyeballs = "==2.6.1"
+aiohttp = "==3.11.18"
+aiosignal = "==1.3.2"
+async-lru = "==2.0.5"
+async-pavlov = "==0.4.0"
+attrs = "==22.1.0"
+audioop-lts = "==0.2.1"
+beautifulsoup4 = "==4.13.4"
+discord-py = "==2.5.2"
+frozenlist = "==1.6.0"
+idna = "==3.3"
+multidict = "==6.0.2"
+pillow = "==11.2.1"
+propcache = "==0.3.1"
+soupsieve = "==2.3.2.post1"
+typing-extensions = "==4.3.0"
+yarl = "==1.20.0"
