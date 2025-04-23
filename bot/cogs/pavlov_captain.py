@@ -7,7 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, aliases, config
+from bot.utils import SteamPlayer, aliases, config, servers
 from bot.utils.pavlov import check_perm_captain, exec_server_command
 from bot.utils.players import (
     parse_player_command_results,
@@ -180,6 +180,7 @@ class PavlovCaptain(commands.Cog):
     @app_commands.command()
     @app_commands.describe(map_id="ID of the map to switch to", game_mode="Game mode for the map")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def switchmap(
         self,
         interaction: discord.Interaction,
@@ -215,6 +216,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def resetsnd(
         self, interaction: discord.Interaction, server_name: str = config.default_server
     ):
@@ -236,6 +238,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", team_id="team", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def switchteam(
         self,
         interaction: discord.Interaction,
@@ -260,6 +263,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def rotatemap(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}rotatemap <server_name>` - *Changes map to next in rotation*
         **Description**: Changes map to next in Game.ini
@@ -279,6 +283,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(team_a_name="team-a", team_b_name="team-b", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def matchsetup(
         self,
         interaction: discord.Interaction,
@@ -320,6 +325,7 @@ class PavlovCaptain(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def flush(
         self,
         interaction: discord.Interaction,
@@ -356,6 +362,7 @@ class PavlovCaptain(commands.Cog):
     @app_commands.command()
     @app_commands.describe(pin="4 digit pin or 'remove' to remove")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def setpin(self, interaction: discord.Interaction, pin: str, server_name: str = config.default_server):
         """`{prefix}setpin <pin> <server_name>` - *Changes server pin*
         **Description**: Sets a password for your server. Must be 4-digits or Use keyword "remove" to unset

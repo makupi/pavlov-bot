@@ -4,7 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from bot.utils import SteamPlayer, config
+from bot.utils import SteamPlayer, config, servers
 from bot.utils.pavlov import check_perm_admin, exec_server_command
 from bot.utils.players import (
     exec_command_all_players,
@@ -146,6 +146,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(item_id="ID of the item")
     @app_commands.rename(player_arg="player", item_id="item-id", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def giveitem(
         self,
         interaction: discord.Interaction,
@@ -180,6 +181,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(vehicle_id="ID of the vehicle")
     @app_commands.rename(player_arg="player", vehicle_id="vehicle-id", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def givevehicle(
         self,
         interaction: discord.Interaction,
@@ -214,6 +216,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(cash_amount="Amount of cash")
     @app_commands.rename(player_arg="player", cash_amount="cash", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def givecash(
         self,
         interaction: discord.Interaction,
@@ -242,6 +245,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(cash_amount="Amount of cash")
     @app_commands.rename(team_id="team", cash_amount="cash", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     @app_commands.choices(team_id=[app_commands.Choice(name="blue/0", value=0), app_commands.Choice(name="red/1", value=1)])
     async def giveteamcash(
         self,
@@ -267,6 +271,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(skin_id="ID of the skin")
     @app_commands.rename(player_arg="player", skin_id="skin-id", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def setplayerskin(
         self,
         interaction: discord.Interaction,
@@ -301,6 +306,7 @@ class PavlovAdmin(commands.Cog):
     @app_commands.command()
     @app_commands.describe(rcon_command="RCON command with arguments")
     @app_commands.rename(rcon_command="rcon", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def custom(self, interaction: discord.Interaction, rcon_command: str, server_name: str = config.default_server):
         """`{prefix}custom "<rcon_command with args>" server_name` - *Telnet-like direct entry to RCON*
         **Description**: Runs a custom RCON command.
@@ -318,6 +324,7 @@ class PavlovAdmin(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     @app_commands.choices(enable=[app_commands.Choice(name="enable", value="true"), app_commands.Choice(name="disable", value="false")])
     async def nametags(self, interaction: discord.Interaction, enable: str, server_name: str = config.default_server):
         """`{prefix}nametags enable/disable/true/false server_name`

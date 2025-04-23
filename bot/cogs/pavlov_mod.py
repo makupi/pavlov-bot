@@ -23,6 +23,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def ban(
         self,
         interaction: discord.Interaction,
@@ -56,6 +57,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def kill(
         self,
         interaction: discord.Interaction,
@@ -85,6 +87,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def kick(
         self,
         interaction: discord.Interaction,
@@ -106,6 +109,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def unban(
         self,
         interaction: discord.Interaction,
@@ -138,6 +142,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def gag(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}gag <player_id> <server_name>`
         **Description**: Globally mutes a player
@@ -154,6 +159,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def addmod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}addmod <player_id> <server_name>`
         **Description**: Adds a player to mods.txt
@@ -170,6 +176,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def removemod(self, interaction: discord.Interaction, player_arg: str, server_name: str = config.default_server):
         """`{prefix}removemod <player_id> <server_name>`
         **Description**: Removes a player from mods.txt
@@ -187,6 +194,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(dmg="The amount of damage the slap should do")
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def slap(
         self,
         interaction: discord.Interaction,
@@ -219,6 +227,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(karma="The amount of karma")
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def tttsetkarma(
         self,
         interaction: discord.Interaction,
@@ -246,6 +255,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(player_arg="player", server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def tttflushkarma(
         self,
         interaction: discord.Interaction,
@@ -272,6 +282,7 @@ class PavlovMod(commands.Cog):
 
     @app_commands.command()
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def tttendround(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}tttendround server_name`
         **Description**: Ends the current TTT round.
@@ -292,6 +303,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(pause="Whether to pause or unpause the timer")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     @app_commands.choices(pause=[app_commands.Choice(name="pause", value="true"), app_commands.Choice(name="unpause", value="false")])
     async def tttpausetimer(self, interaction: discord.Interaction, pause: str, server_name: str = config.default_server):
         """`{prefix}tttpausetimer pause/unpause/true/false server_name`
@@ -313,6 +325,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(enable="Whether to enable or disable the skin menu")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     @app_commands.choices(enable=[app_commands.Choice(name="enable", value="true"), app_commands.Choice(name="disable", value="false")])
     async def tttalwaysenableskinmenu(self, interaction: discord.Interaction, enable: str, server_name: str = config.default_server):
         """`{prefix}tttalwaysenableskinmenu enable/disable/true/false server_name`
@@ -334,6 +347,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(map_id="ID of the map to add", game_mode="Game mode for the map")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def addmap(self, interaction: discord.Interaction, map_id: int, game_mode: str, server_name: str = config.default_server):
         """`{prefix}addmap <map_id> <gamemode> <server_name>`
         **Description**: Adds map to game rotation
@@ -350,6 +364,7 @@ class PavlovMod(commands.Cog):
     @app_commands.command()
     @app_commands.describe(map_id="ID of the map to remove", game_mode="Game mode for the map")
     @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete)
     async def removemap(self, interaction: discord.Interaction, map_id: str, game_mode: str, server_name: str = config.default_server):
         """`{prefix}removemap <map_id> <gamemode> <server_name>`
         **Description**: Removes map from game rotation

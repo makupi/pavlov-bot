@@ -101,7 +101,7 @@ class Pavlov(commands.Cog):
     @app_commands.command()
     @commands.guild_only()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
-    @app_commands.rename(server_name="server-name")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def serverinfo(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}serverinfo <server_name>` - *Provides details on server*
@@ -129,6 +129,7 @@ class Pavlov(commands.Cog):
 
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def banlist(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}banlist <server_name>` - *Lists banned players on a server*
@@ -150,6 +151,7 @@ class Pavlov(commands.Cog):
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
     @app_commands.describe(player="The player id you want to check")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def checkban(self, interaction: discord.Interaction, player: str, server_name: str = config.default_server):
         """`{prefix}checkban <playerid> <server_name>` - *Lists banned players on a server*
@@ -170,7 +172,8 @@ class Pavlov(commands.Cog):
 
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
-    @app_commands.autocomplete(server_name=servers.autocomplete)
+    @app_commands.rename(server_name="server")
+    @app_commands.autocomplete(server_name=servers.autocomplete))
     async def itemlist(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}itemlist <servername>` - *Lists available items on a server*
 
@@ -188,6 +191,7 @@ class Pavlov(commands.Cog):
 
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def maplist(self, interaction: discord.Interaction, server_name: str = config.default_server):
         """`{prefix}maplist <server_name>` - *Lists configured maps on a server*
@@ -210,6 +214,7 @@ class Pavlov(commands.Cog):
 
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def players(
             self,
@@ -287,6 +292,7 @@ class Pavlov(commands.Cog):
     @app_commands.command()
     @app_commands.describe(server_name="The name of the server to get info for, if not given chooses default")
     @app_commands.describe(player="The player id you want to check")
+    @app_commands.rename(server_name="server")
     @app_commands.autocomplete(server_name=servers.autocomplete)
     async def playerinfo(
         self,
